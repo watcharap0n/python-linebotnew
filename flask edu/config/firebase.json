@@ -1,0 +1,14 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyAhlfrbxUOvvtJvXMGN07gTwRSXq32vPiA",
+    "authDomain": "flask-kane.firebaseapp.com",
+    "databaseURL": "https://flask-kane.firebaseio.com",
+    "projectId": "flask-kane",
+    "storageBucket": "flask-kane.appspot.com",
+    "messagingSenderId": "813760746735",
+    "appId": "1:813760746735:web:94051e3fbd5445c707f71a",
+    "measurementId": "G-RD6NMRQM78"
+  },
+  "Channel_secret": "3b935d3a88e3b0bf7c07a6e00bcd5428",
+  "Channel_access_token": "VuHOGfDrdPm6SglfsrzTUjD5JYggmraDiTWBb0M0zT1T5dFbPlQzWs3HW5I2+ikoF7vSIRJJm/UY1JFLQDVSY9v7tgMOY5MdFQQTCMlhJbvbIWPCtHgzb/7MWqXWc8MhQDHdXhCS5vuQt88IunShXwdB04t89/1O/w1cDnyilFU="
+}
