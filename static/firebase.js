@@ -1,12 +1,12 @@
 var firebaseConfig = {
-apiKey: "AIzaSyBlJADiWxXWv6UQMl-bVbsI4fIcpYw8flg",
-authDomain: "chatbot-return.firebaseapp.com",
-databaseURL: "https://chatbot-return.firebaseio.com",
-projectId: "chatbot-return",
-storageBucket: "chatbot-return.appspot.com",
-messagingSenderId: "102505580300",
-appId: "1:102505580300:web:c89f95d84dd17700e1eb29",
-measurementId: "G-GQ1BFCVTZN"
+apiKey: "AIzaSyBqpxP2iNQzO88X4R_fD4oSAnms8KWgtu8",
+authDomain: "fir-7ec62.firebaseapp.com",
+databaseURL: "https://fir-7ec62.firebaseio.com",
+projectId: "fir-7ec62",
+storageBucket: "fir-7ec62.appspot.com",
+messagingSenderId: "1754735193",
+appId: "1:1754735193:web:3ee69e00b63ed176780748",
+measurementId: "G-FX20N2S88W"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
