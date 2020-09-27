@@ -1,1 +1,20 @@
-{"events": [{"type": "message", "replyToken": "7e9e6477d54b401aa0fab74b8af133a8", "source": {"userId": "U5695602b6b9bd56400e2b55052e6c406", "type": "user"}, "timestamp": 1600609135336, "mode": "active", "message": {"type": "sticker", "id": "12713518615222", "stickerId": "51626495", "packageId": "11538", "stickerResourceType": "ANIMATION"}}], "destination": "U5f60983f2792c57606ff36121412001b"}
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "ea18d515fbaa4739b141ba90b681e9b7",
+      "source": {
+        "userId": "U5695602b6b9bd56400e2b55052e6c406",
+        "type": "user"
+      },
+      "timestamp": 1600933557401,
+      "mode": "active",
+      "message": {
+        "type": "text",
+        "id": "12735131208413",
+        "text": "\u0e02\u0e2d\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e1c\u0e25\u0e34\u0e15\u0e20\u0e31\u0e13\u0e11\u0e4c"
+      }
+    }
+  ],
+  "destination": "U5f60983f2792c57606ff36121412001b"
+}

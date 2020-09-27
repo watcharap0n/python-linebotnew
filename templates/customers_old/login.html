@@ -1,0 +1,114 @@
+{% extends "sbadmin/loginLayout.html" %}
+
+{% block content %}
+
+
+<div id="login">
+    <div class="jumbotron">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-12 col-md-9">
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+                        <div class="card-body p-0">
+                            <!-- Nested Row within Card Body -->
+                            <div class="row">
+                                <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                                <div class="col-lg-6">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-4">LINE BOT MANGO</h1>
+                                        </div>
+
+                                        <form class="user" method="POST" action="">
+                                            <input class="form-control form-control-user" type="email"
+                                                   placeholder="Email" name="username"
+                                                   value="{{ request.form.username }}" required>
+
+                                            <br>
+                                            <input class="form-control form-control-user" type="password"
+                                                   placeholder="Password"
+                                                   name="password"
+                                                   value="{{ request.form.password }}" required>
+                                            <br>
+                                            <div class="form-group">
+                                                <div class="custom-control custom-checkbox small">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck"
+                                                           v-model="checkedRemember">
+                                                    <label class="custom-control-label" for="customCheck">Remember
+                                                        Me</label>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-success btn-user btn-block" type="submit"
+                                                    @click="onLogin">Sign in
+                                            </button>
+
+                                        </form>
+                                        <br>
+                                        <div class="text-center">
+                                            <div class="small">Don't have an account? <a href="signup">Sign Up</a></div>
+                                        </div>
+                                        <p class="text-danger">{{error}}</p>
+                                        <div class="text-center">
+                                            <a href="forgot"><p class="small">Forgot Password?</p></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+<script>
+
+
+    const router = new VueRouter({
+        routes: routes,
+        mode: "history",
+        base: "/",
+    });
+
+    var app = new Vue({
+        el: "#login",
+        data: {
+            message: "LINE BOT MANGO",
+            email: '',
+            password: '',
+            checkedRemember: false,
+        },
+        delimiters: ["[[", "]]"],
+        beforeMount() {
+            const person = JSON.parse(window.localStorage.getItem('user'));
+            if (person) {
+                this.email = person.email
+                this.password = person.password
+                this.checkedRemember = true
+            }
+        },
+        async mounted() {
+        },
+        computed: {},
+        methods: {
+            async onLogin() {
+                if (this.email && this.password) {
+                    const person = {'email': this.email, 'password': this.password}
+                    console.log(person)
+                    window.localStorage.setItem('user', JSON.stringify(person));
+                }
+            }
+        }
+    });
+
+
+</script>
+
+{% endblock %}
+
+
