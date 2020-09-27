@@ -97,7 +97,14 @@ def before_request():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=20)
+    app.permanent_session_lifetime = timedelta(minutes=13)
+
+
+@app.route('/test')
+def test():
+    resp = make_session_permanent(render_template(...))
+    resp.set_cookie('username', 'the username')
+    return resp
 
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
@@ -129,7 +136,6 @@ def login(customer):
             data = {
                 'user': user,
                 'customer': 'Customer',
-                'error' : error
             }
             return render_template('/sbadmin/login.html', data=data)
     if request.method == 'POST':
@@ -255,7 +261,8 @@ def index():
 def index_newcustomer():
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('/customers_new/index.html')
+    user = g.user
+    return render_template('/customers_new/index.html', user=user)
 
 
 @app.route('/index_customer')
@@ -576,7 +583,7 @@ def handle_message(event):
     try:
         print('Result 1')
         if result[0] >= 0.14367:
-            if ['ขอข้อมูลผลิตภัทฑ์'] == result[3]:
+            if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api1.reply_message(event.reply_token, mangoerp())
                 inserted = get_datetime(x)
@@ -616,7 +623,7 @@ def handle_message(event):
     try:
         print('Result 2')
         if result[0] >= 0.14367:
-            if ['ขอข้อมูลผลิตภัทฑ์'] == result[3]:
+            if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api2.reply_message(event.reply_token, mangoerp())
                 inserted = get_datetime(x)
@@ -656,7 +663,7 @@ def handle_message_old(event):
     try:
         print('Result 3')
         if result[0] >= 0.14367:
-            if ['ขอข้อมูลผลิตภัทฑ์'] == result[3]:
+            if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api3.reply_message(event.reply_token, mangoerp())
                 inserted = get_datetime(x)

@@ -12,8 +12,8 @@
     <!-- Custom fonts for this template-->
 
     <link href="{{ url_for('static',filename='vendor/fontawesome-free/css/all.min.css') }}"
-            rel="stylesheet"
-            type="text/css"/>
+          rel="stylesheet"
+          type="text/css"/>
 
     <link
             href="http://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css"
@@ -61,7 +61,7 @@
 
 <body id="page-top">
 <script>
-      var firebaseConfig = {
+    var firebaseConfig = {
         "apiKey": "AIzaSyDylMwsCrprPoN8JtDFGw4fkxw2ZZgdc7s",
         "authDomain": "chatbot-mango.firebaseapp.com",
         "databaseURL": "https://chatbot-mango.firebaseio.com",
@@ -70,8 +70,8 @@
         "messagingSenderId": "304952468693",
         "appId": "1:304952468693:web:7fb265fa15d5736137ee5c",
         "measurementId": "G-ZK9D1N662G"
-      };
-      firebase.initializeApp(firebaseConfig);
+    };
+    firebase.initializeApp(firebaseConfig);
 
 
 </script>
@@ -107,10 +107,17 @@
 
         <hr class="sidebar-divider bg-muted d-none d-md-block"/>
 
-        <!-- Sidebar Toggler (Sidebar) -->
+<!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
+<!--        <div class="text-center">-->
+<!--            <p class="small text-white"></p>-->
+<!--        </div>-->
 
         <div class="text-center d-none d-md-inline">
-            <a id="logout" href="/logout"> Logout </a>
+            <a id="logout" href="/logout">
+                <button type="button" class="btn bg-danger text-white">
+                    Logout
+                </button>
+            </a>
         </div>
     </ul>
     <!-- End of Sidebar -->
@@ -181,10 +188,11 @@
 </body>
 <style>
     #logout {
-      color: white;
+        color: white;
     }
+
     #content {
-      background: #e7e7e7;
+        background: #e7e7e7;
     }
 
 
