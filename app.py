@@ -64,8 +64,7 @@ def event_handler(event):
     if _type == 'sticker':
         replyObj = StickerSendMessage(package_id=str(11538), sticker_id=str(sk_id))
         line_bot_api.reply_message(rtoken, replyObj)
-def eve():
-    print('foi')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
