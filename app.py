@@ -474,6 +474,12 @@ def model_linebot():
                 xtrain.append(txt)
                 embedding.append(count)
                 count += 1
+    idx_answer = []
+    for a in answers:
+        idx = list(a)
+        sli = idx[1:]
+        idx_answer.append(sli)
+    # print(idx_answer)
     count_vect = CountVectorizer(tokenizer=tokenize)
     Xtrain_count = count_vect.fit_transform(xtrain)
     tf_transformer = TfidfTransformer(use_idf=False)
@@ -491,7 +497,7 @@ def model_linebot():
     p = float(prop)
     confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     print('value1')
-    return confidence, answers, label, msg, userId
+    return confidence, idx_answer, label, msg, userId
 
 
 def model_linebot_new():
@@ -515,6 +521,12 @@ def model_linebot_new():
                 xtrain.append(txt)
                 embedding.append(count)
                 count += 1
+    idx_answer = []
+    for a in answers:
+        idx = list(a)
+        sli = idx[1:]
+        idx_answer.append(sli)
+    # print(idx_answer)
     count_vect = CountVectorizer(tokenizer=tokenize)
     Xtrain_count = count_vect.fit_transform(xtrain)
     tf_transformer = TfidfTransformer(use_idf=False)
@@ -532,7 +544,7 @@ def model_linebot_new():
     p = float(prop)
     confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     print('value2')
-    return confidence, answers, label, msg, userId
+    return confidence, idx_answer, label, msg, userId
 
 
 def model_linebot_old():
@@ -556,6 +568,11 @@ def model_linebot_old():
                 xtrain.append(txt)
                 embedding.append(count)
                 count += 1
+    idx_answer = []
+    for a in answers:
+        idx = list(a)
+        sli = idx[1:]
+        idx_answer.append(sli)
     count_vect = CountVectorizer(tokenizer=tokenize)
     Xtrain_count = count_vect.fit_transform(xtrain)
     tf_transformer = TfidfTransformer(use_idf=False)
@@ -573,7 +590,7 @@ def model_linebot_old():
     p = float(prop)
     confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     print('value3')
-    return confidence, answers, label, msg, userId
+    return confidence, idx_answer, label, msg, userId
 
 
 @handler1.add(MessageEvent, message=TextMessage)

@@ -64,17 +64,12 @@ label = SVM.predict(Xtest_tf)
 prop = SVM.predict_proba(Xtest_tf)[0][label]
 p = float(prop)
 confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
-print(label)
-print(answers[5])
+# print(label)
+# print(answers)
 
-x = random.choice(answers[int(label)])
-
-while True:
-    if x == '':
-        x = random.choice(answers[int(label)])
-        print(x)
-        pass
-    else:
-        x = random.choice(answers[int(label)])
-        print(x)
-        break
+idx_answer = []
+for a in answers:
+    idx = list(a)
+    sli = idx[1:]
+    idx_answer.append(sli)
+print(idx_answer)
