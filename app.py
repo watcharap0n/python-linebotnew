@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import firebase_admin
 from firebase_admin import credentials, auth
 import json
+import time
 from random import randrange
 from numpy import random
 import numpy as np
@@ -16,13 +17,12 @@ from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             ImageSendMessage, StickerSendMessage, AudioSendMessage, FlexSendMessage,
                             ImagemapSendMessage,
-                            BaseSize, URIImagemapAction, ImagemapArea)
+                            BaseSize, URIImagemapAction, ImagemapArea, QuickReply, QuickReplyButton, MessageAction)
 from mangoerp.mangoerp_card import mangoerp
+from mangoerp.flex_message import *
 
 cred = credentials.Certificate('config/database_test/authen_firebase.json')
 firebase_auth = firebase_admin.initialize_app(cred)
-
-
 
 def database_test():
     with open('config/database_test/firebase.json', encoding='utf8') as json_file:
@@ -250,10 +250,8 @@ def welcome():
     return render_template('/sbadmin/welcome.html')
 
 
-@app.route('/index')
+@app.route('/admin_index')
 def index():
-    if not g.user:
-        return redirect(url_for('welcome'))
     return render_template('/sbadmin/index.html')
 
 
@@ -274,8 +272,6 @@ def index_customer():
 
 @app.route('/intent/<string:id>', methods=['GET', 'POST'])
 def intent(id):
-    if not g.user:
-        return redirect(url_for('login'))
     data = {
         'id': id,
     }
@@ -300,6 +296,26 @@ def old_intent(id):
         'id': id,
     }
     return render_template('/customers_old/intent.html', data=data)
+
+@app.route('/chart')
+def chart():
+    ref = db1.child('customer_email').get()
+    lst = []
+    for r in ref.each():
+        users = r.val()
+        lst.append(users)
+    _id = len(lst)
+    data = {
+        'users': lst,
+        'msg': _id
+    }
+    return render_template('/sbadmin/charts.html', data=data)
+
+@app.route('/vue')
+def vue():
+    data = time.perf_counter()
+    return render_template('/vue.html', data=data)
+
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
@@ -433,8 +449,8 @@ def event_handler2(event):
                 fb.write(chunk)
 
 
-def get_datetime(x):
-    raw_json = request.get_json(force=False, cache=False)
+def get_datetime1(x):
+    raw_json = request.get_json()
     json_line = json.dumps(raw_json)
     decoded = json.loads(json_line)
     message = decoded['events'][0]['message']['text']
@@ -446,6 +462,46 @@ def get_datetime(x):
     hour = datetime.today().hour
     year = datetime.today().year
     profile = line_bot_api1.get_profile(userId)
+    profile = profile.display_name
+    profile = str(profile)
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
+              'sec': second, 'day': day, 'month': month, 'year': year}
+    return result
+
+
+def get_datetime2(x):
+    raw_json = request.get_json()
+    json_line = json.dumps(raw_json)
+    decoded = json.loads(json_line)
+    message = decoded['events'][0]['message']['text']
+    userId = decoded['events'][0]['source']['userId']
+    day = datetime.today().day
+    month = datetime.today().month
+    second = datetime.today().second
+    minute = datetime.today().minute
+    hour = datetime.today().hour
+    year = datetime.today().year
+    profile = line_bot_api2.get_profile(userId)
+    profile = profile.display_name
+    profile = str(profile)
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
+              'sec': second, 'day': day, 'month': month, 'year': year}
+    return result
+
+
+def get_datetime3(x):
+    raw_json = request.get_json()
+    json_line = json.dumps(raw_json)
+    decoded = json.loads(json_line)
+    message = decoded['events'][0]['message']['text']
+    userId = decoded['events'][0]['source']['userId']
+    day = datetime.today().day
+    month = datetime.today().month
+    second = datetime.today().second
+    minute = datetime.today().minute
+    hour = datetime.today().hour
+    year = datetime.today().year
+    profile = line_bot_api3.get_profile(userId)
     profile = profile.display_name
     profile = str(profile)
     result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
@@ -494,9 +550,9 @@ def model_linebot():
     Xtest_tf = tf_transformer.transform(Xtest_count)
     label = SVM.predict(Xtest_tf)
     prop = SVM.predict_proba(Xtest_tf)[0][label]
-    p = float(prop)
-    confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
-    print('value1')
+    confidence = (0.3565152559 / ((len(embedding) * float(prop)) ** 0.5)) ** 2
+    if label == [4]:
+        db1.child('customer_email').push(get_datetime1(None))
     return confidence, idx_answer, label, msg, userId
 
 
@@ -603,7 +659,7 @@ def handle_message(event):
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api1.reply_message(event.reply_token, mangoerp())
-                inserted = get_datetime(x)
+                inserted = get_datetime1(x)
                 db1.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
@@ -618,6 +674,9 @@ def handle_message(event):
             else:
                 x = random.choice(result[1][int(result[2])])
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                q_a = get_datetime1(x)
+                inserted = db1.child('chatbot_transactions').push(q_a)
+                print(f'Inserted : {inserted}')
         else:
             if ['เปิดไฟ'] == result[3]:
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการเปิดไฟ'))
@@ -625,6 +684,8 @@ def handle_message(event):
             elif ['ปิดไฟ'] == result[3]:
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการปิดไฟ'))
                 db1.child('Node1').update({'Relay1': 1})
+            elif ['ขอdemo'] == result[3]:
+                line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'พิมพ์อีเมลของท่านเช่น email admin@user.com เป็นต้น\n เจ้าหน้าที่จะทำการติดต่อกลับไป'))
             elif ['temp'] == result[3]:
                 temp = db1.child('Sensor Ultrasonic').get()
                 temp = temp.val()
@@ -643,7 +704,7 @@ def handle_message(event):
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api2.reply_message(event.reply_token, mangoerp())
-                inserted = get_datetime(x)
+                inserted = get_datetime2(x)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
@@ -658,6 +719,9 @@ def handle_message(event):
             else:
                 x = random.choice(result[1][int(result[2])])
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                q_a = get_datetime2(x)
+                inserted = db2.child('chatbot_transactions').push(q_a)
+                print(f'Inserted : {inserted}')
         else:
             if ['เปิดไฟ'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการเปิดไฟ'))
@@ -669,6 +733,16 @@ def handle_message(event):
                 temp = db2.child('Sensor Ultrasonic').get()
                 temp = temp.val()
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
+            elif ['Intent'] == result[3]:
+                x = 'flex message'
+                line_bot_api2.reply_message(event.reply_token, flex_ans())
+                inserted = get_datetime3(x)
+                db3.child('chatbot_transactions').push(inserted)
+            elif ['question?'] == result[3]:
+                x = 'flex message'
+                line_bot_api2.reply_message(event.reply_token, flex_msg())
+                inserted = get_datetime3(x)
+                db3.child('chatbot_transactions').push(inserted)
     except LineBotApiError:
         abort(400)
 
@@ -683,7 +757,7 @@ def handle_message_old(event):
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api3.reply_message(event.reply_token, mangoerp())
-                inserted = get_datetime(x)
+                inserted = get_datetime3(x)
                 db3.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
@@ -698,6 +772,9 @@ def handle_message_old(event):
             else:
                 x = random.choice(result[1][int(result[2])])
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                q_a = get_datetime3(x)
+                inserted = db3.child('chatbot_transactions').push(q_a)
+                print(f'Inserted : {inserted}')
         else:
             if ['เปิดไฟ'] == result[3]:
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการเปิดไฟ'))
@@ -709,8 +786,31 @@ def handle_message_old(event):
                 temp = db3.child('Sensor Ultrasonic').get()
                 temp = temp.val()
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
+            elif ['Intent'] == result[3]:
+                x = 'flex message'
+                line_bot_api3.reply_message(event.reply_token, flex_ans())
+                inserted = get_datetime3(x)
+                db3.child('chatbot_transactions').push(inserted)
+            elif ['question?'] == result[3]:
+                x = 'flex message'
+                line_bot_api3.reply_message(event.reply_token, flex_msg())
+                inserted = get_datetime3(x)
+                db3.child('chatbot_transactions').push(inserted)
     except LineBotApiError:
         abort(400)
+
+
+@app.route('/api/message/<string:msg>', methods=['GET', 'POST'])
+def msg_message(msg):
+    if request.method == 'POST':
+        if msg == 'broadcast':
+            try:
+                raw_json = request.args['message']
+                line_bot_api1.broadcast(TextSendMessage(text=str(raw_json)))
+                return jsonify(f'Sending success : {raw_json}'), 200
+            except:
+                return jsonify(f'error'), 400
+
 
 
 if __name__ == '__main__':
