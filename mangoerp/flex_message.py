@@ -188,6 +188,178 @@ def flex_ans():
     )
     return flex_message
 
+def flex_erp():
+  flex_test = FlexSendMessage(
+    alt_text='erpshow',
+    contents={
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "hero": {
+        "type": "image",
+        "size": "full",
+        "aspectRatio": "20:13",
+        "aspectMode": "cover",
+        "url": "https://www.mangoconsultant.com/images/Kukkai/content001122018/800x800_003122018.png"
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "text",
+            "text": "Mango Consultant",
+            "wrap": True,
+            "weight": "bold",
+            "size": "xl"
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ยินดีให้บริการ",
+                "wrap": True,
+                "weight": "bold",
+                "size": "lg",
+                "flex": 0
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "message",
+              "label": "ทักทาย",
+              "text": "สวัสดี"
+            },
+            "style": "secondary"
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "message",
+              "label": "Mango ERP คืออะไร",
+              "text": "Mango ERP"
+            },
+            "style": "secondary"
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "message",
+              "label": "ที่อยู่บริษัท",
+              "text": "ตำแหน่งที่อยู่"
+            },
+            "style": "secondary"
+          }
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "button",
+            "style": "primary",
+            "action": {
+              "type": "message",
+              "label": "ขอใบเสนอราคา",
+              "text": "@quote"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "bubble",
+      "hero": {
+        "type": "image",
+        "size": "full",
+        "aspectRatio": "20:13",
+        "aspectMode": "cover",
+        "url": "https://www.mangoconsultant.com/images/Kukkai/content001122018/800x800_005122018.png"
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "text",
+            "text": "Mango ERP",
+            "wrap": True,
+            "weight": "bold",
+            "size": "xl"
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "message",
+              "label": "ขอนัด DEMO",
+              "text": "ขอdemo"
+            },
+            "style": "secondary"
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "uri",
+              "label": "Mango Consultant",
+              "uri": "https://www.mangoconsultant.com"
+            },
+            "style": "secondary"
+          }
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "button",
+            "flex": 2,
+            "style": "primary",
+            "color": "#FF0000",
+            "action": {
+              "type": "datetimepicker",
+              "label": "Datetime",
+              "data": "hello",
+              "mode": "date"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "bubble",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "button",
+            "flex": 1,
+            "gravity": "center",
+            "action": {
+              "type": "postback",
+              "label": "More",
+              "data": "more"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+  )
+  return flex_test
 
 def flex_msg():
     flex_message = FlexSendMessage(

@@ -11,20 +11,26 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Charts</h1>
+    <h1 class="h3 mb-2 text-gray-800">Boardcast</h1>
 
     <div class="row">
         <div class="col-xl-6 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">จำนวนผู้ใช้</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800 pp">18</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user fa-2x text-gray-300"></i>
-                        </div>
+                    <div class="col mr-2">
+                        <form class="user" method="POST" action="">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="broadcast"
+                                           class="text-xs font-weight-bold text-danger text-uppercase mb-1">BROADCAST:</label>
+                                    <input type="text" class="form-control" id="broadcast" name="msg">
+                                </div>
+                                <div class="col-sm-4">
+                                    <br>
+                                    <button type="submit" class="btn btn-warning">Boardcast</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -78,25 +84,20 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
+                        <th>index</th>
                         <th>message</th>
                         <th>profile</th>
-                        <th>user id token</th>
+                        <th>date/time</th>
                     </tr>
                     </thead>
-                    <tfoot>
-                    <tr>
-                        <th>message</th>
-                        <th>profile</th>
-                        <th>user id token</th>
-                    </tr>
-                    </tfoot>
                     <tbody>
 
-                    {% for i in data.users %}
+                    {% for e in data.users %}
                     <tr>
-                        <td>{{i.message}}</td>
-                        <td>{{i.profile}}</td>
-                        <td>{{i.userid}}</td>
+                        <td>{{e.index}}</td>
+                        <td>{{e.message}}</td>
+                        <td>{{e.profile}}</td>
+                        <td>{{e.day}}/{{e.month}}/{{e.year}}&nbsp;&nbsp;&nbsp;{{e.day}}:{{e.hour}}:{{e.year}}</td>
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -153,26 +154,15 @@
 
 
 <script>
-    var app = new Vue({
-        el: '#dataTable',
-        data: {
-            message: 'dataArray',
-            counter: 0
-        },
-        delimiters: ["[[", "]]"],
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            "order": [[3, "desc"]]
+        });
+        $('.dataTables_length').addClass('bs-select');
+    });
 
-        mounted() {
-            setInterval(() =>{
-                this.counter++
-            }, 1000)
-            console.log("vue : " + this.message)
-            console.log('counter: ' + this.mounted())
-        },
-        method: {
-        },
-    })
 
 </script>
 
 
-        {% endblock %}
+{% endblock %}
