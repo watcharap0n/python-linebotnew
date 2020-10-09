@@ -1,9 +1,16 @@
-import base64
-from PIL import Image
-from io import BytesIO
+import pyrebase
+import json
+from linebot import LineBotApi, WebhookHandler
+from linebot.models import TextSendMessage
 
-with open("img/file_path.png", "rb") as image_file:
-    data = base64.b64encode(image_file.read())
 
-im = Image.open(BytesIO(base64.b64decode(data)))
-im.save('image1.png', 'PNG')
+with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
+    data = json.load(json_file)
+    config = data['firebase']
+    firebase = pyrebase.initialize_app(config)
+    pb = pyrebase.initialize_app(config)
+    db = firebase.database()
+    line_bot_api = LineBotApi(data['Channel_access_token'])
+    handler = WebhookHandler(data['Channel_secret'])
+
+
