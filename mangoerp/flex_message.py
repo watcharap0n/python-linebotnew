@@ -538,7 +538,14 @@ def flex_product():
                             },
                             {
                                 "type": "text",
-                                "text": "โปรแกรม โดยราคาจะเริ่มตั้งแต่หลักหมื่นขึ้นไป",
+                                "text": "ขึ้นอยู่กับ Package ที่ต้องการโดยราคาจะเริ่ม",
+                                "size": "xs",
+                                "color": "#ffffff",
+                                "weight": "bold"
+                            },
+                            {
+                                "type": "text",
+                                "text": "ตั้งแต่หลักหมื่นขึ้นไป",
                                 "size": "xs",
                                 "color": "#ffffff",
                                 "weight": "bold"
@@ -665,10 +672,17 @@ def flex_product():
                             },
                             {
                                 "type": "text",
-                                "text": "โปรแกรม โดยราคาจะเริ่มตั้งแต่หลักหมื่นขึ้นไป",
+                                "text": "ขึ้นอยู่กับ Package ที่ต้องการโดยราคาจะเริ่ม",
                                 "size": "xs",
                                 "color": "#ffffff",
                                 "weight": "bold"
+                            },
+                            {
+                                "type": "text",
+                                "text": "ตั้งแต่หลักหมื่นขึ้นไป",
+                                "size": "xs",
+                                "weight": "bold",
+                                "color": "#ffffff"
                             }
                         ],
                         "backgroundColor": "#008891"

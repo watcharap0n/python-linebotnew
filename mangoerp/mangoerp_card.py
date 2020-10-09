@@ -120,3 +120,18 @@ def product_buttons():
     )
     return carousel_template_message
 
+
+def productR4():
+    imagemap_message = ImagemapSendMessage(
+        base_url='https://sv1.picz.in.th/images/2020/10/09/OLHcxP.png',
+        alt_text='imagemap',
+        base_size=BaseSize(height=1040, width=1040),
+        actions=[
+            MessageImagemapAction(
+                text='@Construction',
+                area=ImagemapArea(
+                    x=349, y=242, width=1038, height=300
+                )
+            ),
+        ])
+    return imagemap_message

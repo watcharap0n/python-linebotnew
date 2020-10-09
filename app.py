@@ -15,7 +15,7 @@ from mangoerp.mangoerp_card import *
 from mangoerp.flex_message import *
 from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
-                            StickerSendMessage)
+                            StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, RichMenuResponse)
 
 
 app = Flask(__name__)
@@ -773,7 +773,7 @@ def handle_message(event):
                 db2.child('chatbot_transactions').push(inserted)
             elif ['ขอข้อมูลผลิตภัณฑ์ใหม่'] == result[3]:
                 x = 'card'
-                line_bot_api2.reply_message(event.reply_token, product_action())
+                line_bot_api2.reply_message(event.reply_token, productR4())
                 inserted = get_datetime2(x)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
@@ -880,6 +880,56 @@ def msg_message(msg):
             except:
                 return jsonify(f'error'), 400
 
+
+@app.route('/api/richmenu/<string:rich>', methods=['GET', 'POST'])
+def richmenu(rich):
+    if request.method == 'GET':
+        if rich == 'create':
+            rich_menu_to_create = RichMenu(
+                size=RichMenuSize(width=2500, height=843),
+                selected=False,
+                name="Nice richmenu",
+                chat_bar_text="Tap here",
+                areas=[RichMenuArea(
+                    bounds=RichMenuBounds(x=853, y=164, width=1615, height=232),
+                    action=URIAction(label='Go to line.me', uri='https://line.me')),
+                RichMenuArea(
+                    bounds=RichMenuBounds(x=155, y=353, width=598, height=414),
+                    action=MessageAction(label='text', text='hey')
+                )
+                ]
+            )
+            rich_menu_id = line_bot_api1.create_rich_menu(rich_menu=rich_menu_to_create)
+            print(rich_menu_id)
+            return jsonify(str(rich_menu_id))
+        elif rich == 'uploadimg':
+            with open('Screen Shot 2563-10-09 at 10.30.21.png', 'rb') as f:
+                line_bot_api1.set_rich_menu_image('richmenu-59fe77f4746a66a6ef18bfa05210db88', 'image/jpeg', f)
+            return 'ok'
+        elif rich == 'set':
+            line_bot_api1.set_default_rich_menu('richmenu-59fe77f4746a66a6ef18bfa05210db88')
+            return 'ok'
+        elif rich == 'get_id':
+            rich_menu = line_bot_api1.get_rich_menu('richmenu-59fe77f4746a66a6ef18bfa05210db88')
+            print(rich_menu.rich_menu_id)
+            return jsonify(str(rich_menu))
+        elif rich == 'deleteall':
+            rich_menu_list = line_bot_api1.get_rich_menu_list()
+            for rich_menu in rich_menu_list:
+                richz = rich_menu.rich_menu_id
+                line_bot_api1.delete_rich_menu(str(richz))
+            return 'ok'
+        elif rich == 'list':
+            tx = []
+            rich_menu_list = line_bot_api1.get_rich_menu_list()
+            for rich_menu in rich_menu_list:
+                richz = rich_menu.rich_menu_id
+                tx.append(richz)
+            print(tx)
+            return str(tx)
+        elif rich == 'link_rich':
+            line_bot_api1.delete_rich_menu('richmenu-7d5b53dd033e30ff005da3a38916fb38')
+            return 'ok'
 
 
 if __name__ == '__main__':

@@ -1,1 +1,20 @@
-{"destination": "U6d8b7d5263f65cbd0ad3bed01f6a935c", "events": [{"message": {"id": "12820667004126", "text": "\u0e02\u0e2d\u0e43\u0e1a\u0e40\u0e2a\u0e19\u0e2d\u0e23\u0e32\u0e04\u0e32", "type": "text"}, "mode": "active", "replyToken": "b333b25ce88045b6b887013f988f3899", "source": {"type": "user", "userId": "U5f7725bb2eb57adc83d9d0b6ac4b5227"}, "timestamp": 1602209243320, "type": "message"}]}
+{
+  "destination": "U5f60983f2792c57606ff36121412001b",
+  "events": [
+    {
+      "message": {
+        "id": "12821747515796",
+        "text": "hello",
+        "type": "text"
+      },
+      "mode": "active",
+      "replyToken": "8b7e930cf26c4ec1b02b8b4cbd745a02",
+      "source": {
+        "type": "user",
+        "userId": "U5695602b6b9bd56400e2b55052e6c406"
+      },
+      "timestamp": 1602224423695,
+      "type": "message"
+    }
+  ]
+}
