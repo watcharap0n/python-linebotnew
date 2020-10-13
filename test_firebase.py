@@ -1,7 +1,14 @@
 import pyrebase
 import json
 from linebot import LineBotApi, WebhookHandler
-from linebot.models import TextSendMessage
+from linebot.models import TextSendMessage, ImageSendMessage
+from flask import Flask, request, abort
+from linebot import LineBotApi
+from datetime import datetime
+
+
+app = Flask(__name__)
+
 
 
 with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
@@ -14,3 +21,8 @@ with open('model/config/database_test/firebase.json', encoding='utf8') as json_f
     handler = WebhookHandler(data['Channel_secret'])
 
 
+
+
+
+if __name__ == '__main__':
+    app.run(port=5005, debug=True)

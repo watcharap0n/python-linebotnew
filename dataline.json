@@ -1,19 +1,32 @@
 {
-  "destination": "U5f60983f2792c57606ff36121412001b",
   "events": [
     {
       "message": {
-        "id": "12821747515796",
-        "text": "hello",
+        "id": "100001",
+        "text": "Hello, world",
         "type": "text"
       },
-      "mode": "active",
-      "replyToken": "8b7e930cf26c4ec1b02b8b4cbd745a02",
+      "replyToken": "00000000000000000000000000000000",
       "source": {
         "type": "user",
-        "userId": "U5695602b6b9bd56400e2b55052e6c406"
+        "userId": "Udeadbeefdeadbeefdeadbeefdeadbeef"
       },
-      "timestamp": 1602224423695,
+      "timestamp": 1602486817379,
+      "type": "message"
+    },
+    {
+      "message": {
+        "id": "100002",
+        "packageId": "1",
+        "stickerId": "1",
+        "type": "sticker"
+      },
+      "replyToken": "ffffffffffffffffffffffffffffffff",
+      "source": {
+        "type": "user",
+        "userId": "Udeadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "timestamp": 1602486817379,
       "type": "message"
     }
   ]

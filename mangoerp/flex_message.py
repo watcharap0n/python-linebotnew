@@ -352,7 +352,7 @@ def flex_msg():
             "type": "bubble",
             "hero": {
                 "type": "image",
-                "url": "https://www.mangoconsultant.com/images/Kukkai/mango_bohktor/smes.R1-2.png",
+                "url": "https://www.mangoconsultant.com",
                 "size": "full",
                 "aspectRatio": "20:13",
                 "aspectMode": "cover",
@@ -531,21 +531,21 @@ def flex_product():
                         "contents": [
                             {
                                 "type": "text",
-                                "text": "ราคามีทั้งแบบเช่ารายเดือนและแบบซื้อ",
+                                "text": "ราคามีทั้งแบบซื้อและแบบเช่ารายเดือน",
                                 "size": "md",
                                 "color": "#ffffff",
                                 "weight": "bold"
                             },
                             {
                                 "type": "text",
-                                "text": "ขึ้นอยู่กับ Package ที่ต้องการโดยราคาจะเริ่ม",
+                                "text": "ขึ้นอยู่กับ Package และจำนวน User ที่ต้องการ",
                                 "size": "xs",
                                 "color": "#ffffff",
                                 "weight": "bold"
                             },
                             {
                                 "type": "text",
-                                "text": "ตั้งแต่หลักหมื่นขึ้นไป",
+                                "text": "ใช้งาน โดยราคาเริ่มตั้งแต่หลักหมื่น",
                                 "size": "xs",
                                 "color": "#ffffff",
                                 "weight": "bold"
@@ -665,21 +665,21 @@ def flex_product():
                         "contents": [
                             {
                                 "type": "text",
-                                "text": "ราคามีทั้งแบบเช่ารายเดือนและแบบซื้อ",
+                                "text": "ราคามีทั้งแบบซื้อและแบบเช่ารายเดือน",
                                 "size": "md",
                                 "color": "#ffffff",
                                 "weight": "bold"
                             },
                             {
                                 "type": "text",
-                                "text": "ขึ้นอยู่กับ Package ที่ต้องการโดยราคาจะเริ่ม",
+                                "text": "ขึ้นอยู่กับ Package และจำนวน User ที่ต้องการ",
                                 "size": "xs",
                                 "color": "#ffffff",
                                 "weight": "bold"
                             },
                             {
                                 "type": "text",
-                                "text": "ตั้งแต่หลักหมื่นขึ้นไป",
+                                "text": "ใช้งาน โดยราคาเริ่มตั้งแต่หลักหมื่น",
                                 "size": "xs",
                                 "weight": "bold",
                                 "color": "#ffffff"
