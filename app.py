@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from random import randrange
 from numpy import random
 import json
+import time
 import pyrebase
 import firebase_admin
 from flask import request, json
@@ -547,6 +548,7 @@ def model_linebot():
     label = SVM.predict(Xtest_tf)
     prop = SVM.predict_proba(Xtest_tf)[0][label]
     confidence = (0.3565152559 / ((len(embedding) * float(prop)) ** 0.5)) ** 2
+    print(label)
     if label == [4]:
         db1.child('customer_email').push(get_datetime1(None))
     return confidence, idx_answer, label, msg, userId
@@ -736,11 +738,18 @@ def handle_message(event):
                 user_profile = str(user_profile)
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             else:
-                x = random.choice(result[1][int(result[2])])
-                line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                q_a = get_datetime1(x)
-                inserted = db1.child('chatbot_transactions').push(q_a)
-                print(f'Inserted : {inserted}')
+                if result[2] == [1]:
+                    stic = ['52114110', '52114115', '52114129', '52114122']
+                    stic = random.choice(stic)
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    line_bot_api1.push_message(result[4], StickerSendMessage(package_id=str(11539), sticker_id=str(stic)))
+                else:
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    q_a = get_datetime1(x)
+                    inserted = db1.child('chatbot_transactions').push(q_a)
+                    print(f'Inserted : {inserted}')
         else:
             if ['เปิดไฟ'] == result[3]:
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการเปิดไฟ'))
@@ -761,7 +770,7 @@ def handle_message(event):
 
 
 @handler2.add(MessageEvent, message=TextMessage)
-def handle_message(event):
+def handle_message_new(event):
     result = model_linebot_new()
     print(result[0])
     try:
@@ -788,11 +797,18 @@ def handle_message(event):
                 user_profile = str(user_profile)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             else:
-                x = random.choice(result[1][int(result[2])])
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                q_a = get_datetime2(x)
-                inserted = db2.child('chatbot_transactions').push(q_a)
-                print(f'Inserted : {inserted}')
+                if result[2] == [3]:
+                    stic = ['52114110', '52114115', '52114129', '52114122']
+                    stic = random.choice(stic)
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    line_bot_api2.push_message(result[4], StickerSendMessage(package_id=str(11539), sticker_id=str(stic)))
+                else:
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    q_a = get_datetime2(x)
+                    inserted = db2.child('chatbot_transactions').push(q_a)
+                    print(f'Inserted : {inserted}')
         else:
             if ['เปิดไฟ'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการเปิดไฟ'))
@@ -923,9 +939,10 @@ def richmenu(rich):
         line_bot_api1.set_default_rich_menu(rich_id)
         return 'ok'
     elif rich == 'get_id':
-        rich_menu = line_bot_api1.get_rich_menu(str(rich_Tranform))
-        print(rich_menu.rich_menu_id)
-        return jsonify(str(rich_menu))
+        pass
+        # rich_menu = line_bot_api1.get_rich_menu(str(rich_Tranform))
+        # print(rich_menu.rich_menu_id)
+        # return jsonify(str(rich_menu))
     elif rich == 'deleteall':
         rich_menu_list = line_bot_api1.get_rich_menu_list()
         for rich_menu in rich_menu_list:
