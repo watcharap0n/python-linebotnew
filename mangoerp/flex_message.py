@@ -195,14 +195,15 @@ def flex_erp():
             "type": "bubble",
             "hero": {
                 "type": "image",
-                "url": "https://sv1.picz.in.th/images/2020/10/08/OJOOnS.png",
+                "url": "https://sv1.picz.in.th/images/2020/10/15/bWGj1R.md.png",
                 "size": "full",
-                "aspectRatio": "20:13",
                 "aspectMode": "cover",
                 "action": {
                     "type": "uri",
                     "uri": "http://linecorp.com/"
-                }
+                },
+                "position": "relative",
+                "aspectRatio": "3:5"
             },
             "body": {
                 "type": "box",
@@ -315,22 +316,22 @@ def flex_erp():
                 "contents": [
                     {
                         "type": "button",
+                        "style": "secondary",
+                        "height": "sm",
+                        "action": {
+                            "type": "uri",
+                            "label": "ข้อมูลเพิ่มเติม",
+                            "uri": "https://linecorp.com"
+                        }
+                    },
+                    {
+                        "type": "button",
                         "style": "primary",
                         "height": "sm",
                         "action": {
                             "type": "postback",
                             "label": "ขอใบเสนอราคา",
                             "data": "quote"
-                        }
-                    },
-                    {
-                        "type": "button",
-                        "style": "secondary",
-                        "height": "sm",
-                        "action": {
-                            "type": "uri",
-                            "label": "WEBSITE",
-                            "uri": "https://linecorp.com"
                         }
                     },
                     {

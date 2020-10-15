@@ -18,7 +18,6 @@ from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, RichMenuResponse)
 
-
 app = Flask(__name__)
 app.secret_key = 'watcharaponweeraborirakz'
 
@@ -214,7 +213,8 @@ def signup():
             hour = datetime.today().hour
             year = datetime.today().year
             data = {'firstname': first_name, 'lastname': last_name, 'email': user.email, 'userToken': user.uid,
-                    'Datetime': {'day': day, 'month': month, 'year': year, 'hour': hour, 'minute': minute, 'second': second}}
+                    'Datetime': {'day': day, 'month': month, 'year': year, 'hour': hour, 'minute': minute,
+                                 'second': second}}
             db1.child('id').push(data)
             return redirect(url_for('welcome'))
         except:
@@ -226,7 +226,7 @@ def signup():
 @app.route('/setting')
 def settingPage():
     if not g.user:
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
     return render_template('/sbadmin/setting.html')
 
 
@@ -279,7 +279,7 @@ def intent(id):
 @app.route('/new_intent/<string:id>', methods=['GET', 'POST'])
 def new_intent(id):
     if not g.user:
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
     data = {
         'id': id,
     }
@@ -289,7 +289,7 @@ def new_intent(id):
 @app.route('/c_intent/<string:id>', methods=['GET', 'POST'])
 def old_intent(id):
     if not g.user:
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
     data = {
         'id': id,
     }
@@ -340,7 +340,6 @@ def new_chart():
         line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
         return redirect(url_for('chart'))
     return render_template('/customers_new/charts.html', data=data)
-
 
 
 @app.route('/webhook', methods=['GET', 'POST'])
@@ -447,7 +446,8 @@ def event_handler(event):
             if data == 'more':
                 line_bot_api1.reply_message(rtoken, flex_msg())
             elif data == 'quote':
-                line_bot_api1.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
+                line_bot_api1.reply_message(rtoken, TextSendMessage(
+                    text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
     except:
         _type = event['message']['type']
         img = event['message']['id']
@@ -468,13 +468,22 @@ def event_handler1(event):
     rtoken = event['replyToken']
     try:
         data = event['postback']['data']
+        userid = event['source']['userId']
         if postback == 'postback':
             if data == 'more':
                 line_bot_api2.reply_message(rtoken, flex_msg())
             elif data == 'quote':
-                line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
+                # line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
+                line_bot_api2.push_message(userid, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
+                line_bot_api2.push_message(userid, TextSendMessage(text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
+                line_bot_api2.push_message(userid, TextSendMessage(text='ทางเราจะทำการติดต่อกลับไปให้เร็วที่สุดขอบคุณลูกค้าที่ไว้วางใจ'))
             elif data == 'quoteq':
-                line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้น "ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ"'))
+                line_bot_api2.reply_message(rtoken, TextSendMessage(
+                    text='พิมพ์คำขึ้นต้น ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ'))
+                line_bot_api2.push_message(userid, TextSendMessage(
+                    text='เช่น ชื่อ ใบเสนอราคา ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
+                line_bot_api2.push_message(userid, TextSendMessage(
+                    text='ทางเราจะทำการติดต่อกลับไปให้เร็วที่สุดขอบคุณลูกค้าที่ไว้วางใจ'))
     except:
         _type = event['message']['type']
         img = event['message']['id']
@@ -599,13 +608,6 @@ def model_linebot_new():
     p = float(prop)
     confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     print(label)
-    # if msg == ['ขอใบเสนอราคา']:
-    #     line_bot_api2.reply_message(replyToken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User ต้องการใช้'))
-    if label == [1]:
-        inserted = db2.child('customer_email').push(get_datetime2(None))
-        print(f'Inserted {inserted}')
-    if label == [2]:
-        line_bot_api2.reply_message(replyToken, flex_product())
     return confidence, idx_answer, label, msg, userId
 
 
@@ -715,6 +717,14 @@ def get_datetime3(x):
     return result
 
 
+def integrate_send(model_linebot, event, pack, stick, line_bot_api):
+    result = model_linebot
+    stick = random.choice(stick)
+    x = random.choice(result[1][int(result[2])])
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+    line_bot_api.push_message(result[4], StickerSendMessage(package_id=str(pack), sticker_id=str(stick)))
+
+
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     result = model_linebot()
@@ -732,18 +742,22 @@ def handle_message(event):
             elif ['ฉันชื่ออะไร'] == result[3]:
                 profile = line_bot_api1.get_profile(result[4])
                 user_profile = profile.display_name
-                img = profile.picture_url
-                status = profile.status_message
-                s = profile.language
                 user_profile = str(user_profile)
-                line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
+                line_bot_api1.reply_message(event.reply_token,
+                                            TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             else:
                 if result[2] == [1]:
-                    stic = ['52114110', '52114115', '52114129', '52114122']
-                    stic = random.choice(stic)
-                    x = random.choice(result[1][int(result[2])])
-                    line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    line_bot_api1.push_message(result[4], StickerSendMessage(package_id=str(11539), sticker_id=str(stic)))
+                    stick = ['52114110', '52114115', '52114129', '52114122']
+                    pack = 11539
+                    integrate_send(model_linebot(), event, pack, stick, line_bot_api1)
+                elif result[2] == [6]:
+                    stick = ['52114116', '52114117', '52114125']
+                    pack = 11539
+                    integrate_send(model_linebot(), event, pack, stick, line_bot_api1)
+                elif result[2] == [5]:
+                    stick = ['52114111', '52114119', '52114130']
+                    pack = 11539
+                    integrate_send(model_linebot(), event, pack, stick, line_bot_api1)
                 else:
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -774,8 +788,7 @@ def handle_message_new(event):
     result = model_linebot_new()
     print(result[0])
     try:
-        print('Result 2')
-        if result[0] >= 0.14367:
+        if result[0] >= 0.14:
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api2.reply_message(event.reply_token, mangoerp())
@@ -791,18 +804,31 @@ def handle_message_new(event):
             elif ['ฉันชื่ออะไร'] == result[3]:
                 profile = line_bot_api2.get_profile(result[4])
                 user_profile = profile.display_name
-                img = profile.picture_url
-                status = profile.status_message
-                s = profile.language
                 user_profile = str(user_profile)
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
+                line_bot_api2.reply_message(event.reply_token,
+                                            TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             else:
                 if result[2] == [3]:
-                    stic = ['52114110', '52114115', '52114129', '52114122']
-                    stic = random.choice(stic)
-                    x = random.choice(result[1][int(result[2])])
-                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    line_bot_api2.push_message(result[4], StickerSendMessage(package_id=str(11539), sticker_id=str(stic)))
+                    sticker = ['52114110', '52114115', '52114129', '52114122']
+                    pack = 11539
+                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
+                elif result[2] == [7]:
+                    stick = ['51626520', '51626526']
+                    pack = 11538
+                    integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
+                    line_bot_api2.push_message(result[4], TextSendMessage(text='สามารถเข้าไปรายละเอียดได้ช่องทางด้านล่างนี้ค่ะ'))
+                    line_bot_api2.push_message(result[4], flex_product())
+                elif result[2] == [2]:
+                    sticker = ['52002739', '52002734']
+                    pack = 11537
+                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
+                    line_bot_api2.push_message(result[4], flex_product())
+                elif result[2] == [1]:
+                    inserted = db2.child('customer_email').push(get_datetime2(None))
+                    print(f'Inserted {inserted}')
+                    sticker = ['52002747', '52002752', '52002745']
+                    pack = 11537
+                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
                 else:
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -820,21 +846,29 @@ def handle_message_new(event):
                 temp = db2.child('Sensor Ultrasonic').get()
                 temp = temp.val()
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
-            elif ['@hirepurchase'] == result[3]:
+            elif ['@Product'] == result[3]:
                 x = 'flex message'
                 line_bot_api2.reply_message(event.reply_token, flex_erp())
                 inserted = get_datetime2(x)
                 db2.child('chatbot_transactions').push(inserted)
-            elif ['@Construction'] == result[3]:
+            elif ['@ERPSoftware'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, flex_product())
             elif ['@quote'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ | บริษัท | เบอร์ | อีเมลล์ | จำนวน User ที่ต้องการใช้'))
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(
+                    text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ | บริษัท | เบอร์ | อีเมลล์ | จำนวน User ที่ต้องการใช้'))
             elif ['ขอqrcode'] == result[3]:
                 image_message = ImageSendMessage(
                     original_content_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png',
                     preview_image_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png'
                 )
                 line_bot_api2.reply_message(event.reply_token, image_message)
+            else:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='แอดมินอาจจะให้ข้อมูลได้ไม่ครบถ้วน '
+                                                                                    'คุณลูกค้าพอจะสะดวกจะแจ้งเบอร์โทรศัทพ์ไหมคะ '
+                                                                                    'แอดมินจะดำเนินการผสานงานให้ผู้ที่เกี่ยวข้อง '
+                                                                                    'ให้คำแนะนำอย่างครบถ้วนค่ะ\nหากต้องการให้ทีมมงาน\n'
+                                                                                    'เข้าไป Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกานะคะ\nขอบคุณค่ะ'))
+                line_bot_api2.push_message(result[4], StickerSendMessage(package_id=str(11538), sticker_id=str(51626499)))
     except LineBotApiError:
         abort(400)
 
@@ -844,7 +878,6 @@ def handle_message_old(event):
     result = model_linebot_old()
     print(result[0])
     try:
-        print('Result 3')
         if result[0] >= 0.14367:
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
@@ -856,11 +889,9 @@ def handle_message_old(event):
             elif ['ฉันชื่ออะไร'] == result[3]:
                 profile = line_bot_api3.get_profile(result[4])
                 user_profile = profile.display_name
-                img = profile.picture_url
-                status = profile.status_message
-                s = profile.language
                 user_profile = str(user_profile)
-                line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
+                line_bot_api3.reply_message(event.reply_token,
+                                            TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             else:
                 x = random.choice(result[1][int(result[2])])
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -961,7 +992,6 @@ def richmenu(rich):
     elif rich == 'link_rich':
         line_bot_api1.delete_rich_menu('richmenu-3202e3f39315170a26bf8deca4703e95')
         return 'ok'
-
 
 
 if __name__ == '__main__':

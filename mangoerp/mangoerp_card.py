@@ -43,13 +43,13 @@ def product_action():
         base_size=BaseSize(height=1920, width=1020),
         actions=[
             MessageImagemapAction(
-                text='@Construction',
+                text='@ERPSoftware',
                 area=ImagemapArea(
                     x=34, y=300, width=1020, height=390
                 )
             ),
             MessageImagemapAction(
-                text='@Construction',
+                text='@ERPSoftware',
                 area=ImagemapArea(
                     x=34, y=650, width=1020, height=500
                 )
@@ -128,7 +128,7 @@ def productR4():
         base_size=BaseSize(height=1040, width=1040),
         actions=[
             MessageImagemapAction(
-                text='@Construction',
+                text='@ERPSoftware',
                 area=ImagemapArea(
                     x=349, y=242, width=1038, height=300
                 )
