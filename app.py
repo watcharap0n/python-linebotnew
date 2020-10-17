@@ -1,12 +1,20 @@
-from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g
+from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, make_response
+from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 from random import randrange
 from numpy import random
 import json
+import uuid
+import base64
+from model_image import *
+import cv2
 import time
+from PIL import Image
+import os
+import numpy as np
+import warnings
 import pyrebase
 import firebase_admin
-from flask import request, json
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -18,7 +26,11 @@ from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, RichMenuResponse)
 
+
+warnings.simplefilter('error', Image.DecompressionBombWarning)
+
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 app.secret_key = 'watcharaponweeraborirakz'
 
 cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
@@ -76,6 +88,11 @@ line_bot_api3 = data_older[1]
 handler3 = data_older[2]
 
 
+# @app.route('/test', methods=['GET', 'POST'])
+# def test():
+#     return render_template('/sbadmin/liff.html')
+
+
 @app.before_request
 def before_request():
     try:
@@ -94,14 +111,7 @@ def before_request():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=13)
-
-
-@app.route('/test')
-def test():
-    resp = make_session_permanent(render_template(...))
-    resp.set_cookie('username', 'the username')
-    return resp
+    app.permanent_session_lifetime = timedelta(minutes=20)
 
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
@@ -248,6 +258,31 @@ def welcome():
     return render_template('/sbadmin/welcome.html')
 
 
+@app.route('/paint')
+def paint():
+    return render_template('/sbadmin/painting.html')
+
+
+@app.route('/saveimage', methods=['POST'])
+def saveimage():
+    if request.method == 'POST':
+        event = request.form.to_dict()
+        print(event)
+        dir_name = 'static/img_paint'
+        img_name = uuid.uuid4().hex
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as img:
+            text = img.write(base64.b64decode(event['image'].split(",")[1]))
+            print(text)
+        original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
+        if (original.format != 'JPEG'):
+            return make_response('Unsupported image type.', 400)
+        original.thumbnail((240, 240), Image.ANTIALIAS)
+        original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
+        return make_response(img_name, 200)
+
+
 @app.route('/admin_index')
 def index():
     return render_template('/sbadmin/index.html')
@@ -340,6 +375,15 @@ def new_chart():
         line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
         return redirect(url_for('chart'))
     return render_template('/customers_new/charts.html', data=data)
+
+
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    image = cv2.imdecode(np.fromstring(request.files['image'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
+    img_processed = detect_object(image, None)
+    print(img_processed)
+    print(type(img_processed))
+    return jsonify(img_processed)
 
 
 @app.route('/webhook', methods=['GET', 'POST'])
@@ -443,14 +487,13 @@ def event_handler(event):
     try:
         data = event['postback']['data']
         if postback == 'postback':
-            if data == 'more':
-                line_bot_api1.reply_message(rtoken, flex_msg())
-            elif data == 'quote':
+            if data == 'quote':
                 line_bot_api1.reply_message(rtoken, TextSendMessage(
                     text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
     except:
         _type = event['message']['type']
         img = event['message']['id']
+        user_id = event['source']['userId']
         sk_id = randrange(51626494, 51626533)
         if _type == 'sticker':
             replyObj = StickerSendMessage(package_id=str(11538), sticker_id=str(sk_id))
@@ -458,9 +501,11 @@ def event_handler(event):
         else:
             print(img)
             message_content = line_bot_api1.get_message_content(img)
-            with open('img/file_path.png', 'wb') as fb:
+            with open('static/images/line.png', 'wb') as fb:
                 for chunk in message_content.iter_content():
                     fb.write(chunk)
+            image = cv2.imread('static/images/line.png', cv2.IMREAD_UNCHANGED)
+            detect_object(image, rtoken, user_id, line_bot_api1)
 
 
 def event_handler1(event):
@@ -470,23 +515,19 @@ def event_handler1(event):
         data = event['postback']['data']
         userid = event['source']['userId']
         if postback == 'postback':
-            if data == 'more':
-                line_bot_api2.reply_message(rtoken, flex_msg())
-            elif data == 'quote':
-                # line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
-                line_bot_api2.push_message(userid, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
-                line_bot_api2.push_message(userid, TextSendMessage(text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-                line_bot_api2.push_message(userid, TextSendMessage(text='ทางเราจะทำการติดต่อกลับไปให้เร็วที่สุดขอบคุณลูกค้าที่ไว้วางใจ'))
-            elif data == 'quoteq':
+            # elif data == 'quote':
+            #     # line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
+            #     line_bot_api2.push_message(userid, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
+            #     line_bot_api2.push_message(userid, TextSendMessage(text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
+            if data == 'quoteq':
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
                     text='พิมพ์คำขึ้นต้น ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ'))
                 line_bot_api2.push_message(userid, TextSendMessage(
                     text='เช่น ชื่อ ใบเสนอราคา ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-                line_bot_api2.push_message(userid, TextSendMessage(
-                    text='ทางเราจะทำการติดต่อกลับไปให้เร็วที่สุดขอบคุณลูกค้าที่ไว้วางใจ'))
     except:
         _type = event['message']['type']
         img = event['message']['id']
+        user_id = event['source']['userId']
         sk_id = randrange(51626494, 51626533)
         if _type == 'sticker':
             replyObj = StickerSendMessage(package_id=str(11538), sticker_id=str(sk_id))
@@ -494,9 +535,11 @@ def event_handler1(event):
         else:
             print(img)
             message_content = line_bot_api2.get_message_content(img)
-            with open('img/file_path.png', 'wb') as fb:
+            with open('static/images/line.png', 'wb') as fb:
                 for chunk in message_content.iter_content():
                     fb.write(chunk)
+            image = cv2.imread('static/images/line.png', cv2.IMREAD_UNCHANGED)
+            detect_object(image, rtoken, user_id, line_bot_api2)
 
 
 def event_handler2(event):
@@ -513,6 +556,119 @@ def event_handler2(event):
         with open('img/file_path.png', 'wb') as fb:
             for chunk in message_content.iter_content():
                 fb.write(chunk)
+
+
+def detect_object(img, rtoken, user_id, line_bot_api):
+    scale = 0.5
+    img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+    height, width, channels = img.shape
+    name_app = []
+    # Detecting objects
+    blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    net.setInput(blob)
+    outs = net.forward(output_layers)
+    # Showing informations on the screen
+    class_ids = []
+    confidences = []
+    boxes = []
+    stff = time.time()
+    for out in outs:
+        for detection in out:
+            scores = detection[5:]
+            class_id = np.argmax(scores)
+            confidence = scores[class_id]
+            # print(confidence)
+            if confidence > 0.5:
+                # Object detected
+                center_x = int(detection[0] * width)
+                center_y = int(detection[1] * height)
+                w = int(detection[2] * width)
+                h = int(detection[3] * height)
+                # Rectangle coordinates
+                x = int(center_x - w / 2)
+                y = int(center_y - h / 2)
+                boxes.append([x, y, w, h])
+                confidences.append(float(confidence))
+                class_ids.append(class_id)
+    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    label_str = []
+    for i in range(len(boxes)):
+        if i in indexes:
+            print(i, indexes)
+            x, y, w, h = boxes[i]
+            label = str(classes[class_ids[i]])
+            label_str.append(label)
+            color = colors[i]
+            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(img, label, (x, y - 5), font, .7, color, 2)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    dets = detector(gray, 1)
+    for d in dets:
+        xy = d.left(), d.top()
+        wh = d.right(), d.bottom()
+        shape = sp(img, d)
+        face_desc0 = model.compute_face_descriptor(img, shape, 1)  # output deeplearning
+        d = []
+        for face_desc in FACE_DESC:
+            d.append(np.linalg.norm(np.array(face_desc) - np.array(face_desc0)))
+        d = np.array(d)  # compare picture
+        idx = np.argmin(d)  # ระบุลาเบล
+        print(d[idx])
+        if d[idx] <= 0.49:
+            name = FACE_NAME[idx]
+            name = str(name)
+            print(name)
+            # print(name_api)
+            name_app.append(name)
+            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.rectangle(img, xy, wh, (0, 255, 0), 2)
+        else:
+            name = 'Unknown'
+            print(name)
+            name_app.append(name)
+            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.rectangle(img, xy, wh, (0, 0, 255), 2)
+    str_name = ''
+    str_object = ''
+    for n in name_app:
+        str_name = str_name + n.ljust(8)
+    for l in label_str:
+        str_object = str_object + l.ljust(8)
+    img_item = 'static/images/predict_rec.png'
+    cv2.imwrite(img_item, img)
+
+    image_name = 'static/images/predict_rec.png'
+    dir_name = 'static/images/face_people'
+    img_name = uuid.uuid4().hex
+
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    with open(image_name, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as image_base:
+        image_base.write(base64.b64decode(encoded_string))
+
+    original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
+    original.thumbnail((240, 240), Image.ANTIALIAS)
+    original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
+    # notify.send('Please wait...')
+    # notify.send(str(name_app), image_path='static/images/predict_rec.png')
+    # time_line = 'time {:.2f} sec'.format(time.time() - stff)
+    # notify.send(str(time_line))
+    img_origin = 'https://www.mangoconsultant.net' + '/' + dir_name + '/' + img_name + '.jpg'
+    img_240 = 'https://www.mangoconsultant.net' + '/' + dir_name + '/' + img_name + '_240.jpg'
+    print(img_origin)
+    print(img_240)
+    image_message = ImageSendMessage(
+        original_content_url=img_origin,
+        preview_image_url=img_240
+    )
+    line_bot_api.reply_message(rtoken, image_message)
+    line_bot_api.push_message(user_id, TextSendMessage(text=f'นี้อาจจะเป็น {str(str_name)}รูปแบบ {str_object}'))
+    return str(str_name)
+    # cv2.imshow('image', img)
+    # cv2.waitKey(0)
 
 
 def model_linebot():
@@ -816,7 +972,8 @@ def handle_message_new(event):
                     stick = ['51626520', '51626526']
                     pack = 11538
                     integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
-                    line_bot_api2.push_message(result[4], TextSendMessage(text='สามารถเข้าไปรายละเอียดได้ช่องทางด้านล่างนี้ค่ะ'))
+                    line_bot_api2.push_message(result[4],
+                                               TextSendMessage(text='สามารถเข้าไปรายละเอียดได้ช่องทางด้านล่างนี้ค่ะ'))
                     line_bot_api2.push_message(result[4], flex_product())
                 elif result[2] == [2]:
                     sticker = ['52002739', '52002734']
@@ -849,26 +1006,31 @@ def handle_message_new(event):
             elif ['@Product'] == result[3]:
                 x = 'flex message'
                 line_bot_api2.reply_message(event.reply_token, flex_erp())
+                line_bot_api2.push_message(result[4], TextSendMessage(
+                    text='หากต้องการใบเสนอราคา พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
+                line_bot_api2.push_message(result[4], TextSendMessage(
+                    text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
                 inserted = get_datetime2(x)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['@ERPSoftware'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, flex_product())
-            elif ['@quote'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(
-                    text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ | บริษัท | เบอร์ | อีเมลล์ | จำนวน User ที่ต้องการใช้'))
             elif ['ขอqrcode'] == result[3]:
                 image_message = ImageSendMessage(
                     original_content_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png',
                     preview_image_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png'
                 )
                 line_bot_api2.reply_message(event.reply_token, image_message)
+            elif ['วาดรูป'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
             else:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='แอดมินอาจจะให้ข้อมูลได้ไม่ครบถ้วน '
                                                                                     'คุณลูกค้าพอจะสะดวกจะแจ้งเบอร์โทรศัทพ์ไหมคะ '
                                                                                     'แอดมินจะดำเนินการผสานงานให้ผู้ที่เกี่ยวข้อง '
-                                                                                    'ให้คำแนะนำอย่างครบถ้วนค่ะ\nหากต้องการให้ทีมมงาน\n'
-                                                                                    'เข้าไป Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกานะคะ\nขอบคุณค่ะ'))
-                line_bot_api2.push_message(result[4], StickerSendMessage(package_id=str(11538), sticker_id=str(51626499)))
+                                                                                    'ให้คำแนะนำอย่างครบถ้วนค่ะ'))
+                line_bot_api2.push_message(result[4], TextSendMessage(
+                    text='หากต้องการให้ทีมมงาน เข้าไป Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกานะคะ\nขอบคุณค่ะ'))
+                line_bot_api2.push_message(result[4],
+                                           StickerSendMessage(package_id=str(11538), sticker_id=str(51626499)))
     except LineBotApiError:
         abort(400)
 
@@ -909,16 +1071,6 @@ def handle_message_old(event):
                 temp = db3.child('Sensor Ultrasonic').get()
                 temp = temp.val()
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
-            elif ['Intent'] == result[3]:
-                x = 'flex message'
-                line_bot_api3.reply_message(event.reply_token, flex_ans())
-                inserted = get_datetime3(x)
-                db3.child('chatbot_transactions').push(inserted)
-            elif ['question?'] == result[3]:
-                x = 'flex message'
-                line_bot_api3.reply_message(event.reply_token, flex_msg())
-                inserted = get_datetime3(x)
-                db3.child('chatbot_transactions').push(inserted)
     except LineBotApiError:
         abort(400)
 
@@ -963,11 +1115,11 @@ def richmenu(rich):
         return jsonify(txt)
     elif rich == 'uploadimg':
         with open('ProductThumb_45569_67700481_resize.jpg', 'rb') as f:
-            line_bot_api1.set_rich_menu_image(rich_id, 'image/jpeg', f)
+            line_bot_api1.set_rich_menu_image('richmenu-455e1d928c3b906515a05598ba745772', 'image/jpeg', f)
             print(f'rich_id : {rich_id}')
         return 'ok'
     elif rich == 'set':
-        line_bot_api1.set_default_rich_menu(rich_id)
+        line_bot_api1.set_default_rich_menu('richmenu-455e1d928c3b906515a05598ba745772')
         return 'ok'
     elif rich == 'get_id':
         pass
