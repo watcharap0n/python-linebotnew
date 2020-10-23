@@ -79,15 +79,19 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-
-
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
                         <th>index</th>
-                        <th>message</th>
+                        <th>name</th>
+                        <th>product</th>
+                        <th>company</th>
+                        <th>tel</th>
+                        <th>email</th>
+                        <th>email(permission)</th>
                         <th>profile</th>
                         <th>date/time</th>
+                        <th>delete</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -95,9 +99,21 @@
                     {% for e in data.users %}
                     <tr>
                         <td>{{e.index}}</td>
-                        <td>{{e.message}}</td>
-                        <td>{{e.profile}}</td>
-                        <td>{{e.month}}/{{e.day}}/{{e.year}}&nbsp;&nbsp;&nbsp;{{e.day}}:{{e.hour}}:{{e.year}}</td>
+                        <td>{{e.event.firstname}}</td>
+                        <td>{{e.event.product}}</td>
+                        <td>{{e.event.company}}</td>
+                        <td>{{e.event.tel}}</td>
+                        <td>{{e.event.email}}</td>
+                        <td>{{e.event.token}}</td>
+                        <td>{{e.event.displayName}}</td>
+                        <td>{{e.day}}/{{e.month}}/{{e.year}} {{e.hour}}:{{e.min}}:{{e.sec}}</td>
+                        <td>
+                            <div>
+
+                                    <a href="/remove/{{e.key}}" class="btn btn-danger btn-sm">Delete</a>
+
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -156,7 +172,7 @@
 <script>
     $(document).ready(function () {
         $('#dataTable').DataTable({
-            "order": [[3, "desc"]]
+            "order": [[0, "desc"]]
         });
         $('.dataTables_length').addClass('bs-select');
     });

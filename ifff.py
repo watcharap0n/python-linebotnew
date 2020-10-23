@@ -21,7 +21,7 @@ def do_get():
 @app.route('/saveimage', methods=['POST'])
 def saveimage():
     event = request.form.to_dict()
-
+    print(event)
     dir_name = 'static/img_paint'
     img_name = uuid.uuid4().hex
 

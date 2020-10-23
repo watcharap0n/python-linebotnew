@@ -123,15 +123,151 @@ def product_buttons():
 
 def productR4():
     imagemap_message = ImagemapSendMessage(
-        base_url='https://sv1.picz.in.th/images/2020/10/09/OLHcxP.png',
+        base_url='https://sv1.picz.in.th/images/2020/10/22/bflT71.jpg',
+        alt_text='imagemap',
+        base_size=BaseSize(height=1600, width=1040),
+        actions=[
+            MessageImagemapAction(
+                text='@ERPSoftware',
+                area=ImagemapArea(
+                    x=350, y=248, width=1037, height=400
+                )
+            ),
+            MessageImagemapAction(
+                text='@NewFeature',
+                area=ImagemapArea(
+                    x=49, y=1108, width=294, height=294
+                )
+            ),
+            MessageImagemapAction(
+                text='@Optional',
+                area=ImagemapArea(
+                    x=759, y=1148, width=280, height=280
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://liff.line.me/1655104822-OmWMl8NA',
+                area=ImagemapArea(
+                    x=164, y=1421, width=863, height=200
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://liff.line.me/1655104822-V86LlWPo',
+                area=ImagemapArea(
+                    x=366, y=1118, width=280, height=280
+                )
+            ),
+            MessageImagemapAction(
+                text='@Business',
+                area=ImagemapArea(
+                    x=511, y=720, width=400, height=400
+                )
+            )
+        ])
+    return imagemap_message
+
+
+def productR7():
+    imagemap_message = ImagemapSendMessage(
+        base_url='https://sv1.picz.in.th/images/2020/10/22/bflw2D.jpg',
         alt_text='imagemap',
         base_size=BaseSize(height=1040, width=1040),
         actions=[
             MessageImagemapAction(
                 text='@ERPSoftware',
                 area=ImagemapArea(
-                    x=349, y=242, width=1038, height=300
+                    x=134, y=169, width=240, height=300
                 )
             ),
+            MessageImagemapAction(
+                text='@Business',
+                area=ImagemapArea(
+                    x=625, y=184, width=240, height=300
+                )
+            ),
+            MessageImagemapAction(
+                text='@NewFeature',
+                area=ImagemapArea(
+                    x=44, y=585, width=240, height=300
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://liff.line.me/1655104822-V86LlWPo',
+                area=ImagemapArea(
+                    x=369, y=591, width=240, height=300
+                )
+            ),
+            MessageImagemapAction(
+                text='@Optional',
+                area=ImagemapArea(
+                    x=730, y=581, width=240, height=300
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://liff.line.me/1655104822-OmWMl8NA',
+                area=ImagemapArea(
+                    x=301, y=940, width=748, height=180
+                )
+            ),
+        ])
+    return imagemap_message
+
+
+def destiny():
+    imagemap_message = ImagemapSendMessage(
+        base_url='https://sv1.picz.in.th/images/2020/10/21/bNlb2V.png',
+        alt_text='imagemap',
+        base_size=BaseSize(height=884, width=1300),
+        actions=[
+            URIImagemapAction(
+                link_uri='https://horoscope.sanook.com/play/tarot/',
+                area=ImagemapArea(
+                    x=11, y=181, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/7days/',
+                area=ImagemapArea(
+                    x=372, y=238, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/weekly/',
+                area=ImagemapArea(
+                    x=707, y=237, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/monthly/',
+                area=ImagemapArea(
+                    x=1048, y=229, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/yearly/',
+                area=ImagemapArea(
+                    x=32, y=513, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/zodiac/',
+                area=ImagemapArea(
+                    x=370, y=508, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/career/',
+                area=ImagemapArea(
+                    x=709, y=518, width=250, height=250
+                )
+            ),
+            URIImagemapAction(
+                link_uri='https://www.sanook.com/horoscope/myhoro/birthdaybyzodiac/',
+                area=ImagemapArea(
+                    x=1059, y=520, width=250, height=250
+                )
+            ),
+
+
         ])
     return imagemap_message

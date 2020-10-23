@@ -1,20 +1,15 @@
-from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, make_response
+from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
+    make_response, send_from_directory, send_file
+import requests, json, uuid, cv2, time, os, warnings, pyrebase, firebase_admin, base64, xlsxwriter
 from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 from random import randrange
 from numpy import random
-import json
-import uuid
-import base64
+from bs4 import BeautifulSoup
+import pandas as pd
 from model_image import *
-import cv2
-import time
 from PIL import Image
-import os
 import numpy as np
-import warnings
-import pyrebase
-import firebase_admin
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -25,7 +20,6 @@ from mangoerp.flex_message import *
 from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, RichMenuResponse)
-
 
 warnings.simplefilter('error', Image.DecompressionBombWarning)
 
@@ -88,11 +82,6 @@ line_bot_api3 = data_older[1]
 handler3 = data_older[2]
 
 
-# @app.route('/test', methods=['GET', 'POST'])
-# def test():
-#     return render_template('/sbadmin/liff.html')
-
-
 @app.before_request
 def before_request():
     try:
@@ -111,7 +100,7 @@ def before_request():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=20)
+    app.permanent_session_lifetime = timedelta(minutes=60)
 
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
@@ -229,7 +218,7 @@ def signup():
             return redirect(url_for('welcome'))
         except:
             return render_template('/sbadmin/signup.html', error=error)
-        return render_template('/sbadmin/signup.html')
+
     return render_template('/sbadmin/signup.html')
 
 
@@ -258,6 +247,53 @@ def welcome():
     return render_template('/sbadmin/welcome.html')
 
 
+@app.route('/mango/<string:site>', methods=['GET', 'POST'])
+def test(site):
+    if request.path == '/mango/anywhere':
+        lst = []
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        lst.append(product)
+        return render_template('/sbadmin/testing.html', lst=lst)
+    elif request.path == '/mango/rent':
+        lst = []
+        product = {'product': ['เช่าสุดคุ้ม']}
+        lst.append(product)
+        return render_template('/sbadmin/rent.html', lst=lst)
+    return render_template('/sbadmin/testing.html')
+
+
+@app.route('/letme', methods=['GET', 'POST'])
+def letme():
+    if request.method == 'POST':
+        event = request.form.to_dict()
+        day = datetime.today().day
+        month = datetime.today().month
+        second = datetime.today().second
+        minute = datetime.today().minute
+        hour = datetime.today().hour
+        year = datetime.today().year
+        p = {'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
+        db2.child('LineLiff').push(p)
+        print(event)
+        with open('lineliff.json', 'w') as lineliff:
+            json.dump(event, lineliff)
+        firstname = event['firstname']
+        email = event['email']
+        company = event['company']
+        tel = event['tel']
+        product = event['product']
+        userId = event['userId']
+        token = event['token']
+        picture = event['picture']
+        displayName = event['displayName']
+        print(picture)
+        x = f'คุณ: {displayName}\n\n{firstname}\n{email}\n{company}\n{tel}\n{product}\n\nขอบคุณที่ทำรายการค่ะ'
+        line_bot_api2.push_message(userId, TextSendMessage(text=f'{x}'))
+        line_bot_api2.push_message(userId, TextSendMessage(
+            text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะขอบคุณค่ะ'))
+        return make_response(event)
+
+
 @app.route('/paint')
 def paint():
     return render_template('/sbadmin/painting.html')
@@ -267,14 +303,12 @@ def paint():
 def saveimage():
     if request.method == 'POST':
         event = request.form.to_dict()
-        print(event)
         dir_name = 'static/img_paint'
         img_name = uuid.uuid4().hex
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as img:
-            text = img.write(base64.b64decode(event['image'].split(",")[1]))
-            print(text)
+            img.write(base64.b64decode(event['image'].split(",")[1]))
         original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
         if (original.format != 'JPEG'):
             return make_response('Unsupported image type.', 400)
@@ -333,6 +367,8 @@ def old_intent(id):
 
 @app.route('/chart', methods=['GET', 'POST'])
 def chart():
+    if not g.user:
+        return redirect(url_for('welcome'))
     ref = db1.child('customer_email').get()
     lst = []
     count = 0
@@ -356,13 +392,16 @@ def chart():
 
 @app.route('/new_chart', methods=['GET', 'POST'])
 def new_chart():
-    ref = db2.child('customer_email').get()
+    if not g.user:
+        return redirect(url_for('welcome'))
+    ref = db2.child('LineLiff').get()
     lst = []
-    count = 0
+    count = 1
     for r in ref.each():
+        k = r.key()
         users = r.val()
         users = dict(users)
-        users.update({'index': str(count)})
+        users.update({'index': str(count), 'key': k})
         lst.append(users)
         count = count + 1
     _id = len(lst)
@@ -373,14 +412,52 @@ def new_chart():
     if request.method == 'POST':
         broadcast = request.form['msg']
         line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-        return redirect(url_for('chart'))
+        return redirect(url_for('new_chart'))
     return render_template('/customers_new/charts.html', data=data)
+
+
+@app.route('/download', methods=['GET'])
+def download():
+    if request.method == 'GET':
+        ref = db2.child('LineLiff').get()
+        date_time = []
+        for i in ref.each():
+            # print(i.val())
+            days = i.val()['day']
+            months = i.val()['month']
+            years = i.val()['year']
+            hour = i.val()['hour']
+            min = i.val()['min']
+            sec = i.val()['sec']
+            displayName = i.val()['event']['displayName']
+            email = i.val()['event']['email']
+            firstname = i.val()['event']['firstname']
+            picture = i.val()['event']['picture']
+            product = i.val()['event']['product']
+            tel = i.val()['event']['tel']
+            token = i.val()['event']['token']
+            dbTime = {'Name': firstname, 'Product': product, 'Email': email, 'Tel': tel, 'displayName': displayName,
+                      'Email(Permisstion)': token, 'Day': days, 'Month': months, 'Year': years, 'Picture': picture}
+            date_time.append(dbTime)
+        dbDatetime = date_time
+        data = pd.DataFrame(dbDatetime)
+        datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
+        data.to_excel(datatoexcel, sheet_name='Sheet1')
+        datatoexcel.save()
+        return send_from_directory('static/excel', 'FromPython.xlsx')
+    return redirect(url_for('new_chart'))
+
+
+@app.route('/remove/<string:key>', methods=['GET'])
+def remove(key):
+    db2.child('LineLiff').child(key).remove()
+    return redirect(url_for('new_chart'))
 
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
     image = cv2.imdecode(np.fromstring(request.files['image'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
-    img_processed = detect_object(image, None)
+    img_processed = detect_object(image, None, None)
     print(img_processed)
     print(type(img_processed))
     return jsonify(img_processed)
@@ -478,7 +555,7 @@ def webhookOld():
             for i in range(no_event):
                 event = decoded['events'][i]
                 event_handler2(event)
-        return ''
+    return ''
 
 
 def event_handler(event):
@@ -515,15 +592,28 @@ def event_handler1(event):
         data = event['postback']['data']
         userid = event['source']['userId']
         if postback == 'postback':
+            if data == 'product':
+                line_bot_api2.reply_message(rtoken, productR4())
+            elif data == '@ERPSoftware':
+                line_bot_api2.reply_message(rtoken, flex_product())
+            elif data == '@Business':
+                line_bot_api2.reply_message(rtoken, flex_bus())
+            elif data == '@NewFeature':
+                line_bot_api2.reply_message(rtoken, flex_newfeature())
+            elif data == '@Optional':
+                line_bot_api2.reply_message(rtoken, flex_optional())
             # elif data == 'quote':
             #     # line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
             #     line_bot_api2.push_message(userid, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
             #     line_bot_api2.push_message(userid, TextSendMessage(text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-            if data == 'quoteq':
+            # if data == 'quoteq':
+            #     line_bot_api2.reply_message(rtoken, TextSendMessage(
+            #         text='พิมพ์คำขึ้นต้น ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ'))
+            #     line_bot_api2.push_message(userid, TextSendMessage(
+            #         text='เช่น ใบเสนอราคา ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user Product Project Planning'))
+            if data == 'business':
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
-                    text='พิมพ์คำขึ้นต้น ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ'))
-                line_bot_api2.push_message(userid, TextSendMessage(
-                    text='เช่น ชื่อ ใบเสนอราคา ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
+                    text='ในกรณีที่คุณลูกค้าต้องการสอบถามข้อมูลการ Power BI คุณลูกค้า แจ้งชื่อ เบอร์ติดต่อ เพื่อให้เจ้าหน้าที่ติดต่อกลับให้ข้อมูลเพิ่มเติมค่ะ'))
     except:
         _type = event['message']['type']
         img = event['message']['id']
@@ -615,7 +705,7 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         d = np.array(d)  # compare picture
         idx = np.argmin(d)  # ระบุลาเบล
         print(d[idx])
-        if d[idx] <= 0.49:
+        if d[idx] <= 0.45:
             name = FACE_NAME[idx]
             name = str(name)
             print(name)
@@ -637,7 +727,6 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         str_object = str_object + l.ljust(8)
     img_item = 'static/images/predict_rec.png'
     cv2.imwrite(img_item, img)
-
     image_name = 'static/images/predict_rec.png'
     dir_name = 'static/images/face_people'
     img_name = uuid.uuid4().hex
@@ -648,14 +737,9 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         encoded_string = base64.b64encode(image_file.read())
     with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as image_base:
         image_base.write(base64.b64decode(encoded_string))
-
     original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
     original.thumbnail((240, 240), Image.ANTIALIAS)
     original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
-    # notify.send('Please wait...')
-    # notify.send(str(name_app), image_path='static/images/predict_rec.png')
-    # time_line = 'time {:.2f} sec'.format(time.time() - stff)
-    # notify.send(str(time_line))
     img_origin = 'https://www.mangoconsultant.net' + '/' + dir_name + '/' + img_name + '.jpg'
     img_240 = 'https://www.mangoconsultant.net' + '/' + dir_name + '/' + img_name + '_240.jpg'
     print(img_origin)
@@ -664,11 +748,13 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         original_content_url=img_origin,
         preview_image_url=img_240
     )
-    line_bot_api.reply_message(rtoken, image_message)
-    line_bot_api.push_message(user_id, TextSendMessage(text=f'นี้อาจจะเป็น {str(str_name)}รูปแบบ {str_object}'))
+    if not str_name and not str_object:
+        line_bot_api.push_message(user_id, TextSendMessage(
+            text='รูปที่คุณถ่าย ไม่สามารถระบุได้ โปรดถ่ายรูปหน้าคน หรือ รถสิ่งของต่าง ๆ'))
+    else:
+        line_bot_api.reply_message(rtoken, image_message)
+        line_bot_api.push_message(user_id, TextSendMessage(text=f'นี้อาจจะเป็น {str(str_name)}รูปแบบ {str_object}'))
     return str(str_name)
-    # cv2.imshow('image', img)
-    # cv2.waitKey(0)
 
 
 def model_linebot():
@@ -715,7 +801,7 @@ def model_linebot():
     confidence = (0.3565152559 / ((len(embedding) * float(prop)) ** 0.5)) ** 2
     print(label)
     if label == [4]:
-        db1.child('customer_email').push(get_datetime1(None))
+        db1.child('customer_email').push(get_datetime(None, line_bot_api1))
     return confidence, idx_answer, label, msg, userId
 
 
@@ -813,7 +899,7 @@ def model_linebot_old():
     return confidence, idx_answer, label, msg, userId
 
 
-def get_datetime1(x):
+def get_datetime(x, line_bot_api):
     raw_json = request.get_json()
     json_line = json.dumps(raw_json)
     decoded = json.loads(json_line)
@@ -825,7 +911,7 @@ def get_datetime1(x):
     minute = datetime.today().minute
     hour = datetime.today().hour
     year = datetime.today().year
-    profile = line_bot_api1.get_profile(userId)
+    profile = line_bot_api.get_profile(userId)
     profile = profile.display_name
     profile = str(profile)
     result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
@@ -833,44 +919,51 @@ def get_datetime1(x):
     return result
 
 
-def get_datetime2(x):
-    raw_json = request.get_json()
-    json_line = json.dumps(raw_json)
-    decoded = json.loads(json_line)
-    message = decoded['events'][0]['message']['text']
-    userId = decoded['events'][0]['source']['userId']
-    day = datetime.today().day
-    month = datetime.today().month
-    second = datetime.today().second
-    minute = datetime.today().minute
-    hour = datetime.today().hour
-    year = datetime.today().year
-    profile = line_bot_api2.get_profile(userId)
-    profile = profile.display_name
-    profile = str(profile)
-    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
-              'sec': second, 'day': day, 'month': month, 'year': year}
-    return result
+def web_scraping_temp():
+    r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
+    soup = BeautifulSoup(r.content, "html.parser")
+    temp = soup.find('span', {'data-testid': 'TemperatureValue'})
+    feelLike = soup.find('div', {'data-testid': 'FeelsLikeSection'})
+    HighLow = soup.find('div', {'data-testid': 'WeatherDetailsLabel'})
+    valueTemp = soup.find('div', {'data-testid': 'wxData'})
+    humility = soup.find('span', {'data-testid': 'PercentageValue'})
+    x = 'Temperature : {}\n{}\n{}  {}\nHumidity  {}'.format(temp.text, feelLike.text,
+                                                            HighLow.text, valueTemp.text,
+                                                            humility.text)
+    return x
 
 
-def get_datetime3(x):
-    raw_json = request.get_json()
-    json_line = json.dumps(raw_json)
-    decoded = json.loads(json_line)
-    message = decoded['events'][0]['message']['text']
-    userId = decoded['events'][0]['source']['userId']
-    day = datetime.today().day
-    month = datetime.today().month
-    second = datetime.today().second
-    minute = datetime.today().minute
-    hour = datetime.today().hour
-    year = datetime.today().year
-    profile = line_bot_api3.get_profile(userId)
-    profile = profile.display_name
-    profile = str(profile)
-    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
-              'sec': second, 'day': day, 'month': month, 'year': year}
-    return result
+class News():
+    @staticmethod
+    def new_common():
+        r = requests.get("https://www.thairath.co.th/news/local")
+        soup = BeautifulSoup(r.content, "html.parser")
+        newHit = soup.find('div', {'class': 'css-1y5neuu edxt67m0'})
+        txt = newHit.text
+        txt = txt.split(' '' ')
+        str_txt = ', \n '
+        str_txt = str_txt.join(txt)
+        return str_txt
+
+    @staticmethod
+    def new_sport():
+        r = requests.get("https://www.thairath.co.th/sport")
+        soup = BeautifulSoup(r.content, "html.parser")
+        score = soup.find('div', {'class': 'css-w104ue e18p2jld54'})
+        t = ''
+        for i in score:
+            t = t + '\n' + i.text
+        return t
+
+    @staticmethod
+    def new_entertain():
+        r = requests.get("https://www.thairath.co.th/entertain")
+        soup = BeautifulSoup(r.content, "html.parser")
+        newother = soup.find('div', {'class': 'col-md-8'})
+        txt = ''
+        for d in newother:
+            txt = txt + '\n' + d.text
+        return txt
 
 
 def integrate_send(model_linebot, event, pack, stick, line_bot_api):
@@ -891,8 +984,11 @@ def handle_message(event):
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api1.reply_message(event.reply_token, product_action())
-                inserted = get_datetime1(x)
+                inserted = get_datetime(x, line_bot_api1)
                 db1.child('chatbot_transactions').push(inserted)
+            elif ['ขอดู'] == result[3]:
+                x = 'https://liff.line.me/1655104822-k5dRGJez'
+                line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
             elif ['@mango'] == result[3]:
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
             elif ['ฉันชื่ออะไร'] == result[3]:
@@ -917,7 +1013,7 @@ def handle_message(event):
                 else:
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    q_a = get_datetime1(x)
+                    q_a = get_datetime(x, line_bot_api1)
                     inserted = db1.child('chatbot_transactions').push(q_a)
                     print(f'Inserted : {inserted}')
         else:
@@ -947,13 +1043,8 @@ def handle_message_new(event):
         if result[0] >= 0.14:
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
-                line_bot_api2.reply_message(event.reply_token, mangoerp())
-                inserted = get_datetime2(x)
-                db2.child('chatbot_transactions').push(inserted)
-            elif ['ขอข้อมูลผลิตภัณฑ์ใหม่'] == result[3]:
-                x = 'card'
                 line_bot_api2.reply_message(event.reply_token, productR4())
-                inserted = get_datetime2(x)
+                inserted = get_datetime(x, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
@@ -963,33 +1054,133 @@ def handle_message_new(event):
                 user_profile = str(user_profile)
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
+            elif ['มาก'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='น้อย'))
+            elif ['น้อย'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
+            elif ['คือ'] == result[3]:
+                x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['คืออะไร'] == result[3]:
+                x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['คือไร'] == result[3]:
+                x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['คือไง'] == result[3]:
+                x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
             else:
                 if result[2] == [3]:
                     sticker = ['52114110', '52114115', '52114129', '52114122']
                     pack = 11539
                     integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
+                elif result[2] == [12]:
+                    line_bot_api2.push_message(result[4], flex_destiny())
+                    line_bot_api2.push_message(result[4], destiny())
                 elif result[2] == [7]:
                     stick = ['51626520', '51626526']
                     pack = 11538
                     integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
-                    line_bot_api2.push_message(result[4],
-                                               TextSendMessage(text='สามารถเข้าไปรายละเอียดได้ช่องทางด้านล่างนี้ค่ะ'))
-                    line_bot_api2.push_message(result[4], flex_product())
                 elif result[2] == [2]:
-                    sticker = ['52002739', '52002734']
-                    pack = 11537
-                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
                     line_bot_api2.push_message(result[4], flex_product())
                 elif result[2] == [1]:
-                    inserted = db2.child('customer_email').push(get_datetime2(None))
-                    print(f'Inserted {inserted}')
-                    sticker = ['52002747', '52002752', '52002745']
-                    pack = 11537
-                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
+                    inserted = db2.child('customer_email').push(get_datetime(None, line_bot_api2))
+                    # print(f'Inserted {inserted}')
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    image_message = ImageSendMessage(
+                        original_content_url='https://sv1.picz.in.th/images/2020/10/21/bBc4NI.png',
+                        preview_image_url='https://sv1.picz.in.th/images/2020/10/21/bBc4NI.png'
+                    )
+                    line_bot_api2.push_message(result[4], image_message)
+                elif result[2] == [11]:
+                    profile = line_bot_api2.get_profile(result[4])
+                    displayName = profile.display_name
+                    picture_url = profile.picture_url
+                    user_id = profile.user_id
+                    status = profile.status_message
+                    # print(displayName, picture_url, user_id, status)
+                    # line_bot_api2.push_message(result[4], flex_profile_erp(picture_url, displayName, status))
+                    line_bot_api2.push_message(result[4], productR7())
+                elif result[2] == [22]:
+                    stick = ['51626503', '51626509']
+                    pack = 11538
+                    integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
+                elif result[2] == [23]:
+                    day = datetime.today().day
+                    month = datetime.today().month
+                    second = datetime.today().second
+                    minute = datetime.today().minute
+                    hour = datetime.today().hour
+                    year = datetime.today().year
+                    x = 'วันนี้วันที่ {}/{}/{} เวลา {}:{}:{}'.format(day, month, year, hour, minute, second)
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                elif result[2] == [24]:
+                    x = web_scraping_temp()
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{str(x)}'))
+                elif result[2] == [25]:
+                    if result[3] == ['ข่าว']:
+                        x = News.new_common()
+                        line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                        line_bot_api2.push_message(result[4], TextSendMessage(
+                            text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
+                        line_bot_api2.push_message(result[4], TextSendMessage(
+                            text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว การเมือง'))
+                    else:
+                        i = ''
+                        k = result[3]
+                        p = i.join(k)
+                        print(p)
+                        x = p.split('ข่าว')
+                        print(x)
+                        tranform = ''
+                        ans = tranform.join(x)
+                        print('string >: ', ans)
+                        if ans == ' ทั่วไป':
+                            x = News.new_common()
+                            line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                        elif ans == ' กีฬา':
+                            x = News.new_sport()
+                            line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/sport'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                        elif ans == ' บังเทิง':
+                            x = News.new_entertain()
+                            line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/entertain'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+
+                elif ['ไรงะ'] == result[3]:
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='อะไรงะ'))
+                elif ['งะ'] == result[3]:
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='ง้าววววว'))
+                elif ['หรอ'] == result[3]:
+                    x = ['จ้า', 'ใช่จ้า', 'จริงสิ']
+                    y = random.choice(x)
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
+                elif ['ใช่หรอ'] == result[3]:
+                    x = ['จ้า', 'ใช่จ้า', 'จริงสิ']
+                    y = random.choice(x)
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
+                elif ['งั้นหรอ'] == result[3]:
+                    x = ['จ้า', 'ใช่จ้า', 'จริงสิ']
+                    y = random.choice(x)
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
                 else:
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    q_a = get_datetime2(x)
+                    q_a = get_datetime(x, line_bot_api2)
                     inserted = db2.child('chatbot_transactions').push(q_a)
                     print(f'Inserted : {inserted}')
         else:
@@ -1003,14 +1194,26 @@ def handle_message_new(event):
                 temp = db2.child('Sensor Ultrasonic').get()
                 temp = temp.val()
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
+            elif ['mango'] == result[3]:
+                z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
+                x = random.choice(z)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
+                get_datetime(x, line_bot_api2)
+            elif ['แมงโก้'] == result[3]:
+                z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
+                x = random.choice(z)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
+                get_datetime(x, line_bot_api2)
+            elif ['น้อย'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
             elif ['@Product'] == result[3]:
                 x = 'flex message'
                 line_bot_api2.reply_message(event.reply_token, flex_erp())
-                line_bot_api2.push_message(result[4], TextSendMessage(
-                    text='หากต้องการใบเสนอราคา พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
-                line_bot_api2.push_message(result[4], TextSendMessage(
-                    text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-                inserted = get_datetime2(x)
+                # line_bot_api2.push_message(result[4], TextSendMessage(
+                #     text='หากต้องการใบเสนอราคา พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
+                # line_bot_api2.push_message(result[4], TextSendMessage(
+                #     text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
+                inserted = get_datetime(x, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['@ERPSoftware'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, flex_product())
@@ -1020,8 +1223,15 @@ def handle_message_new(event):
                     preview_image_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png'
                 )
                 line_bot_api2.reply_message(event.reply_token, image_message)
+            elif ['@NewFeature'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, flex_newfeature())
+            elif ['@Optional'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, flex_optional())
+            elif ['@Business'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, flex_bus())
             elif ['วาดรูป'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
+                line_bot_api2.reply_message(event.reply_token,
+                                            TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
             else:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='แอดมินอาจจะให้ข้อมูลได้ไม่ครบถ้วน '
                                                                                     'คุณลูกค้าพอจะสะดวกจะแจ้งเบอร์โทรศัทพ์ไหมคะ '
@@ -1044,7 +1254,7 @@ def handle_message_old(event):
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
                 x = 'card'
                 line_bot_api3.reply_message(event.reply_token, mangoerp())
-                inserted = get_datetime3(x)
+                inserted = get_datetime(x, line_bot_api3)
                 db3.child('chatbot_transactions').push(inserted)
             elif ['@mango'] == result[3]:
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
@@ -1057,7 +1267,7 @@ def handle_message_old(event):
             else:
                 x = random.choice(result[1][int(result[2])])
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                q_a = get_datetime3(x)
+                q_a = get_datetime(x, line_bot_api3)
                 inserted = db3.child('chatbot_transactions').push(q_a)
                 print(f'Inserted : {inserted}')
         else:
