@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"></link>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    {% block css %}
+
+    {% endblock %}
+</head>
+<body>
+
+<!--<div class="container-fluid text-center top-container">-->
+<!--    <img height="60" width="120" src="{{ url_for('static',filename='images/Flask_icon.png')}}">-->
+<!--</div>-->
+
+<div class="container">
+
+    {% block content %}
+
+    {% endblock %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+{% block js %}
+
+
+{% endblock %}
+
+</body>
+</html>
+
+
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/versions/2.3.0/sdk.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function runApp() {
+        $('#btn').on('click', function () {
+            console.log("this is ajaxxxxx ", $('#user').val())
+            liff.getProfile().then(profile => {
+                $.ajax({
+                    type: 'POST',
+                    url: '/letme',
+                    data: {
+                        'firstname': $('#first').val(),
+                        'lastname': $('#last').val(),
+                        'email': $('#email').val(),
+                        'company': $('#compa').val(),
+                        'tel': $('#tel').val(),
+                        'product': $('#pro').val(),
+                        'displayName': profile.displayName
+                    },
+                    success: function (res, status) {
+                        liff.getProfile().then(function (profile) {
+                            console.log("res eang: ", res)
+                            console.log("status: ", status)
+                            liff.sendMessages([
+                                {
+                                    type: 'text',
+                                    text: 'คุณ : ' + profile.displayName + '\n'+'\n' + $('#first').val() + $('#last').val() + $('#email').val() + $('#compa').val() + $('#tel').val() + $('#pro').val()
+                                }
+                            ]).then(function () {
+                                liff.closeWindow();
+                            }).catch(function (error) {
+                                window.alert('Error sending message: ' + error.message);
+                            });
+                        }).catch(function (error) {
+                            window.alert("Error getting profile: " + error.message);
+                        });
+                    },
+                    error: function (res) {
+                        window.alert('Error saving image: ' + res.status);
+                    }
+                });
+            });
+        });
+    }
+</script>
+
+<br>
+<br>
+<div class="row" style="background-color:#fff;">
+    <div class="col-lg-6 offset-lg-3">
+        <form method="POST">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Mango From</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="first">Firstname:</label>
+                                <input type="text" class="form-control" id="first" placeholder="Enter Firstname"
+                                       name="firstname" value="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="last">Lastname:</label>
+                            <input type="text" class="form-control" id="last" placeholder="Enter Lastname"
+                                   name="lastname" value="">
+                        </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="text" class="form-control" id="email" placeholder="Enter email"
+                               name="email" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="compa">Company:</label>
+                        <input type="text" class="form-control" id="compa" placeholder="Enter Company"
+                               name="company" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="tel">Tel:</label>
+                        <input type="tel" class="form-control" id="tel" placeholder="Enter Tel"
+                               name="tel" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="pro">Product:</label>
+                        <input type="text" class="form-control" id="pro" placeholder="Enter Product"
+                               name="pro" value="">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% extends "bootstrap/base.html" %}
+
+{%- block metas %}
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+{%- endblock metas %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+<script>
+
+    $(window).on('load', function () {
+        liff.init({liffId: "1655104822-k5dRGJez"}, () => {
+            if (liff.isLoggedIn()) {
+                runApp()
+            } else {
+                liff.login();
+            }
+        }, err => console.error(err.code, error.message));
+        // liff.init(function (data) {
+    });
+</script>
+
+<script src="https://static.line-scdn.net/liff/edge/versions/2.3.0/sdk.js"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function runApp() {
+        $('#btn').on('click', function () {
+            liff.getProfile().then(profile => {
+                $.ajax({
+                    type: 'POST',
+                    url: '/letme',
+                    data: {
+                        'firstname': $('#first').val(),
+                        'lastname': $('#last').val(),
+                        'email': $('#email').val(),
+                        'company': $('#compa').val(),
+                        'tel': $('#tel').val(),
+                        'product': $('#pro').val(),
+                        'userId': profile.userId,
+                        'token': liff.getDecodedIDToken().email,
+                        'displayName': profile.displayName
+                    },
+                    success: function (res, status) {
+                        liff.getProfile().then(function (profile) {
+                            console.log("res eang: ", res)
+                            console.log("status: ", status)
+                            liff.sendMessages([
+                                {
+                                    type: 'text',
+                                    text: 'คุณ : ' + profile.displayName + '\n\n' + $('#first').val() + '  ' + $('#last').val() + '\n' + $('#email').val() + '\n' + $('#compa').val() + '\n' + $('#tel').val() + '\n' + $('#pro').val() + '\n\n' + '"ขอบคุณสำหรับข้อมูลค่ะ แอดมินกำลังประสานงานให้เจ้าหน้าที่ฝ่ายขาย ติดต่อกลับเพื่อแจ้งรายละเอียดเพิ่มเติมให้เร็วที่สุดค่ะ"'
+                                }
+                            ]).then(function () {
+                                liff.closeWindow();
+                            }).catch(function (error) {
+                                window.alert('Error sending message: ' + error.message);
+                            });
+                        }).catch(function (error) {
+                            window.alert("Error getting profile: " + error.message);
+                        });
+                    },
+                    error: function (res) {
+                        window.alert('Error saving image: ' + res.status);
+                    }
+                });
+            });
+        });
+    }
+</script>
+{% endblock %}
+
+{% block title %}From Input{% endblock %}
+
+{% block content %}
+<br>
+<div class="container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="first">Firstname:</label>
+            <input type="text" class="form-control" id="first" placeholder="Enter Firstname"
+                   name="firstname" value="">
+        </div>
+        <div class="form-group">
+            <label for="last">Lastname:</label>
+            <input type="text" class="form-control" id="last" placeholder="Enter Lastname"
+                   name="lastname" value="">
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" placeholder="Enter email"
+                   name="email" value="">
+        </div>
+        <div class="form-group">
+            <label for="compa">Company:</label>
+            <input type="text" class="form-control" id="compa" placeholder="Enter Company"
+                   name="company" value="">
+        </div>
+        <div class="form-group">
+            <label for="tel">Tel:</label>
+            <input type="tel" class="form-control" id="tel" placeholder="Enter Tel"
+                   name="tel" value="">
+        </div>
+        <div class="form-group">
+            <label for="pro">Product:</label><br>
+            <select name="product" id="pro">
+                <option value="">Please, select</option>
+                {% for p in lst %}
+                {% for i in p.product %}
+                <option value="{{i}}" {% if i == i %} selected {% endif %}>
+                    {{i}}
+                </option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+        <button id="btn" type="button" class="btn btn-primary btn-block">Submit</button>
+    </form>
+</div>
+{% endblock %}
+

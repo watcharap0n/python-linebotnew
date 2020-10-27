@@ -249,17 +249,53 @@ def welcome():
 
 @app.route('/mango/<string:site>', methods=['GET', 'POST'])
 def test(site):
-    if request.path == '/mango/anywhere':
+    if request.path == '/mango/construction':
+        print('construction')
+        x = 'Construction'
+        page_data = get_link(x)
+        Insert = db2.child('chat-flex').push(page_data)
+        print('show: ', Insert)
         lst = []
         product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
         lst.append(product)
-        return render_template('/sbadmin/testing.html', lst=lst)
+        return render_template('/customers_new/construction.html', lst=lst)
+    elif request.path == '/mango/planing':
+        print('planning')
+        x = 'Project Planning'
+        page_data = get_link(x)
+        Insert = db2.child('chat-flex').push(page_data)
+        print('show: ', Insert)
+        lst = []
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        lst.append(product)
+        return render_template('/customers_new/planing.html', lst=lst)
+    elif request.path == '/mango/reales':
+        print('reales')
+        x = 'Real Estate'
+        page_data = get_link(x)
+        Insert = db2.child('chat-flex').push(page_data)
+        print('show: ', Insert)
+        lst = []
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        lst.append(product)
+        return render_template('/customers_new/reales.html', lst=lst)
     elif request.path == '/mango/rent':
+        print('rent')
+        x = 'เช่าสุดคุ้ม'
+        page_data = get_link(x)
+        Insert = db2.child('chat-flex').push(page_data)
+        print('show: ', Insert)
         lst = []
         product = {'product': ['เช่าสุดคุ้ม']}
         lst.append(product)
-        return render_template('/sbadmin/rent.html', lst=lst)
-    return render_template('/sbadmin/testing.html')
+        return render_template('/customers_new/rent.html', lst=lst)
+    elif request.path == '/mango/anywhere':
+        print('anywhere')
+        lst = []
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        lst.append(product)
+        return render_template('/customers_new/quote.html', lst=lst)
+    return render_template('/customers_new/quote.html')
 
 
 @app.route('/letme', methods=['GET', 'POST'])
@@ -273,7 +309,6 @@ def letme():
         hour = datetime.today().hour
         year = datetime.today().year
         p = {'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
-        db2.child('LineLiff').push(p)
         print(event)
         with open('lineliff.json', 'w') as lineliff:
             json.dump(event, lineliff)
@@ -286,12 +321,21 @@ def letme():
         token = event['token']
         picture = event['picture']
         displayName = event['displayName']
+        comment = event['comment']
         print(picture)
-        x = f'คุณ: {displayName}\n\n{firstname}\n{email}\n{company}\n{tel}\n{product}\n\nขอบคุณที่ทำรายการค่ะ'
-        line_bot_api2.push_message(userId, TextSendMessage(text=f'{x}'))
-        line_bot_api2.push_message(userId, TextSendMessage(
-            text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะขอบคุณค่ะ'))
+        if email and tel:
+            flex_profile = flex_pF(picture, displayName, firstname, email, company, tel, product, comment)
+            x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
+            line_bot_api2.push_message(userId, flex_profile)
+            db2.child('LineLiff').push(p)
+        else:
+           line_bot_api2.push_message(userId, TextSendMessage(text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
         return make_response(event)
+
+
+@app.route('/success')
+def success():
+    return render_template('/customers_new/success.html')
 
 
 @app.route('/paint')
@@ -416,13 +460,72 @@ def new_chart():
     return render_template('/customers_new/charts.html', data=data)
 
 
+@app.route('/stats')
+def stats():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    ref = db2.child('chat-flex').get()
+    count = 1
+    lst = []
+    stats = []
+    for i in ref.each():
+        k = i.key()
+        msg = i.val()['reply']
+        stats.append(msg)
+        user = dict(i.val())
+        user.update({'index': count, 'key': k})
+        lst.append(user)
+        count += 1
+    Rental = [s for s in stats if 'Rental' in s]
+    CSM = [s for s in stats if 'Customer Service Management' in s]
+    QCM = [s for s in stats if 'Quality Control Management' in s]
+    Maintenance = [s for s in stats if 'Maintenance' in s]
+    MRP = [s for s in stats if 'MRP' in s]
+    Rent = [s for s in stats if 'เช่าสุดคุ้ม' in s]
+    PJ = [s for s in stats if 'Project Planning' in s]
+    Con = [s for s in stats if 'Construction' in s]
+    Real = [s for s in stats if 'Real Estate' in s]
+    Rental = len(Rental)
+    CSM = len(CSM)
+    QCM = len(QCM)
+    Maintenance = len(Maintenance)
+    MRP = len(MRP)
+    Rent = len(Rent)
+    PJ = len(PJ)
+    Con = len(Con)
+    Real = len(Real)
+
+    key_erp = {'Rental': Rental, 'CSM': CSM,
+               'QCM': QCM, 'Maintenance': Maintenance, 'MRP': MRP, 'เช่าสุดคุ้ม': Rent,
+               'Project Planning': PJ, 'Construction': Con, 'Real Estate': Real}
+    value_erp = Rental, CSM, QCM, Maintenance, MRP, Rent, PJ, Con, Real
+    value_erp = list(value_erp)
+    key_erp = max(key_erp)
+    value_erp = max(value_erp)
+
+    data = {
+        'user': lst,
+        'rental': Rental,
+        'csm': CSM,
+        'qcm': QCM,
+        'main': Maintenance,
+        'mrp': MRP,
+        'rent': Rent,
+        'pj': PJ,
+        'con': Con,
+        'real': Real,
+        'key_erp': key_erp,
+        'value_erp': str(value_erp)
+    }
+    return render_template('/customers_new/stats.html', data=data)
+
+
 @app.route('/download', methods=['GET'])
 def download():
     if request.method == 'GET':
         ref = db2.child('LineLiff').get()
         date_time = []
         for i in ref.each():
-            # print(i.val())
             days = i.val()['day']
             months = i.val()['month']
             years = i.val()['year']
@@ -448,10 +551,40 @@ def download():
     return redirect(url_for('new_chart'))
 
 
+@app.route('/stats_download', methods=['GET'])
+def stats_download():
+    if request.method == 'GET':
+        date_time = []
+        ref = db2.child('chat-flex').get()
+        for e in ref.each():
+            # index = e['index']
+            profile = e.val()['profile']
+            erp = e.val()['message']
+            reply = e.val()['reply']
+            year = e.val()['year']
+            month = e.val()['month']
+            day = e.val()['day']
+            dbTime = {'profile': profile, 'question': erp, 'reply': reply, 'year': year, 'month': month, 'day': day}
+            date_time.append(dbTime)
+        dbDatetime = date_time
+        data = pd.DataFrame(dbDatetime)
+        datatoexcel = pd.ExcelWriter('static/excel/Stats.xlsx', engine='xlsxwriter')
+        data.to_excel(datatoexcel, sheet_name='Sheet1')
+        datatoexcel.save()
+        return send_from_directory('static/excel', 'Stats.xlsx')
+    return redirect(url_for('stats'))
+
+
 @app.route('/remove/<string:key>', methods=['GET'])
 def remove(key):
     db2.child('LineLiff').child(key).remove()
     return redirect(url_for('new_chart'))
+
+
+@app.route('/r_stat/<string:key>', methods=['GET'])
+def remove_stats(key):
+    db2.child('chat-flex').child(key).remove()
+    return redirect(url_for('stats'))
 
 
 @app.route('/api/upload', methods=['POST'])
@@ -592,28 +725,44 @@ def event_handler1(event):
         data = event['postback']['data']
         userid = event['source']['userId']
         if postback == 'postback':
-            if data == 'product':
-                line_bot_api2.reply_message(rtoken, productR4())
-            elif data == '@ERPSoftware':
-                line_bot_api2.reply_message(rtoken, flex_product())
-            elif data == '@Business':
-                line_bot_api2.reply_message(rtoken, flex_bus())
-            elif data == '@NewFeature':
-                line_bot_api2.reply_message(rtoken, flex_newfeature())
-            elif data == '@Optional':
-                line_bot_api2.reply_message(rtoken, flex_optional())
-            # elif data == 'quote':
-            #     # line_bot_api2.reply_message(rtoken, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์  อีเมลล์ จำนวน User ที่ต้องการใช้'))
-            #     line_bot_api2.push_message(userid, TextSendMessage(text='พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
-            #     line_bot_api2.push_message(userid, TextSendMessage(text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-            # if data == 'quoteq':
-            #     line_bot_api2.reply_message(rtoken, TextSendMessage(
-            #         text='พิมพ์คำขึ้นต้น ขอใบเสนอราคา ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ จำนวน User และ Product ที่ต้องการ'))
-            #     line_bot_api2.push_message(userid, TextSendMessage(
-            #         text='เช่น ใบเสนอราคา ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user Product Project Planning'))
-            if data == 'business':
+            print(data)
+            if data == 'CSM':
+                x = 'Customer Service Management'
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
-                    text='ในกรณีที่คุณลูกค้าต้องการสอบถามข้อมูลการ Power BI คุณลูกค้า แจ้งชื่อ เบอร์ติดต่อ เพื่อให้เจ้าหน้าที่ติดต่อกลับให้ข้อมูลเพิ่มเติมค่ะ'))
+                    text='ผลิตภัณฑ์นี้เหมาะสำหรับบริษัทฯ ที่ใช้ Software ERP Mango Anywhere '
+                         'เท่านั้น\nหากท่านสนใจใช้ สามารถติดต่อเจ้าหน้าที่ฝ่ายขาย\nได้ที่เบอร์ 063 565 4594 ค่ะ'))
+                Insert = get_postback(x, line_bot_api2)
+                showDB = db2.child('chat-flex').push(Insert)
+                print('show: ', showDB)
+            elif data == 'QCM':
+                x = 'Quality Control Management'
+                line_bot_api2.reply_message(rtoken, TextSendMessage(
+                    text='ผลิตภัณฑ์นี้เหมาะสำหรับบริษัทฯ ที่ใช้ Software ERP Mango Anywhere '
+                         'เท่านั้น\nหากท่านสนใจใช้ สามารถติดต่อเจ้าหน้าที่ฝ่ายขาย\nได้ที่เบอร์ 063 565 4594 ค่ะ'))
+                Insert = get_postback(x, line_bot_api2)
+                showDB = db2.child('chat-flex').push(Insert)
+                print('show: ', showDB)
+            elif data == 'maintenance':
+                x = 'Maintenance'
+                line_bot_api2.reply_message(rtoken, TextSendMessage(
+                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                Insert = get_postback(x, line_bot_api2)
+                showDB = db2.child('chat-flex').push(Insert)
+                print('show: ', showDB)
+            elif data == 'rental':
+                x = 'Rental'
+                line_bot_api2.reply_message(rtoken, TextSendMessage(
+                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                Insert = get_postback(x, line_bot_api2)
+                showDB = db2.child('chat-flex').push(Insert)
+                print('show: ', showDB)
+            elif data == 'mrp':
+                x = 'MRP'
+                line_bot_api2.reply_message(rtoken, TextSendMessage(
+                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                Insert = get_postback(x, line_bot_api2)
+                showDB = db2.child('chat-flex').push(Insert)
+                print('show: ', showDB)
     except:
         _type = event['message']['type']
         img = event['message']['id']
@@ -898,6 +1047,39 @@ def model_linebot_old():
     print('value3')
     return confidence, idx_answer, label, msg, userId
 
+def get_link(x):
+    message = 'link'
+    profile = '[ตัวลิงค์จะไม่สามารถได้ชื่อคน]'
+    day = datetime.today().day
+    month = datetime.today().month
+    second = datetime.today().second
+    minute = datetime.today().minute
+    hour = datetime.today().hour
+    year = datetime.today().year
+    result = {'profile': profile, 'message': message, 'reply': x, 'hour': hour, 'min': minute,
+              'sec': second, 'day': day, 'month': month, 'year': year}
+    return result
+
+
+def get_postback(x, line_bot_api):
+    raw_json = request.get_json()
+    json_line = json.dumps(raw_json)
+    decoded = json.loads(json_line)
+    message = 'postback'
+    userId = decoded['events'][0]['source']['userId']
+    day = datetime.today().day
+    month = datetime.today().month
+    second = datetime.today().second
+    minute = datetime.today().minute
+    hour = datetime.today().hour
+    year = datetime.today().year
+    profile = line_bot_api.get_profile(userId)
+    profile = profile.display_name
+    profile = str(profile)
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
+              'sec': second, 'day': day, 'month': month, 'year': year}
+    return result
+
 
 def get_datetime(x, line_bot_api):
     raw_json = request.get_json()
@@ -919,21 +1101,20 @@ def get_datetime(x, line_bot_api):
     return result
 
 
-def web_scraping_temp():
-    r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
-    soup = BeautifulSoup(r.content, "html.parser")
-    temp = soup.find('span', {'data-testid': 'TemperatureValue'})
-    feelLike = soup.find('div', {'data-testid': 'FeelsLikeSection'})
-    HighLow = soup.find('div', {'data-testid': 'WeatherDetailsLabel'})
-    valueTemp = soup.find('div', {'data-testid': 'wxData'})
-    humility = soup.find('span', {'data-testid': 'PercentageValue'})
-    x = 'Temperature : {}\n{}\n{}  {}\nHumidity  {}'.format(temp.text, feelLike.text,
-                                                            HighLow.text, valueTemp.text,
-                                                            humility.text)
-    return x
-
-
-class News():
+class WebScraping():
+    @classmethod
+    def humility(cls):
+        r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
+        soup = BeautifulSoup(r.content, "html.parser")
+        temp = soup.find('span', {'data-testid': 'TemperatureValue'})
+        feelLike = soup.find('div', {'data-testid': 'FeelsLikeSection'})
+        HighLow = soup.find('div', {'data-testid': 'WeatherDetailsLabel'})
+        valueTemp = soup.find('div', {'data-testid': 'wxData'})
+        humility = soup.find('span', {'data-testid': 'PercentageValue'})
+        x = 'Temperature : {}\n{}\n{}  {}\nHumidity  {}'.format(temp.text, feelLike.text,
+                                                                HighLow.text, valueTemp.text,
+                                                                humility.text)
+        return x
     @staticmethod
     def new_common():
         r = requests.get("https://www.thairath.co.th/news/local")
@@ -944,7 +1125,6 @@ class News():
         str_txt = ', \n '
         str_txt = str_txt.join(txt)
         return str_txt
-
     @staticmethod
     def new_sport():
         r = requests.get("https://www.thairath.co.th/sport")
@@ -954,7 +1134,6 @@ class News():
         for i in score:
             t = t + '\n' + i.text
         return t
-
     @staticmethod
     def new_entertain():
         r = requests.get("https://www.thairath.co.th/entertain")
@@ -1042,7 +1221,7 @@ def handle_message_new(event):
     try:
         if result[0] >= 0.14:
             if ['ขอข้อมูลผลิตภัณฑ์'] == result[3]:
-                x = 'card'
+                x = 'ขอผลิตภัณฑ์รวม'
                 line_bot_api2.reply_message(event.reply_token, productR4())
                 inserted = get_datetime(x, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
@@ -1060,6 +1239,10 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
             elif ['คือ'] == result[3]:
                 x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['อะไรอะ'] == result[3]:
+                x = ['นั้นสิ', 'อิหยังวะ', 'ป๊าวว']
                 z = random.choice(x)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
             elif ['คืออะไร'] == result[3]:
@@ -1089,8 +1272,6 @@ def handle_message_new(event):
                 elif result[2] == [2]:
                     line_bot_api2.push_message(result[4], flex_product())
                 elif result[2] == [1]:
-                    inserted = db2.child('customer_email').push(get_datetime(None, line_bot_api2))
-                    # print(f'Inserted {inserted}')
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                     image_message = ImageSendMessage(
@@ -1098,14 +1279,9 @@ def handle_message_new(event):
                         preview_image_url='https://sv1.picz.in.th/images/2020/10/21/bBc4NI.png'
                     )
                     line_bot_api2.push_message(result[4], image_message)
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [11]:
-                    profile = line_bot_api2.get_profile(result[4])
-                    displayName = profile.display_name
-                    picture_url = profile.picture_url
-                    user_id = profile.user_id
-                    status = profile.status_message
-                    # print(displayName, picture_url, user_id, status)
-                    # line_bot_api2.push_message(result[4], flex_profile_erp(picture_url, displayName, status))
                     line_bot_api2.push_message(result[4], productR7())
                 elif result[2] == [22]:
                     stick = ['51626503', '51626509']
@@ -1120,17 +1296,21 @@ def handle_message_new(event):
                     year = datetime.today().year
                     x = 'วันนี้วันที่ {}/{}/{} เวลา {}:{}:{}'.format(day, month, year, hour, minute, second)
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [24]:
-                    x = web_scraping_temp()
+                    x = WebScraping.humility()
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{str(x)}'))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [25]:
                     if result[3] == ['ข่าว']:
-                        x = News.new_common()
+                        x = WebScraping.new_common()
                         line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                         line_bot_api2.push_message(result[4], TextSendMessage(
                             text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
                         line_bot_api2.push_message(result[4], TextSendMessage(
-                            text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว การเมือง'))
+                            text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
                     else:
                         i = ''
                         k = result[3]
@@ -1142,25 +1322,28 @@ def handle_message_new(event):
                         ans = tranform.join(x)
                         print('string >: ', ans)
                         if ans == ' ทั่วไป':
-                            x = News.new_common()
+                            x = WebScraping.new_common()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                             line_bot_api2.push_message(result[4], TextSendMessage(text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
                             line_bot_api2.push_message(result[4], TextSendMessage(text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                            inserted = get_datetime(x, line_bot_api2)
+                            db2.child('chatbot_transactions').push(inserted)
                         elif ans == ' กีฬา':
-                            x = News.new_sport()
+                            x = WebScraping.new_sport()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/sport'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
-                        elif ans == ' บังเทิง':
-                            x = News.new_entertain()
+                            inserted = get_datetime(x, line_bot_api2)
+                            db2.child('chatbot_transactions').push(inserted)
+                        elif ans == ' บันเทิง':
+                            x = WebScraping.new_entertain()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/entertain'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
-
                 elif ['ไรงะ'] == result[3]:
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='อะไรงะ'))
                 elif ['งะ'] == result[3]:
@@ -1175,6 +1358,10 @@ def handle_message_new(event):
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
                 elif ['งั้นหรอ'] == result[3]:
                     x = ['จ้า', 'ใช่จ้า', 'จริงสิ']
+                    y = random.choice(x)
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
+                elif ['ไรงะ'] == result[3]:
+                    x = ['><', 'หืม', 'ป๊าวนิ']
                     y = random.choice(x)
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}'))
                 else:
@@ -1198,25 +1385,28 @@ def handle_message_new(event):
                 z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
                 x = random.choice(z)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
-                get_datetime(x, line_bot_api2)
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['แมงโก้'] == result[3]:
                 z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
                 x = random.choice(z)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
-                get_datetime(x, line_bot_api2)
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['น้อย'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
             elif ['@Product'] == result[3]:
-                x = 'flex message'
+                # x = 'เช่าสุดคุ้ม'
                 line_bot_api2.reply_message(event.reply_token, flex_erp())
-                # line_bot_api2.push_message(result[4], TextSendMessage(
-                #     text='หากต้องการใบเสนอราคา พิมพ์คำขึ้นต้นด้วย เช่าสุดคุ้ม ตามด้วย ชื่อ บริษัท เบอร์ อีเมลล์ และจำนวน User ที่ต้องการใช้'))
-                # line_bot_api2.push_message(result[4], TextSendMessage(
-                #     text='เช่น เช่าสุดคุ้ม ชื่อ สำลี บริษัท MangoConsultant เบอร์ 09-999-XXXX อีเมลล์ user@admin.com จำนวน 5 user'))
-                inserted = get_datetime(x, line_bot_api2)
-                db2.child('chatbot_transactions').push(inserted)
+                # inserted = get_datetime(x, line_bot_api2)
+                # showDB = db2.child('chat-flex').push(inserted)
+                # print('show : ', showDB)
             elif ['@ERPSoftware'] == result[3]:
+                # x = 'ERP Construction and Real Estate'
                 line_bot_api2.reply_message(event.reply_token, flex_product())
+                # inserted = get_datetime(x, line_bot_api2)
+                # showDB = db2.child('chat-flex').push(inserted)
+                # print('show : ', showDB)
             elif ['ขอqrcode'] == result[3]:
                 image_message = ImageSendMessage(
                     original_content_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png',
@@ -1224,23 +1414,41 @@ def handle_message_new(event):
                 )
                 line_bot_api2.reply_message(event.reply_token, image_message)
             elif ['@NewFeature'] == result[3]:
+                # x = 'NewFeature'
                 line_bot_api2.reply_message(event.reply_token, flex_newfeature())
+                # inserted = get_datetime(x, line_bot_api2)
+                # showDB = db2.child('chat-flex').push(inserted)
+                # print('show : ', showDB)
             elif ['@Optional'] == result[3]:
+                # x = 'Optional'
                 line_bot_api2.reply_message(event.reply_token, flex_optional())
+                # inserted = get_datetime(x, line_bot_api2)
+                # showDB = db2.child('chat-flex').push(inserted)
+                # print('show : ', showDB)
             elif ['@Business'] == result[3]:
+                # x = 'Business'
                 line_bot_api2.reply_message(event.reply_token, flex_bus())
+                # inserted = get_datetime(x, line_bot_api2)
+                # showDB = db2.child('chat-flex').push(inserted)
+                # print('show : ', showDB)
             elif ['วาดรูป'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
+            elif ['profile'] == result[3]:
+                profile = line_bot_api2.get_profile(result[4])
+                displayName = profile.display_name
+                picture_url = profile.picture_url
+                user_id = profile.user_id
+                status = profile.status_message
+                print(displayName, picture_url, user_id, status)
+                line_bot_api2.push_message(result[4], flex_profile_erp(picture_url, displayName, status))
             else:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='แอดมินอาจจะให้ข้อมูลได้ไม่ครบถ้วน '
-                                                                                    'คุณลูกค้าพอจะสะดวกจะแจ้งเบอร์โทรศัทพ์ไหมคะ '
-                                                                                    'แอดมินจะดำเนินการผสานงานให้ผู้ที่เกี่ยวข้อง '
-                                                                                    'ให้คำแนะนำอย่างครบถ้วนค่ะ'))
-                line_bot_api2.push_message(result[4], TextSendMessage(
-                    text='หากต้องการให้ทีมมงาน เข้าไป Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกานะคะ\nขอบคุณค่ะ'))
-                line_bot_api2.push_message(result[4],
-                                           StickerSendMessage(package_id=str(11538), sticker_id=str(51626499)))
+                profile = line_bot_api2.get_profile(result[4])
+                displayName = profile.display_name
+                picture_url = profile.picture_url
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='น้องแมงโก้ไม่แน่ใจ คุณ ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
+                                                                                    'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ'))
+                line_bot_api2.push_message(result[4], flex_profile(picture_url, displayName))
     except LineBotApiError:
         abort(400)
 
@@ -1283,18 +1491,6 @@ def handle_message_old(event):
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
     except LineBotApiError:
         abort(400)
-
-
-@app.route('/api/message/<string:msg>', methods=['GET', 'POST'])
-def msg_message(msg):
-    if request.method == 'POST':
-        if msg == 'broadcast':
-            try:
-                raw_json = request.args['message']
-                line_bot_api1.broadcast(TextSendMessage(text=str(raw_json)))
-                return jsonify(f'Sending success : {raw_json}'), 200
-            except:
-                return jsonify(f'error'), 400
 
 
 @app.route('/api/richmenu/<string:rich>', methods=['GET', 'POST'])
