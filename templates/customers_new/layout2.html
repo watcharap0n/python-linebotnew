@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Mango AII</title>
+    <title>Mango AI</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <link rel="icon" href="demo_icon.gif" type="image/gif" sizes="16x16">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="icon" href="/static/images/meat.png" type="image/png" sizes="16x16">
+<!--    <link rel="stylesheet" href="css/custom.css">-->
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <!-- Custom fonts for this template-->
@@ -16,11 +16,6 @@
           type="text/css"/>
 
     <link
-            href="http://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css"
-            rel="stylesheet"
-            type="text/css"
-    />
-    <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
             rel="stylesheet"
     />
@@ -28,12 +23,18 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
+    <link
+            rel="stylesheet"
+            href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"
+    />
+
     <!-- Custom styles for this template-->
 
     <link
             href="{{ url_for('static',filename='/css/sb-admin-2.min.css') }}"
             rel="stylesheet"
     />
+
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
@@ -109,9 +110,9 @@
             >
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/stats">
+            <a class="nav-link" href="/graph">
                 <i class="far fa-feather"></i>
-                <span>Stats</span></a
+                <span>Statistic</span></a
             >
         </li>
 

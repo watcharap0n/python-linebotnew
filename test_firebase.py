@@ -3,6 +3,7 @@ import json, webbrowser, lxml
 from linebot import LineBotApi, WebhookHandler
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
+from attacut import tokenize
 from flask import Flask, request, abort
 from linebot import LineBotApi
 import requests
@@ -24,20 +25,80 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     handler = WebhookHandler(data['Channel_secret'])
 
 
-def temperature():
-    r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
-    soup = BeautifulSoup(r.content, "html.parser")
-    temp = soup.find('span', {'data-testid': 'TemperatureValue'})
-    feelLike = soup.find('div', {'data-testid': 'FeelsLikeSection'})
-    HighLow = soup.find('div', {'data-testid': 'WeatherDetailsLabel'})
-    valueTemp = soup.find('div', {'data-testid': 'wxData'})
-    humility = soup.find('span', {'data-testid': 'PercentageValue'})
-    x = 'Temperature : {}\n{}\n{}  {}\nHumidity  {}'.format(temp.text, feelLike.text,
-                                               HighLow.text, valueTemp.text,
-                                              humility.text)
-    return x
+# def temperature():
+#     r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
+#     soup = BeautifulSoup(r.content, "html.parser")
+#     temp = soup.find('span', {'data-testid': 'TemperatureValue'})
+#     feelLike = soup.find('div', {'data-testid': 'FeelsLikeSection'})
+#     HighLow = soup.find('div', {'data-testid': 'WeatherDetailsLabel'})
+#     valueTemp = soup.find('div', {'data-testid': 'wxData'})
+#     humility = soup.find('span', {'data-testid': 'PercentageValue'})
+#     x = 'Temperature : {}\n{}\n{}  {}\nHumidity  {}'.format(temp.text, feelLike.text,
+#                                                HighLow.text, valueTemp.text,
+#                                               humility.text)
+#     return x
+
+print(tokenize('แอปมีไหม'))
 
 
+
+# @app.route('/stats')
+# def stats():
+#     if not g.user:
+#         return redirect(url_for('welcome'))
+#     ref = db2.child('chat-flex').get()
+#     count = 1
+#     lst = []
+#     stats = []
+#     for i in ref.each():
+#         k = i.key()
+#         msg = i.val()['reply']
+#         stats.append(msg)
+#         user = dict(i.val())
+#         user.update({'index': count, 'key': k})
+#         lst.append(user)
+#         count += 1
+#     Rental = [s for s in stats if 'Rental' in s]
+#     CSM = [s for s in stats if 'Customer Service Management' in s]
+#     QCM = [s for s in stats if 'Quality Control Management' in s]
+#     Maintenance = [s for s in stats if 'Maintenance' in s]
+#     MRP = [s for s in stats if 'MRP' in s]
+#     Rent = [s for s in stats if 'เช่าสุดคุ้ม' in s]
+#     PJ = [s for s in stats if 'Project Planning' in s]
+#     Con = [s for s in stats if 'Construction' in s]
+#     Real = [s for s in stats if 'Real Estate' in s]
+#     Rental = len(Rental)
+#     CSM = len(CSM)
+#     QCM = len(QCM)
+#     Maintenance = len(Maintenance)
+#     MRP = len(MRP)
+#     Rent = len(Rent)
+#     PJ = len(PJ)
+#     Con = len(Con)
+#     Real = len(Real)
+#     key_erp = {'Rental': Rental, 'CSM': CSM,
+#                'QCM': QCM, 'Maintenance': Maintenance, 'MRP': MRP, 'เช่าสุดคุ้ม': Rent,
+#                'Project Planning': PJ, 'Construction': Con, 'Real Estate': Real}
+#     value_erp = Rental, CSM, QCM, Maintenance, MRP, Rent, PJ, Con, Real
+#     value_erp = list(value_erp)
+#     key_erp = max(key_erp)
+#     value_erp = max(value_erp)
+#
+#     data = {
+#         'user': lst,
+#         'rental': Rental,
+#         'csm': CSM,
+#         'qcm': QCM,
+#         'main': Maintenance,
+#         'mrp': MRP,
+#         'rent': Rent,
+#         'pj': PJ,
+#         'con': Con,
+#         'real': Real,
+#         'key_erp': key_erp,
+#         'value_erp': str(value_erp)
+#     }
+#     return render_template('/customers_new/stats.html', data=data)
 # class News():
 #     @staticmethod
 #     def new_common():
@@ -89,20 +150,20 @@ def temperature():
 # for i in range(len(data)):
 #     print(data[i].text)
 
-ref = db.child('chat-flex').get()
-count = 1
-lst = []
-stats = []
-key = []
-for i in ref.each():
-    key.append(i.key())
-    msg = i.val()['message']
-    stats.append(msg)
-    user = dict(i.val())
-    user.update({'index': count})
-    lst.append(user)
-    # print(user)
-    count += 1
+# ref = db.child('chat-flex').get()
+# count = 1
+# lst = []
+# stats = []
+# key = []
+# for i in ref.each():
+#     key.append(i.key())
+#     msg = i.val()['message']
+#     stats.append(msg)
+#     user = dict(i.val())
+#     user.update({'index': count})
+#     lst.append(user)
+#     # print(user)
+#     count += 1
 
 # key = key.
 
@@ -184,4 +245,77 @@ for i in ref.each():
 #     print(first)
 #     print(tel)
 #     print(email)
-line_bot_api.push_message('U29abee37b5e3255aa9d24e67099be87b', TextSendMessage(text=f'fwjif'))
+# line_bot_api.push_message('U29abee37b5e3255aa9d24e67099be87b', TextSendMessage(text=f'fwjif'))
+
+
+# ref = db.child('chatbot_transactions').get()
+#
+# d = []
+# for i in ref.each():
+#     day = i.val()['day']
+#     month = i.val()['month']
+#     year = i.val()['year']
+#     name = str(day) + '-' + str(month) + '-' + str(year)
+#     d.append(name)
+#
+# stf = datetime.today()
+# print(type(stf.strftime('%B')))
+#
+# t1 = [e for e in d if '24-10-2020' in e]
+# t2 = [e for e in d if '26-10-2020' in e]
+# t3 = [e for e in d if '27-10-2020' in e]
+# t4 = [e for e in d if '28-10-2020' in e]
+
+
+
+
+# ref = db.child('LineLiff').get()
+# lst = []
+# for o in ref.each():
+#     e = o.key()
+#     py = db.child('LineLiff').child(e).get()
+#     day = py.val()['day']
+#     month = py.val()['month']
+#     year = py.val()['year']
+#     hour = py.val()['hour']
+#     minn = py.val()['min']
+#     sec = py.val()['sec']
+#     event = py.val()['event']
+#     comment = event['comment']
+#     company = event['company']
+#     displayName = event['displayName']
+#     email = event['email']
+#     name = event['firstname']
+#     picture = event['picture']
+#     product = event['product']
+#     tel = event['tel']
+#     token = event['token']
+#     group = {'Name': name, 'Product': product, 'Company': company,
+#            'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
+#            'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
+#            'Picture': picture}
+    # db.child('RestCustomer').push(group)
+    # print(group)
+
+#
+# rest = db.child('RestCustomer').child('-ML61O1X2uVFWg62dyeO').get()
+# for i in rest.each():
+#     print(i.val())
+    # profile = i.val()['Profile']
+    # cTime = i.val()['Time']
+    # cDate = i.val()['Date']
+    # company = i.val()['Company']
+    # email = i.val()['Email']
+    # pEmail = i.val()['EmailLiff']
+    # message = i.val()['Message']
+    # picture = i.val()['Picture']
+    # product = i.val()['Product']
+    # tel = i.val()['Tel']
+    # name = i.val()['Name']
+    # group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
+    #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
+    #          'Picture': picture}
+    # print(group)
+
+
+

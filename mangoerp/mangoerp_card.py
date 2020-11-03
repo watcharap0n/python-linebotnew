@@ -1,5 +1,6 @@
 from linebot.models import (ImagemapSendMessage, BaseSize, URIImagemapAction, ImagemapArea, MessageImagemapAction,
-                            TemplateSendMessage, PostbackAction, MessageAction, URIAction, ButtonsTemplate, CarouselColumn, CarouselTemplate)
+                            TemplateSendMessage, PostbackAction, MessageAction, URIAction, ButtonsTemplate, CarouselColumn, CarouselTemplate,
+                            CameraAction, CameraRollAction, DatetimePickerAction, LocationAction, ImageCarouselColumn, ImageCarouselTemplate)
 
 
 def mangoerp():
@@ -271,3 +272,28 @@ def destiny():
 
         ])
     return imagemap_message
+
+
+def promotion():
+    image_carousel_template_message = TemplateSendMessage(
+        alt_text='ImageCarousel template',
+        template=ImageCarouselTemplate(
+            columns=[
+                ImageCarouselColumn(
+                    image_url='https://sv1.picz.in.th/images/2020/11/01/biNgsP.jpg',
+                    action=URIAction(
+                        label='คลิก',
+                        uri='https://liff.line.me/1655104822-8nMB6y2m'
+                    )
+                ),
+                ImageCarouselColumn(
+                    image_url='https://sv1.picz.in.th/images/2020/11/01/biNBsf.jpg',
+                    action=URIAction(
+                        label='คลิก',
+                        uri='https://liff.line.me/1655104822-8nMB6y2m'
+                    )
+                )
+            ]
+        )
+    )
+    return image_carousel_template_message

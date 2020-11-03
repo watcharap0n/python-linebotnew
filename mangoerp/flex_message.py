@@ -781,9 +781,9 @@ def flex_bus():
                         "style": "primary",
                         "height": "sm",
                         "action": {
-                            "type": "postback",
+                            "type": "uri",
                             "label": "POWER BI",
-                            "data": "business"
+                            "uri": "https://liff.line.me/1655104822-pR0REwNV"
                         }
                     },
                     {

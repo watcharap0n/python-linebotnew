@@ -76,70 +76,194 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="row">
-                <div class="col-sm-6">
-                    <h6 class="m-0 font-weight-bold text-primary">ข้อมูลลูกค้า</h6>
+                <div class="col-sm-4">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#home">
+                                <i class="fa fa-users"></i>
+                                ข้อมูลลูกค้า
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#menu1">
+                                <i class="fa fa-check"></i>
+                                นำเข้า
+                                 <span class="badge badge-light">{{data.rmsg}}</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
+                    <h6 class="m-0 font-weight-bold text-primary"></h6>
+                </div>
+                <div class="col-sm-4">
                     <div class="align-content-end">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="/download" class="btn btn-success btn-sm">Download Excel</a>
+                        <a href="/download" class="btn btn-success">
+                            <i class="fa fa-file-excel-o"></i>
+                            Export Excel
+                        </a>
+
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            All Delete
+                        </button>
+                        <div class="modal" id="myModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Confirm Delete</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Delete all transaction... <br>
+                                        Are you sure ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a {% for d in data.users %}
+                                           href="/delete/{{d.key}}"
+                                           {% endfor %} class="btn btn-danger btn">All Delete</a>
+                                        <button type="button" class="btn btn-danger btn" data-dismiss="modal">Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                    <tr>
-                        <th>index</th>
-                        <th>name</th>
-                        <th>product</th>
-                        <th>company</th>
-                        <th>tel</th>
-                        <th>email</th>
-                        <th>email(permission)</th>
-                        <th>profile</th>
-                        <th>date/time</th>
-                        <th>delete</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        <form action="" method="POST">
+            <div class="card-body">
+                <div class="tab-content">
+                    <div id="home" class="container tab-pane active"><br>
+                        <div class="table-responsive">
+                            <table class="display" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        Select
+                                    </th>
+                                    <th>Index</th>
+                                    <th>Name</th>
+                                    <th>Product</th>
+                                    <th>Company</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Email(permission)</th>
+                                    <th>Message</th>
+                                    <th>Profile</th>
+                                    <th>Date/time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for e in data.users %}
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="checkbox"
+                                                   name="key"
+                                                   id="{{e.key}}"
+                                                   value="{{e.key}}"
+                                                   {% if e.key in data.users.key %} checked {% endif %}>
+                                        </div>
+                                    </td>
+                                    <td>{{e.index}}</td>
+                                    <td>{{e.Name}}</td>
+                                    <td>{{e.Product}}</td>
+                                    <td>{{e.Company}}</td>
+                                    <td>{{e.Tel}}</td>
+                                    <td>{{e.Email}}</td>
+                                    <td>{{e.EmailLiff}}</td>
+                                    <td>{{e.Message}}</td>
+                                    <td>{{e.Profile}}</td>
+                                    <td>{{e.Date}} {{e.Time}}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="menu1" class="container tab-pane fade"><br>
+                        <div class="table-responsive">
+                            <table class="display" id="restTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Insert</th>
+                                    <th>Index</th>
+                                    <th>Name</th>
+                                    <th>Product</th>
+                                    <th>Company</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Email(permission)</th>
+                                    <th>Message</th>
+                                    <th>Profile</th>
+                                    <th>Date/time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for r in data.est %}
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="checkbox"
+                                                   name="insert"
+                                                   id="insert"
+                                                   value="{{r.key}}"
+                                                   {% if r.key in data.est.key %} checked {% endif %}>
+                                        </div>
+                                    </td>
 
-                    {% for e in data.users %}
-                    <tr>
-                        <td>{{e.index}}</td>
-                        <td>{{e.event.firstname}}</td>
-                        <td>{{e.event.product}}</td>
-                        <td>{{e.event.company}}</td>
-                        <td>{{e.event.tel}}</td>
-                        <td>{{e.event.email}}</td>
-                        <td>{{e.event.token}}</td>
-                        <td>{{e.event.displayName}}</td>
-                        <td>{{e.day}}/{{e.month}}/{{e.year}} {{e.hour}}:{{e.min}}:{{e.sec}}</td>
-                        <td>
-                            <div>
-                                <a href="/remove/{{e.key}}" class="btn btn-danger btn-sm">Delete</a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                                    <td>{{r.index}}</td>
+                                    <td>{{r.event.firstname}}</td>
+                                    <td>{{r.event.product}}</td>
+                                    <td>{{r.event.company}}</td>
+                                    <td>{{r.event.tel}}</td>
+                                    <td>{{r.event.email}}</td>
+                                    <td>{{r.event.token}}</td>
+                                    <td>{{r.event.comment}}</td>
+                                    <td>{{r.event.displayName}}</td>
+                                    <td>{{r.day}}/{{r.month}}/{{r.year}} {{r.hour}}:{{r.min}}:{{r.sec}}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-2"></div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                        <button type="submit" name="delete_button" value="Insert_button" class="btn btn-success btn-sm">
+                            <i class="fa fa-check-square-o"></i>
+                            Insert Index
+                        </button>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" name="delete_button" value="Excel_button" class="btn btn-warning btn-sm">
+                            <i class="fa fa-check-square-o"></i>
+                            Excel Index
+                        </button>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" name="delete_button" value="Delete_button" class="btn btn-danger btn-sm">
+                            <i class="fa fa-check-square-o"></i>
+                            Delete Index
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
     </div>
 </div>
-<!-- /.container-fluid -->
 
-</div>
-<!-- End of Main Content -->
 
-<!-- Footer -->
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
         <div class="copyright text-center my-auto">
@@ -147,49 +271,36 @@
         </div>
     </div>
 </footer>
-<!-- End of Footer -->
-
-</div>
-<!-- End of Content Wrapper -->
-
-</div>
-<!-- End of Page Wrapper -->
-
-<!-- Scroll to Top Button-->
-<a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-</a>
-
-<!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 <script>
     $(document).ready(function () {
         $('#dataTable').DataTable({
-            "order": [[0, "desc"]]
+            // "order": [[0, "desc"]]
         });
-        $('.dataTables_length').addClass('bs-select');
     });
 
 
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#restTable').DataTable({
+            // "order": [[0, "desc"]]
+        });
+    });
+
+
+</script>
+
+
+<script>
+    document.getElementById('select-all').onclick = function () {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
 </script>
 
 

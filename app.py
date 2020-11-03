@@ -1,8 +1,8 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
-    make_response, send_from_directory, send_file
-import requests, json, uuid, cv2, time, os, warnings, pyrebase, firebase_admin, base64, xlsxwriter
+    make_response, send_from_directory
+import requests, json, uuid, time, os, warnings, pyrebase, firebase_admin, base64
 from flask_bootstrap import Bootstrap
-from datetime import datetime, timedelta
+from datetime import timedelta
 from random import randrange
 from numpy import random
 from bs4 import BeautifulSoup
@@ -105,7 +105,6 @@ def make_session_permanent():
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
 def login(customer):
-    error = 'Invalid credentials. Please try again. '
     if request.path == '/lg/new':
         if g.user:
             return redirect(url_for('index_newcustomer'))
@@ -248,7 +247,7 @@ def welcome():
 
 
 @app.route('/mango/<string:site>', methods=['GET', 'POST'])
-def test(site):
+def line_liff(site):
     if request.path == '/mango/construction':
         print('construction')
         x = 'Construction'
@@ -256,7 +255,7 @@ def test(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         lst.append(product)
         return render_template('/customers_new/construction.html', lst=lst)
     elif request.path == '/mango/planing':
@@ -266,7 +265,7 @@ def test(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         lst.append(product)
         return render_template('/customers_new/planing.html', lst=lst)
     elif request.path == '/mango/reales':
@@ -276,7 +275,7 @@ def test(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         lst.append(product)
         return render_template('/customers_new/reales.html', lst=lst)
     elif request.path == '/mango/rent':
@@ -286,15 +285,21 @@ def test(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['เช่าสุดคุ้ม']}
+        product = {'product': 'เช่าสุดคุ้ม'}
         lst.append(product)
         return render_template('/customers_new/rent.html', lst=lst)
     elif request.path == '/mango/anywhere':
         print('anywhere')
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning']}
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         lst.append(product)
         return render_template('/customers_new/quote.html', lst=lst)
+    elif request.path == '/mango/powerbi':
+        print('Power BI')
+        lst = []
+        product = {'product': 'Power BI'}
+        lst.append(product)
+        return render_template('/customers_new/powerbi.html', lst=lst)
     return render_template('/customers_new/quote.html')
 
 
@@ -325,17 +330,13 @@ def letme():
         print(picture)
         if email and tel:
             flex_profile = flex_pF(picture, displayName, firstname, email, company, tel, product, comment)
-            x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
+            # x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
             line_bot_api2.push_message(userId, flex_profile)
+            line_bot_api2.push_message(userId, TextSendMessage(text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
             db2.child('LineLiff').push(p)
         else:
            line_bot_api2.push_message(userId, TextSendMessage(text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
         return make_response(event)
-
-
-@app.route('/success')
-def success():
-    return render_template('/customers_new/success.html')
 
 
 @app.route('/paint')
@@ -434,114 +435,230 @@ def chart():
     return render_template('/sbadmin/charts.html', data=data)
 
 
+
 @app.route('/new_chart', methods=['GET', 'POST'])
 def new_chart():
     if not g.user:
         return redirect(url_for('welcome'))
-    ref = db2.child('LineLiff').get()
-    lst = []
-    count = 1
-    for r in ref.each():
-        k = r.key()
-        users = r.val()
-        users = dict(users)
-        users.update({'index': str(count), 'key': k})
-        lst.append(users)
-        count = count + 1
-    _id = len(lst)
-    data = {
-        'users': lst,
-        'msg': _id
-    }
-    if request.method == 'POST':
-        broadcast = request.form['msg']
-        line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
+    if request.method == 'GET':
+        rest = db2.child('RestCustomer').get()
+        lst = []
+        count = 1
+        est = []
+        eCount = 1
+        for r in rest.each()[1:]:
+            k = r.key()
+            users = r.val()
+            users = dict(users)
+            users.update({'index': str(count), 'key': k})
+            lst.append(users)
+            count = count + 1
+        _id = len(lst)
+        ref = db2.child('LineLiff').get()
+        for e in ref.each()[1:]:
+            k = e.key()
+            users = e.val()
+            users = dict(users)
+            users.update({'index': str(eCount), 'key': k})
+            est.append(users)
+            eCount = eCount + 1
+        rMsg = len(est)
+        data = {
+            'users': lst,
+            'est': est,
+            'msg': _id,
+            'rmsg': rMsg
+        }
+        return render_template('/customers_new/charts.html', data=data)
+    elif request.method == 'POST':
+        try:
+            broadcast = request.form['msg']
+            line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
+            return redirect(url_for('push'))
+        except:
+            key = request.form.getlist('key')
+            excel = request.form.getlist('excel')
+            insert = request.form.getlist('insert')
+            print(insert)
+            print(key)
+            print(excel)
+            if request.form['delete_button'] == 'Delete_button':
+                print('Delete_button')
+                if key:
+                    for k in key:
+                        k = str(k)
+                        db2.child('RestCustomer').child(k).remove()
+                    return redirect(url_for('new_chart'))
+                elif insert:
+                    for i in insert:
+                        db2.child('LineLiff').child(i).remove()
+                    return redirect(url_for('new_chart'))
+            elif request.form['delete_button'] == 'Excel_button':
+                print('Excel_button')
+                if key:
+                    lst = []
+                    for k in key:
+                        list_chart = group_chart(k)
+                        lst.append(list_chart)
+                    data = pd.DataFrame(lst)
+                    datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+                    data.to_excel(datatoexcel, sheet_name='Sheet1')
+                    datatoexcel.save()
+                    return send_from_directory('static/excel', 'Customers.xlsx')
+                elif insert:
+                    est = []
+                    for e in insert:
+                        list_chart = push_database(e)
+                        est.append(list_chart)
+                    data = pd.DataFrame(est)
+                    datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+                    data.to_excel(datatoexcel, sheet_name='Sheet1')
+                    datatoexcel.save()
+                    return send_from_directory('static/excel', 'newCustomers.xlsx')
+            elif request.form['delete_button'] == 'Insert_button':
+                print('Insert_button')
+                for i in insert:
+                    group = push_database(i)
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+                return redirect(url_for('new_chart'))
         return redirect(url_for('new_chart'))
-    return render_template('/customers_new/charts.html', data=data)
 
 
-@app.route('/stats')
-def stats():
+@app.route('/graph', methods=['GET', 'POST'])
+def graph():
     if not g.user:
         return redirect(url_for('welcome'))
-    ref = db2.child('chat-flex').get()
-    count = 1
-    lst = []
-    stats = []
-    for i in ref.each():
-        k = i.key()
-        msg = i.val()['reply']
-        stats.append(msg)
-        user = dict(i.val())
-        user.update({'index': count, 'key': k})
-        lst.append(user)
-        count += 1
-    Rental = [s for s in stats if 'Rental' in s]
-    CSM = [s for s in stats if 'Customer Service Management' in s]
-    QCM = [s for s in stats if 'Quality Control Management' in s]
-    Maintenance = [s for s in stats if 'Maintenance' in s]
-    MRP = [s for s in stats if 'MRP' in s]
-    Rent = [s for s in stats if 'เช่าสุดคุ้ม' in s]
-    PJ = [s for s in stats if 'Project Planning' in s]
-    Con = [s for s in stats if 'Construction' in s]
-    Real = [s for s in stats if 'Real Estate' in s]
-    Rental = len(Rental)
-    CSM = len(CSM)
-    QCM = len(QCM)
-    Maintenance = len(Maintenance)
-    MRP = len(MRP)
-    Rent = len(Rent)
-    PJ = len(PJ)
-    Con = len(Con)
-    Real = len(Real)
+    if request.method == 'GET':
+        ref = db2.child('chat-flex').get()
+        count = 1
+        lst = []
+        stats = []
+        for i in ref.each()[1:]:
+            k = i.key()
+            msg = i.val()['reply']
+            stats.append(msg)
+            user = dict(i.val())
+            user.update({'index': count, 'key': k})
+            lst.append(user)
+            count += 1
+        Rental = [s for s in stats if 'Rental' in s]
+        CSM = [s for s in stats if 'Customer Service Management' in s]
+        QCM = [s for s in stats if 'Quality Control Management' in s]
+        Maintenance = [s for s in stats if 'Maintenance' in s]
+        MRP = [s for s in stats if 'MRP' in s]
+        Rent = [s for s in stats if 'เช่าสุดคุ้ม' in s]
+        PJ = [s for s in stats if 'Project Planning' in s]
+        Con = [s for s in stats if 'Construction' in s]
+        Real = [s for s in stats if 'Real Estate' in s]
+        Rental = len(Rental)
+        CSM = len(CSM)
+        QCM = len(QCM)
+        Maintenance = len(Maintenance)
+        MRP = len(MRP)
+        Rent = len(Rent)
+        PJ = len(PJ)
+        Con = len(Con)
+        Real = len(Real)
+        stf = datetime.today().strftime('%B')
+        key_erp = {'Rental': Rental, 'CSM': CSM,
+                   'QCM': QCM, 'Maintenance': Maintenance, 'MRP': MRP, 'เช่าสุดคุ้ม': Rent,
+                   'Project Planning': PJ, 'Construction': Con, 'Real Estate': Real}
+        value_erp = Rental, CSM, QCM, Maintenance, MRP, Rent, PJ, Con, Real
+        value_erp = list(value_erp)
+        key_erp = max(key_erp)
+        value_erp = max(value_erp)
+        data = {
+            'stff': stf,
+            'user': lst,
+            'rental': Rental,
+            'csm': CSM,
+            'qcm': QCM,
+            'main': Maintenance,
+            'mrp': MRP,
+            'rent': Rent,
+            'pj': PJ,
+            'con': Con,
+            'real': Real,
+            'key_erp': key_erp,
+            'value_erp': str(value_erp)
+        }
+        return render_template('/customers_new/graph.html', data=data)
+    elif request.method == 'POST':
+        key = request.form.getlist('key')
+        print(key)
+        for k in key:
+            k = str(k)
+            db2.child('chat-flex').child(k).remove()
+        return redirect(url_for('graph'))
+    return render_template('/customers_new/graph.html')
 
-    key_erp = {'Rental': Rental, 'CSM': CSM,
-               'QCM': QCM, 'Maintenance': Maintenance, 'MRP': MRP, 'เช่าสุดคุ้ม': Rent,
-               'Project Planning': PJ, 'Construction': Con, 'Real Estate': Real}
-    value_erp = Rental, CSM, QCM, Maintenance, MRP, Rent, PJ, Con, Real
-    value_erp = list(value_erp)
-    key_erp = max(key_erp)
-    value_erp = max(value_erp)
 
-    data = {
-        'user': lst,
-        'rental': Rental,
-        'csm': CSM,
-        'qcm': QCM,
-        'main': Maintenance,
-        'mrp': MRP,
-        'rent': Rent,
-        'pj': PJ,
-        'con': Con,
-        'real': Real,
-        'key_erp': key_erp,
-        'value_erp': str(value_erp)
-    }
-    return render_template('/customers_new/stats.html', data=data)
+def group_chart(e):
+    i = db2.child('RestCustomer').child(e).get()
+    profile = i.val()['Profile']
+    cTime = i.val()['Time']
+    cDate = i.val()['Date']
+    company = i.val()['Company']
+    email = i.val()['Email']
+    pEmail = i.val()['EmailLiff']
+    message = i.val()['Message']
+    picture = i.val()['Picture']
+    product = i.val()['Product']
+    tel = i.val()['Tel']
+    name = i.val()['Name']
+    group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
+             'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
+             'Picture': picture}
+    return group
 
 
-@app.route('/download', methods=['GET'])
+def push_database(e):
+    py = db2.child('LineLiff').child(e).get()
+    day = py.val()['day']
+    month = py.val()['month']
+    year = py.val()['year']
+    hour = py.val()['hour']
+    minn = py.val()['min']
+    sec = py.val()['sec']
+    event = py.val()['event']
+    comment = event['comment']
+    company = event['company']
+    displayName = event['displayName']
+    email = event['email']
+    name = event['firstname']
+    picture = event['picture']
+    product = event['product']
+    tel = event['tel']
+    token = event['token']
+    group = {'Name': name, 'Product': product, 'Company': company,
+             'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
+             'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
+             'Picture': picture}
+    return group
+
+
+@app.route('/download')
 def download():
     if request.method == 'GET':
-        ref = db2.child('LineLiff').get()
+        ref = db2.child('RestCustomer').get()
         date_time = []
-        for i in ref.each():
-            days = i.val()['day']
-            months = i.val()['month']
-            years = i.val()['year']
-            hour = i.val()['hour']
-            min = i.val()['min']
-            sec = i.val()['sec']
-            displayName = i.val()['event']['displayName']
-            email = i.val()['event']['email']
-            firstname = i.val()['event']['firstname']
-            picture = i.val()['event']['picture']
-            product = i.val()['event']['product']
-            tel = i.val()['event']['tel']
-            token = i.val()['event']['token']
-            dbTime = {'Name': firstname, 'Product': product, 'Email': email, 'Tel': tel, 'displayName': displayName,
-                      'Email(Permisstion)': token, 'Day': days, 'Month': months, 'Year': years, 'Picture': picture}
-            date_time.append(dbTime)
+        for i in ref.each()[1:]:
+            profile = i.val()['Profile']
+            cTime = i.val()['Time']
+            cDate = i.val()['Date']
+            company = i.val()['Company']
+            email = i.val()['Email']
+            pEmail = i.val()['EmailLiff']
+            message = i.val()['Message']
+            picture = i.val()['Picture']
+            product = i.val()['Product']
+            tel = i.val()['Tel']
+            name = i.val()['Name']
+            group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
+                     'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
+                     'Picture': picture}
+            date_time.append(group)
         dbDatetime = date_time
         data = pd.DataFrame(dbDatetime)
         datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
@@ -572,25 +689,19 @@ def stats_download():
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
         return send_from_directory('static/excel', 'Stats.xlsx')
-    return redirect(url_for('stats'))
-
-
-@app.route('/remove/<string:key>', methods=['GET'])
-def remove(key):
-    db2.child('LineLiff').child(key).remove()
-    return redirect(url_for('new_chart'))
+    return redirect(url_for('graph'))
 
 
 @app.route('/r_stat/<string:key>', methods=['GET'])
 def remove_stats(key):
     db2.child('chat-flex').child(key).remove()
-    return redirect(url_for('stats'))
+    return redirect(url_for('graph'))
 
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
     image = cv2.imdecode(np.fromstring(request.files['image'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
-    img_processed = detect_object(image, None, None)
+    img_processed = detect_object(image, None, None, None)
     print(img_processed)
     print(type(img_processed))
     return jsonify(img_processed)
@@ -745,21 +856,24 @@ def event_handler1(event):
             elif data == 'maintenance':
                 x = 'Maintenance'
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
-                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                    text='ผลิตภัณฑ์นี้เหมาะสำหรับบริษัทฯ ที่ใช้ Software ERP Mango Anywhere '
+                         'เท่านั้น\nหากท่านสนใจใช้ สามารถติดต่อเจ้าหน้าที่ฝ่ายขาย\nได้ที่เบอร์ 063 565 4594 ค่ะ'))
                 Insert = get_postback(x, line_bot_api2)
                 showDB = db2.child('chat-flex').push(Insert)
                 print('show: ', showDB)
             elif data == 'rental':
                 x = 'Rental'
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
-                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                    text='ผลิตภัณฑ์นี้เหมาะสำหรับบริษัทฯ ที่ใช้ Software ERP Mango Anywhere '
+                         'เท่านั้น\nหากท่านสนใจใช้ สามารถติดต่อเจ้าหน้าที่ฝ่ายขาย\nได้ที่เบอร์ 063 565 4594 ค่ะ'))
                 Insert = get_postback(x, line_bot_api2)
                 showDB = db2.child('chat-flex').push(Insert)
                 print('show: ', showDB)
             elif data == 'mrp':
                 x = 'MRP'
                 line_bot_api2.reply_message(rtoken, TextSendMessage(
-                    text='ผลิตภัณฑ์นี้ไม่ใช่ผลิตแยก ถ้าหากทางลูกค้าสนใจกรุณาติดต่อ แอดมิน'))
+                    text='ผลิตภัณฑ์นี้เหมาะสำหรับบริษัทฯ ที่ใช้ Software ERP Mango Anywhere '
+                         'เท่านั้น\nหากท่านสนใจใช้ สามารถติดต่อเจ้าหน้าที่ฝ่ายขาย\nได้ที่เบอร์ 063 565 4594 ค่ะ'))
                 Insert = get_postback(x, line_bot_api2)
                 showDB = db2.child('chat-flex').push(Insert)
                 print('show: ', showDB)
@@ -858,7 +972,6 @@ def detect_object(img, rtoken, user_id, line_bot_api):
             name = FACE_NAME[idx]
             name = str(name)
             print(name)
-            # print(name_api)
             name_app.append(name)
             cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 255, 0), 2)
@@ -997,8 +1110,8 @@ def model_linebot_new():
     label = SVM.predict(Xtest_tf)
     prop = SVM.predict_proba(Xtest_tf)[0][label]
     p = float(prop)
-    confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     print(label)
+    confidence = (0.3565152559 / ((len(embedding) * p) ** 0.5)) ** 2
     return confidence, idx_answer, label, msg, userId
 
 
@@ -1047,9 +1160,12 @@ def model_linebot_old():
     print('value3')
     return confidence, idx_answer, label, msg, userId
 
+
 def get_link(x):
     message = 'link'
     profile = '[ตัวลิงค์จะไม่สามารถได้ชื่อคน]'
+    stf = datetime.today()
+    stff = stf.strftime('%B')
     day = datetime.today().day
     month = datetime.today().month
     second = datetime.today().second
@@ -1057,7 +1173,7 @@ def get_link(x):
     hour = datetime.today().hour
     year = datetime.today().year
     result = {'profile': profile, 'message': message, 'reply': x, 'hour': hour, 'min': minute,
-              'sec': second, 'day': day, 'month': month, 'year': year}
+              'sec': second, 'day': day, 'month': month, 'year': year, 'now': stff}
     return result
 
 
@@ -1143,6 +1259,42 @@ class WebScraping():
         for d in newother:
             txt = txt + '\n' + d.text
         return txt
+
+
+def intent_hello(model_linebot, event, label1, text1,
+                label2, text2, label3, text3, label4,
+                text4, label5, text5):
+    result = model_linebot
+    profile = line_bot_api2.get_profile(result[4])
+    displayName = profile.display_name
+    y = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
+    reply = line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}', quick_reply=QuickReply(items=[
+        QuickReplyButton(action=MessageAction(label=f'{label1}', text=f'{text1}')),
+        QuickReplyButton(action=MessageAction(label=f'{label2}', text=f'{text2}')),
+        QuickReplyButton(action=MessageAction(label=f'{label3}', text=f'{text3}')),
+        QuickReplyButton(action=MessageAction(label=f'{label4}', text=f'{text4}')),
+        QuickReplyButton(action=MessageAction(label=f'{label5}', text=f'{text5}'))
+    ])))
+    return reply
+
+
+def quick_reply(event, x, QuickReply):
+    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}', quick_reply=QuickReply))
+
+
+def quick_camera(model_linebot, event, label1, text1, label2,
+                 text2, label3, text3, label4, text4, label5, text5):
+    result = model_linebot
+    x = random.choice(result[1][int(result[2])])
+    reply = line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}', quick_reply=QuickReply(items=[
+        QuickReplyButton(action=MessageAction(label=f'{label1}', text=f'{text1}')),
+        QuickReplyButton(action=MessageAction(label=f'{label2}', text=f'{text2}')),
+        QuickReplyButton(action=MessageAction(label=f'{label3}', text=f'{text3}')),
+        QuickReplyButton(action=MessageAction(label=f'{label4}', text=f'{text4}')),
+        QuickReplyButton(action=MessageAction(label=f'{label5}', text=f'{text5}')),
+        QuickReplyButton(action=CameraAction(label='Camera'))
+    ])))
+    return reply
 
 
 def integrate_send(model_linebot, event, pack, stick, line_bot_api):
@@ -1257,20 +1409,42 @@ def handle_message_new(event):
                 x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
                 z = random.choice(x)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['ชื่อไร'] == result[3]:
+                x = ['แมงโก้ค่า', 'น้องแมงโก้']
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
             else:
                 if result[2] == [3]:
-                    sticker = ['52114110', '52114115', '52114129', '52114122']
-                    pack = 11539
-                    integrate_send(model_linebot_new(), event, pack, sticker, line_bot_api2)
+                    intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
+                                label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
+                                label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน', text5='สอบถามการใช้งาน')
+                elif result[2] == [5]:
+                    x = random.choice(result[1][int(result[2])])
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ขอข้อมูลผลิตภัณฑ์', text='ขอข้อมูลผลิตภัณฑ์')),
+                        QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
+                        QuickReplyButton(action=MessageAction(label='สอบถามปัญหาโปรแกรม', text='สอบถามปัญหาโปรแกรม')),
+                    ]))
+                elif result[2] == [6]:
+                    x = random.choice(result[1][int(result[2])])
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น'))
+                    ]))
                 elif result[2] == [12]:
                     line_bot_api2.push_message(result[4], flex_destiny())
                     line_bot_api2.push_message(result[4], destiny())
+                elif result[2] == [13]:
+                    quick_camera(model_linebot_new(), event, label1='ทำอะไรอยู่', text1='ทำอะไรอยู่',
+                                label2='ชื่ออะไรหรอ', text2='ชื่ออะไรหรอ', label3='ดูดวง', text3='ดูดวง',
+                                 label4='ข่าว ทั่วไป', text4='ข่าว ทั่วไป', label5='ข่าว บันเทิง', text5='ข่าว บันเทิง')
                 elif result[2] == [7]:
                     stick = ['51626520', '51626526']
                     pack = 11538
                     integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
                 elif result[2] == [2]:
+                    x = 'flex โปรแกรม'
                     line_bot_api2.push_message(result[4], flex_product())
+                    get_datetime(x, line_bot_api2)
                 elif result[2] == [1]:
                     x = random.choice(result[1][int(result[2])])
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -1281,13 +1455,27 @@ def handle_message_new(event):
                     line_bot_api2.push_message(result[4], image_message)
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
+                elif result[2] == [10]:
+                    x = 'ขออภัยในความไม่สะดวกนะคะ\n\nช่องทางนี้สำหรับแนะนำผลิตภัณฑ์และประชาสัมพันธ์ข่าวสาร ค่ะ\n' \
+                        'กรณีที่ลูกค้าติดปัญหาการใช้งานแนะนำให้ติดต่อฝ่าย Customer Service\n' \
+                        'โทร. 02-937-1601-9 ต่อ 603 Call Center 02-123-3900\n' \
+                        'มีทีมงานผู้เชี่ยวชาญคอยให้คำปรึกษาเฉพาะด้าน มีระบบบันทึกเสียงและเก็บบันทึกข้อมูลปัญหาของลูกค้าค่ะ\n' \
+                        'หากต้องการส่งรูปภาพ สามารถส่งได้ทาง Email : info@mangoconsultant.com\n\n' \
+                        'นอกจากนี้ยังสามารถ เข้าตรวจสอบหน้าจอการทำงาน ของลูกค้าผ่าน TeamViewer ได้อีกด้วย\nขออภัยในความไม่สะดวกนะคะ ขอบคุณค่ะ'
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ขอข้อมูลผลิตภัณฑ์', text='ขอข้อมูลผลิตภัณฑ์')),
+                        QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น'))
+                    ]))
                 elif result[2] == [11]:
                     line_bot_api2.push_message(result[4], productR7())
-                elif result[2] == [22]:
-                    stick = ['51626503', '51626509']
-                    pack = 11538
-                    integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
-                elif result[2] == [23]:
+                elif result[2] == [18]:
+                    x = random.choice(result[1][int(result[2])])
+                    quick_reply(event=event, x=x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ขอข้อมูลผลิตภัณฑ์', text='ขอข้อมูลผลิตภัณฑ์')),
+                        QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
+                        QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text="ขอใบเสนอราคา"))
+                    ]))
+                elif result[2] == [19]:
                     day = datetime.today().day
                     month = datetime.today().month
                     second = datetime.today().second
@@ -1298,12 +1486,16 @@ def handle_message_new(event):
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
-                elif result[2] == [24]:
+                elif result[2] == [20]:
                     x = WebScraping.humility()
-                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{str(x)}'))
+                    quick_reply(event=event, x=x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ข่าวทั่วไป', text='ข่าว ทั่วไป')),
+                        QuickReplyButton(action=MessageAction(label='ข่าวบันเทิง', text='ข่าว บันเทิง')),
+                        QuickReplyButton(action=MessageAction(label='ข่าวกีฬา', text='ข่าว กีฬา'))
+                    ]))
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
-                elif result[2] == [25]:
+                elif result[2] == [21]:
                     if result[3] == ['ข่าว']:
                         x = WebScraping.new_common()
                         line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -1344,6 +1536,17 @@ def handle_message_new(event):
                                 text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/entertain'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                elif result[2] == [22]:
+                    x = 'Software ERP Mango Anywhere จะทำงานอยู่บน 3 platform\n\n' \
+                        '1.Window\n2.On Web\n3.Application\n\nในส่วนของ Application จะไม่ได้ครอบคลุมการทำงานทั้งหมดโดยเราได้พัฒนา' \
+                        'Application เพื่อตอบสนองการทำงานของลูกค้าในบางส่วนสามารถดูตัวอย่าง Application ได้จากลิงค์นี้ค่ะ https://youtu.be/0e-bm5UMlL4'
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิตภัณฑ์แมงโก้'))
+                    ]))
+                elif result[2] == [23]:
+                    x = 'flex โปรโมชั่น'
+                    line_bot_api2.reply_message(event.reply_token, promotion())
+                    get_datetime(x, line_bot_api2)
                 elif ['ไรงะ'] == result[3]:
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='อะไรงะ'))
                 elif ['งะ'] == result[3]:
@@ -1395,45 +1598,23 @@ def handle_message_new(event):
                 db2.child('chatbot_transactions').push(inserted)
             elif ['น้อย'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
-            elif ['@Product'] == result[3]:
-                # x = 'เช่าสุดคุ้ม'
-                line_bot_api2.reply_message(event.reply_token, flex_erp())
-                # inserted = get_datetime(x, line_bot_api2)
-                # showDB = db2.child('chat-flex').push(inserted)
-                # print('show : ', showDB)
+            elif ['ผลิตภัณฑ์แมงโก้'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, productR7())
+            elif ['@Promotion'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, promotion())
             elif ['@ERPSoftware'] == result[3]:
-                # x = 'ERP Construction and Real Estate'
                 line_bot_api2.reply_message(event.reply_token, flex_product())
-                # inserted = get_datetime(x, line_bot_api2)
-                # showDB = db2.child('chat-flex').push(inserted)
-                # print('show : ', showDB)
-            elif ['ขอqrcode'] == result[3]:
-                image_message = ImageSendMessage(
-                    original_content_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png',
-                    preview_image_url='https://sv1.picz.in.th/images/2020/10/09/OeiUj9.png'
-                )
-                line_bot_api2.reply_message(event.reply_token, image_message)
             elif ['@NewFeature'] == result[3]:
-                # x = 'NewFeature'
                 line_bot_api2.reply_message(event.reply_token, flex_newfeature())
-                # inserted = get_datetime(x, line_bot_api2)
-                # showDB = db2.child('chat-flex').push(inserted)
-                # print('show : ', showDB)
             elif ['@Optional'] == result[3]:
-                # x = 'Optional'
                 line_bot_api2.reply_message(event.reply_token, flex_optional())
-                # inserted = get_datetime(x, line_bot_api2)
-                # showDB = db2.child('chat-flex').push(inserted)
-                # print('show : ', showDB)
             elif ['@Business'] == result[3]:
-                # x = 'Business'
                 line_bot_api2.reply_message(event.reply_token, flex_bus())
-                # inserted = get_datetime(x, line_bot_api2)
-                # showDB = db2.child('chat-flex').push(inserted)
-                # print('show : ', showDB)
             elif ['วาดรูป'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
+            elif ['promotion'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, promotion())
             elif ['profile'] == result[3]:
                 profile = line_bot_api2.get_profile(result[4])
                 displayName = profile.display_name
@@ -1445,10 +1626,24 @@ def handle_message_new(event):
             else:
                 profile = line_bot_api2.get_profile(result[4])
                 displayName = profile.display_name
-                picture_url = profile.picture_url
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='น้องแมงโก้ไม่แน่ใจ คุณ ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
-                                                                                    'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ'))
-                line_bot_api2.push_message(result[4], flex_profile(picture_url, displayName))
+                text_message = TextSendMessage(text=f'น้องแมงโก้ไม่แน่ใจ คุณ {displayName} ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
+                                                                                    'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ',
+                                               quick_reply=QuickReply(items=[
+                                                   QuickReplyButton(action=MessageAction(label="ขอข้อมูลผลิตภัณฑ์", text="ขอข้อมูลผลิตภัณฑ์")),
+                                                   QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคาทำอย่างไร')),
+                                                   QuickReplyButton(action=MessageAction(label='ลูกค้าที่ใช้งานโปรแกรม', text='ลูกค้าที่ใช้งานโปรแกรม')),
+                                                   QuickReplyButton(action=MessageAction(label='ราคาโปรแกรม', text='ราคาโปรแกรม')),
+                                                   QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
+                                                   QuickReplyButton(action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
+                                                   QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
+                                                   # QuickReplyButton(action=DatetimePickerAction(label='Datetime Picker', data='storeId=12345',
+                                                   #                                              mode='datetime', initial='2018-09-11T00:00',
+                                                   #                                              max='2018-12-31T23:59', min='2018-01-01T00:00')),
+                                                   # QuickReplyButton(action=CameraAction('Camera')),
+                                                   # QuickReplyButton(action=CameraRollAction('Gallery')),
+                                                   # QuickReplyButton(action=LocationAction('Location'))
+                                               ]))
+                line_bot_api2.push_message(result[4], text_message)
     except LineBotApiError:
         abort(400)
 

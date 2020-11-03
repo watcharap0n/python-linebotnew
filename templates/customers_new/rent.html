@@ -1,11 +1,7 @@
-{% extends "bootstrap/base.html" %}
+{% extends "sbadmin/loginLayout.html" %}
 
-{%- block metas %}
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-{%- endblock metas %}
+{% block content %}
 
-{% block scripts %}
-{{super()}}
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 <script>
 
@@ -27,78 +23,108 @@
 <script>
     function runApp() {
         $('#btn').on('click', function () {
-            liff.getProfile().then(profile => {
-                $.ajax({
-                    type: 'POST',
-                    url: '/letme',
-                    data: {
-                        'firstname': $('#first').val(),
-                        'email': $('#email').val(),
-                        'company': $('#compa').val(),
-                        'tel': $('#tel').val(),
-                        'product': $('#pro').val(),
-                        'userId': profile.userId,
-                        'token': liff.getDecodedIDToken().email,
-                        'displayName': profile.displayName,
-                        'picture': profile.pictureUrl
-                    },
-                    success: function (res, status) {
-                        liff.getProfile().then(function (profile) {
-                            console.log("res eang: ", res)
-                            console.log("status: ", status)
-                            liff.closeWindow();
-                        })
-                    },
+            document.getElementById("comment").defaultValue = "None"
+            var firstname = $('#first').val()
+            var email = $('#email').val()
+            var company = $('#compa').val()
+            var tel = $('#tel').val()
+            if (firstname === '' || company === '' || email === '' || tel === '') {
+                $("#message").html("some field is empty!!")
+            } else {
+                liff.getProfile().then(profile => {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/letme',
+                        data: {
+                            'firstname': $('#first').val(),
+                            'email': $('#email').val(),
+                            'company': $('#compa').val(),
+                            'tel': $('#tel').val(),
+                            'product': 'เช่าสุดคุ้ม',
+                            'comment': $('#comment').val(),
+                            'userId': profile.userId,
+                            'token': liff.getDecodedIDToken().email,
+                            'displayName': profile.displayName,
+                            'picture': profile.pictureUrl
+                        },
+                        success: function (res, status) {
+                            liff.getProfile().then(function (profile) {
+                                console.log("res eang: ", res)
+                                console.log("status: ", status)
+                                liff.closeWindow();
+                            })
+                        },
 
+                    });
                 });
-            });
+            }
         });
     }
+
+    // $('#btn').on('click', function () {
+    //     liff.getProfile().then(profile => {
+    //         $.ajax({
+    //             type: 'POST',
+    //             url: '/letme',
+    //             data: {
+    //                 'firstname': $('#first').val(),
+    //                 'email': $('#email').val(),
+    //                 'company': $('#compa').val(),
+    //                 'tel': $('#tel').val(),
+    //                 'product': $('#pro').val(),
+    //                 'userId': profile.userId,
+    //                 'token': liff.getDecodedIDToken().email,
+    //                 'displayName': profile.displayName,
+    //                 'picture': profile.pictureUrl
+    //             },
+    //             success: function (res, status) {
+    //                 liff.getProfile().then(function (profile) {
+    //                     console.log("res eang: ", res)
+    //                     console.log("status: ", status)
+    //                     liff.closeWindow();
+    //                 })
+    //             },
+    //
+    //         });
+    //     });
+    // });
+
 </script>
-{% endblock %}
 
-{% block title %}From Input{% endblock %}
-
-{% block content %}
 <br>
 
 <div class="container">
-    <form method="POST">
+    <center><img src="/static/images/mango-profile.jpg" class="rounded-circle" alt="Cinque Terre" height="140"></center>
+    <form method="POST" id="perform" onsubmit="return validation()">
         <div class="form-group">
-            <label for="first">Name:</label>
-            <input type="text" class="form-control" id="first" placeholder="Enter Firstname"
+            <label for="first">ชื่อผู้ติดต่อ :</label>
+            <input type="text" class="form-control" id="first" placeholder="Name"
                    name="firstname" value="" required>
         </div>
         <div class="form-group">
-            <label for="compa">Company:</label>
-            <input type="text" class="form-control" id="compa" placeholder="Enter Company"
+            <label for="compa">ชื่อบริษัท :</label>
+            <input type="text" class="form-control" id="compa" placeholder="Company"
                    name="company" value="" required>
         </div>
-          <div class="form-group">
-            <label for="pro">Product:</label><br>
-            <select name="product" id="pro">
-                <option value="">Please, select</option>
-                {% for p in lst %}
-                {% for i in p.product %}
-                <option value="{{i}}" {% if i == i %} selected {% endif %}>
-                    {{i}}
-                </option>
-                {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
         <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" placeholder="Enter email"
+            <label for="email">อีเมล :</label>
+            <input type="email" class="form-control" id="email" placeholder="Email"
                    name="email" value="" required>
         </div>
         <div class="form-group">
-            <label for="tel">Tel:</label>
-            <input type="tel" class="form-control" id="tel" placeholder="Enter Tel"
+            <label for="tel">เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ :</label>
+            <input type="tel" class="form-control" id="tel" placeholder="Tel"
                    name="tel" value="" required>
         </div>
-        <button id="btn" type="submit" class="btn btn-primary btn-block">Submit</button>
+        <div class="form-group">
+            <label for="comment">รายละเอียดเพิ่มเติม :</label>
+            <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
+        </div>
+
+        <button id="btn" type="button" class="btn btn-success btn-block">Submit</button>
     </form>
 </div>
+<br>
+<br>
 {% endblock %}
 
