@@ -328,7 +328,8 @@ def letme():
         minute = datetime.today().minute
         hour = datetime.today().hour
         year = datetime.today().year
-        p = {'tag': [''], 'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
+        p = {'tag': [''], 'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second,
+             'event': event}
         print(event)
         with open('lineliff.json', 'w') as lineliff:
             json.dump(event, lineliff)
@@ -347,10 +348,12 @@ def letme():
             flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
             # x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
             line_bot_api2.push_message(userId, flex_profile)
-            line_bot_api2.push_message(userId, TextSendMessage(text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
+            line_bot_api2.push_message(userId, TextSendMessage(
+                text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
             db2.child('LineLiff').push(p)
         else:
-           line_bot_api2.push_message(userId, TextSendMessage(text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
+            line_bot_api2.push_message(userId, TextSendMessage(
+                text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
         return make_response(event)
 
 
@@ -451,15 +454,14 @@ def chart():
     return render_template('/sbadmin/charts.html', data=data)
 
 
-
 @app.route('/new_chart', methods=['GET', 'POST'])
 def new_chart():
-    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
-           'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
-           'RA010', 'RB010']
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
+        tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+               'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+               'RA010', 'RB010']
         rest = db2.child('RestCustomer').get()
         lst = []
         count = 1
@@ -588,9 +590,280 @@ def new_chart():
                     data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
                     print(data)
                 return redirect(url_for('new_chart'))
-                # return jsonify({'tagjson': tagIndex})
-
         return redirect(url_for('new_chart'))
+
+
+@app.route('/tagliff/<string:lifftag>', methods=['GET', 'POST'])
+def lifftag(lifftag):
+    if request.method == 'GET':
+        ref = db2.child('LineLiff').get()
+        if lifftag == 'RB010':
+            data = req_path('RB010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CC010':
+            data = req_path('CC010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CG010':
+            data = req_path('CG010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CI010':
+            data = req_path('CI010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CJ010':
+            data = req_path('CJ010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CM010':
+            data = req_path('CM010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CF010':
+            data = req_path('CF010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CP010':
+            data = req_path('CP010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CE010':
+            data = req_path('CE010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CH010':
+            data = req_path('CH010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CK010':
+            data = req_path('CK010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CN010':
+            data = req_path('CN010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RC010':
+            data = req_path('RC010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RA010':
+            data = req_path('RA010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RB010':
+            data = req_path('RB010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CD010':
+            data = req_path('CD010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+    elif request.method == 'POST':
+        key = request.form.getlist('key')
+        excel = request.form.getlist('excel')
+        insert = request.form.getlist('insert')
+        tagIndex = request.form.getlist('tag')
+        jsontag = request.get_json()
+        button = request.form['delete_button']
+        print(jsontag)
+        print(tagIndex, 'tag')
+        print(insert, 'insert')
+        print(key, 'key')
+        print(excel, 'excel')
+        if button == 'Delete_button':
+            print('Keep Delete')
+            for k in key:
+                k = str(k)
+                db2.child('RestCustomer').child(k).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Excel_button':
+            print('Keep Excel')
+            diplayName = session['user_id']['displayName']
+            _date = datetimeNow()
+            lst = []
+            for k in key:
+                list_chart = group_chart(k, diplayName, _date[0], _date[1])
+                lst.append(list_chart)
+            data = pd.DataFrame(lst)
+            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'Insert_button':
+            print('Rest Insert')
+            _date = datetimeNow()
+            diplayName = session['user_id']['displayName']
+            if not tagIndex:
+                print('ja')
+                for i in insert:
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+                return redirect(url_for('new_chart'))
+            else:
+                print('and')
+                for i in insert:
+                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+        elif button == 'Excel_rest':
+            print('Rest Excel')
+            est = []
+            _date = datetimeNow()
+            eUser = session['user_id']['email']
+            diplayName = session['user_id']['displayName']
+            for e in insert:
+                list_chart = push_database(e, diplayName, _date[0], _date[1])
+                est.append(list_chart)
+            data = pd.DataFrame(est)
+            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'Delete_rest':
+            print('Rest Delete')
+            for i in insert:
+                db2.child('LineLiff').child(i).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Tag':
+            print('tagIndex')
+            print(jsontag)
+            for i in insert:
+                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        elif button == 'RestTag':
+            print('resttag')
+            for k in key:
+                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        return redirect(url_for('new_chart'))
+
+
+@app.route('/tagrest/<string:lifftag>', methods=['GET', 'POST'])
+def tagrest(lifftag):
+    if request.method == 'GET':
+        ref = db2.child('RestCustomer').get()
+        if lifftag == 'RB010':
+            data = req_path('RB010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CC010':
+            data = req_path('CC010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CG010':
+            data = req_path('CG010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CI010':
+            data = req_path('CI010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CJ010':
+            data = req_path('CJ010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CM010':
+            data = req_path('CM010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CF010':
+            data = req_path('CF010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CP010':
+            data = req_path('CP010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CE010':
+            data = req_path('CE010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CH010':
+            data = req_path('CH010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CK010':
+            data = req_path('CK010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CN010':
+            data = req_path('CN010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RC010':
+            data = req_path('RC010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RA010':
+            data = req_path('RA010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RB010':
+            data = req_path('RB010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CD010':
+            data = req_path('CD010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+    elif request.method == 'POST':
+        key = request.form.getlist('key')
+        excel = request.form.getlist('excel')
+        insert = request.form.getlist('insert')
+        tagIndex = request.form.getlist('tag')
+        jsontag = request.get_json()
+        button = request.form['delete_button']
+        print(jsontag)
+        print(tagIndex, 'tag')
+        print(insert, 'insert')
+        print(key, 'key')
+        print(excel, 'excel')
+        if button == 'Delete_button':
+            print('Keep Delete')
+            for k in key:
+                k = str(k)
+                db2.child('RestCustomer').child(k).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Excel_button':
+            print('Keep Excel')
+            diplayName = session['user_id']['displayName']
+            _date = datetimeNow()
+            lst = []
+            for k in key:
+                list_chart = group_chart(k, diplayName, _date[0], _date[1])
+                lst.append(list_chart)
+            data = pd.DataFrame(lst)
+            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'Insert_button':
+            print('Rest Insert')
+            _date = datetimeNow()
+            diplayName = session['user_id']['displayName']
+            if not tagIndex:
+                print('ja')
+                for i in insert:
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+                return redirect(url_for('new_chart'))
+            else:
+                print('and')
+                for i in insert:
+                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+        elif button == 'Excel_rest':
+            print('Rest Excel')
+            est = []
+            _date = datetimeNow()
+            eUser = session['user_id']['email']
+            diplayName = session['user_id']['displayName']
+            for e in insert:
+                list_chart = push_database(e, diplayName, _date[0], _date[1])
+                est.append(list_chart)
+            data = pd.DataFrame(est)
+            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'Delete_rest':
+            print('Rest Delete')
+            for i in insert:
+                db2.child('LineLiff').child(i).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Tag':
+            print('tagIndex')
+            print(jsontag)
+            for i in insert:
+                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        elif button == 'RestTag':
+            print('resttag')
+            for k in key:
+                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        return redirect(url_for('new_chart'))
+
 
 
 @app.route('/graph', methods=['GET', 'POST'])
@@ -693,6 +966,26 @@ def group_chart(e, username, date, time):
              'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
              'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag}
     return group
+
+
+def req_path(tag, ref, upper):
+    tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+           'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+           'RA010', 'RB010']
+    lst = []
+    eCount = 1
+    for i in ref.each()[1:]:
+        if tag in i.val()[upper]:
+            k = i.key()
+            user = dict(i.val())
+            user.update({'index': str(eCount), 'key': k})
+            lst.append(user)
+            eCount = eCount + 1
+    data = {
+        'lst': lst,
+        'tag': tags
+    }
+    return data
 
 
 def push_database(e, username, date, time):
@@ -1301,7 +1594,8 @@ def get_datetime(x, line_bot_api):
     img = profile.picture_url
     profile = profile.display_name
     profile = str(profile)
-    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'img': img, 'hour': hour, 'min': minute,
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'img': img, 'hour': hour,
+              'min': minute,
               'sec': second, 'day': day, 'month': month, 'year': year}
     return result
 
@@ -1320,6 +1614,7 @@ class WebScraping():
                                                                 HighLow.text, valueTemp.text,
                                                                 humility.text)
         return x
+
     @staticmethod
     def new_common():
         r = requests.get("https://www.thairath.co.th/news/local")
@@ -1330,6 +1625,7 @@ class WebScraping():
         str_txt = ', \n '
         str_txt = str_txt.join(txt)
         return str_txt
+
     @staticmethod
     def new_sport():
         r = requests.get("https://www.thairath.co.th/sport")
@@ -1339,6 +1635,7 @@ class WebScraping():
         for i in score:
             t = t + '\n' + i.text
         return t
+
     @staticmethod
     def new_entertain():
         r = requests.get("https://www.thairath.co.th/entertain")
@@ -1351,8 +1648,8 @@ class WebScraping():
 
 
 def intent_hello(model_linebot, event, label1, text1,
-                label2, text2, label3, text3, label4,
-                text4, label5, text5):
+                 label2, text2, label3, text3, label4,
+                 text4, label5, text5):
     result = model_linebot
     profile = line_bot_api2.get_profile(result[4])
     displayName = profile.display_name
@@ -1479,10 +1776,11 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             elif ['ขอ Demo'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='สวัสดีค่ะ แอดมินขออภัยในความไม่สะดวกนะคะ '
-                                                                                    'ทางบริษัทจะไม่มีตัว Demo ให้ทดลองใช้ แต่จะเป็นการนัดเข้าไป '
-                                                                                    'Demo เพื่อพรีเซนต์รายละเอียดโปรแกรมค่ะ หากต้องการให้ทีมงานเข้าไป '
-                                                                                    'Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกา นะคะขอบคุณค่ะ'))
+                line_bot_api2.reply_message(event.reply_token,
+                                            TextSendMessage(text='สวัสดีค่ะ แอดมินขออภัยในความไม่สะดวกนะคะ '
+                                                                 'ทางบริษัทจะไม่มีตัว Demo ให้ทดลองใช้ แต่จะเป็นการนัดเข้าไป '
+                                                                 'Demo เพื่อพรีเซนต์รายละเอียดโปรแกรมค่ะ หากต้องการให้ทีมงานเข้าไป '
+                                                                 'Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกา นะคะขอบคุณค่ะ'))
             elif ['สวัสดีจ่ะ'] == result[3]:
                 intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
                              label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
@@ -1529,8 +1827,9 @@ def handle_message_new(event):
             else:
                 if result[2] == [3]:
                     intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
-                                label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
-                                label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน', text5='สอบถามการใช้งาน')
+                                 label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
+                                 label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน',
+                                 text5='สอบถามการใช้งาน')
                 elif result[2] == [5]:
                     x = random.choice(result[1][int(result[2])])
                     quick_reply(event, x, QuickReply=QuickReply(items=[
@@ -1555,7 +1854,7 @@ def handle_message_new(event):
                     db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [13]:
                     quick_camera(model_linebot_new(), event, label1='ทำอะไรอยู่', text1='ทำอะไรอยู่',
-                                label2='ชื่ออะไรหรอ', text2='ชื่ออะไรหรอ', label3='ดูดวง', text3='ดูดวง',
+                                 label2='ชื่ออะไรหรอ', text2='ชื่ออะไรหรอ', label3='ดูดวง', text3='ดูดวง',
                                  label4='ข่าว ทั่วไป', text4='ข่าว ทั่วไป', label5='ข่าว บันเทิง', text5='ข่าว บันเทิง')
                 elif result[2] == [7]:
                     stick = ['51626520', '51626526']
@@ -1643,8 +1942,10 @@ def handle_message_new(event):
                         if ans == ' ทั่วไป':
                             x = WebScraping.new_common()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                            line_bot_api2.push_message(result[4], TextSendMessage(text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
-                            line_bot_api2.push_message(result[4], TextSendMessage(text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
                             inserted = get_datetime(x, line_bot_api2)
                             db2.child('chatbot_transactions').push(inserted)
                         elif ans == ' กีฬา':
@@ -1776,17 +2077,20 @@ def handle_message_new(event):
             else:
                 profile = line_bot_api2.get_profile(result[4])
                 displayName = profile.display_name
-                text_message = TextSendMessage(text=f'น้องแมงโก้ไม่แน่ใจ คุณ {displayName} ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
-                                                                                    'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ',
-                                               quick_reply=QuickReply(items=[
-                                                   QuickReplyButton(action=MessageAction(label="ขอข้อมูลผลิตภัณฑ์", text="ขอข้อมูลผลิตภัณฑ์")),
-                                                   QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคาทำอย่างไร')),
-                                                   QuickReplyButton(action=MessageAction(label='ลูกค้าที่ใช้งานโปรแกรม', text='ลูกค้าที่ใช้งานโปรแกรม')),
-                                                   QuickReplyButton(action=MessageAction(label='ราคาโปรแกรม', text='ราคาโปรแกรม')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
-                                               ]))
+                text_message = TextSendMessage(
+                    text=f'น้องแมงโก้ไม่แน่ใจ คุณ {displayName} ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
+                         'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ',
+                    quick_reply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label="ขอข้อมูลผลิตภัณฑ์", text="ขอข้อมูลผลิตภัณฑ์")),
+                        QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคาทำอย่างไร')),
+                        QuickReplyButton(
+                            action=MessageAction(label='ลูกค้าที่ใช้งานโปรแกรม', text='ลูกค้าที่ใช้งานโปรแกรม')),
+                        QuickReplyButton(action=MessageAction(label='ราคาโปรแกรม', text='ราคาโปรแกรม')),
+                        QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
+                        QuickReplyButton(
+                            action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
+                        QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
+                    ]))
                 line_bot_api2.push_message(result[4], text_message)
                 x = 'ไม่เข้าใจ'
                 inserted = get_datetime(x, line_bot_api2)

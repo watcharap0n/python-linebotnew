@@ -1,0 +1,271 @@
+{% extends "customers_new/layout2.html" %}
+{% block content %}
+
+
+<!-- Topbar -->
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+</nav>
+<!-- End of Topbar -->
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Inserted</h1>
+
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-success active" data-toggle="pill" href="#home">
+                                <i class="fa fa-users"></i>
+                                ข้อมูลลูกค้า
+                                <span class="badge badge-light">{{data.msg}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
+                    <div class="align-content-end">
+                        <a href="/download" class="btn btn-success">
+                            <i class="fa fa-file-excel-o"></i>
+                            Export Excel
+                        </a>
+
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            Remove All
+                        </button>
+                        <div class="modal" id="myModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Confirm Delete</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Delete all transaction... <br>
+                                        Are you sure ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a {% for d in data.lst %}
+                                           href="/delete/{{d.key}}"
+                                           {% endfor %} class="btn btn-danger btn">Remove All</a>
+                                        <button type="button" class="btn btn-danger btn" data-dismiss="modal">Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form class="kane" action="" method="POST">
+            <div class="card-body">
+                <div class="tab-content">
+                    <div id="home" class="tab-pane active">
+                        <div class="footer">
+                            <div class="dropdown" style="margin-bottom: 15px">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                        data-toggle="dropdown">
+                                    Tag Sort
+                                </button>
+                                <div class="dropdown-menu">
+                                    <li class="dropdown-header">Select Tag</li>
+                                    <li class="divider"></li>
+                                    {% for w in data.tag %}
+                                    <a class="dropdown-item">
+                                        <input class="tag_sort"
+                                               type="checkbox"
+                                               name="tag"
+                                               id="{{w}}"
+                                               value="{{w}}"
+                                               {% if k in data %} checked {% endif %}>
+                                        <label for="{{w}}" class="getvalue" id="labeltag">
+                                            {{w}}
+                                        </label>
+                                        {% endfor %}
+                                        <hr>
+                                        <button type="submit" name="delete_button" value="RestTag"
+                                                class="btn btn-secondary btn-sm" id="tag_rest">
+                                            <i class="fas fa-tags"></i>
+                                            Apply
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="display" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="select1" id="select-all">
+                                    </th>
+                                    <th>Index</th>
+                                      <th>Tag</th>
+                                    <th>Name</th>
+                                    <th>Product</th>
+                                    <th>Other</th>
+                                    <th>Company</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th>Email(permission)</th>
+                                    <th>Message</th>
+                                    <th>Profile</th>
+                                    <th>Date/time</th>
+                                    <th>UserImport</th>
+                                    <th>ImportDate/Time</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for e in data.lst %}
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="checkkey"
+                                                   type="checkbox"
+                                                   name="key"
+                                                   id="{{e.key}}"
+                                                   value="{{e.key}}"
+                                                   {% if e.key in data.lst.key %} checked {% endif %}>
+                                        </div>
+                                    </td>
+                                    <td>{{e.index}}</td>
+                                    <td>
+                                        {% for j in e.Tag %}
+                                        {% if j %}
+                                        <a href="{{j}}"<span class="badge badge-success">
+                                            <i class="fas fa-tags"></i>
+                                            {{j}}
+                                        </span></a>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{e.Name}}</td>
+                                    <td>{{e.Product}}</td>
+                                    <td>{{e.Other}}</td>
+                                    <td>{{e.Company}}</td>
+                                    <td>{{e.Tel}}</td>
+                                    <td>{{e.Email}}</td>
+                                    <td>{{e.EmailLiff}}</td>
+                                    <td>{{e.Message}}</td>
+                                    <td>{{e.Profile}}</td>
+                                    <td>{{e.Date}} {{e.Time}}</td>
+                                    <td>{{e.Username}}</td>
+                                    <td>{{e.DateInsert}} {{e.TimeInsert}}</td>
+
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <div class="footer">
+                            <div class="row" style="margin-left: 15px">
+                                <div class="" style="margin-right: 12px">
+                                    <button type="submit" name="delete_button" value="Excel_button"
+                                            class="btn btn-warning btn-sm" data-toggle="Temple">
+                                        <i class="fa fa-check-square-o"></i>
+                                        Excel Index
+                                    </button>
+                                </div>
+
+                                <div class="" style="margin-right: 12px">
+                                    <button type="submit" name="delete_button" value="Delete_button"
+                                            class="btn btn-danger btn-sm">
+                                        <i class="fa fa-check-square-o"></i>
+                                        Delete Index
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <br><br>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Copyright &copy; Your Website 2020</span>
+        </div>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            // "order": [[0, "desc"]]
+        });
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#restTable').DataTable({
+            // "order": [[0, "desc"]]
+        });
+    });
+
+    $(document).ready(function () {
+
+    })
+
+
+
+</script>
+
+
+<script>
+    document.getElementById('select-all').onclick = function () {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
+</script>
+
+
+<script>
+    document.getElementById('select-rest').onclick = function () {
+        var checkboxes = document.getElementsByName('insert');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
+</script>
+
+
+
+
+
+
+
+{% endblock %}

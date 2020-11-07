@@ -1,0 +1,113 @@
+
+
+                                        {% if t == 'CB010' %}
+                                        { % set CB010 = t % }
+                                        <span id="{{CB010}}" class="badge badge-secondary Filter_kane CB010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CB010}}
+                                        </span>
+
+                                        {% elif t == 'CC010' %}
+                                        {% set CC010 = t %}
+                                         <span id="{{CC010}}" class="badge badge-secondary Filter_kane CC010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CC010}}
+                                        </span>
+
+                                        {% elif t == 'CG010' %}
+                                        {% set CG010 = t %}
+                                         <span id="{{CG010}}" class="badge badge-secondary Filter_kane CG010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CG010}}
+                                        </span>
+
+                                        {% elif t == 'CI010' %}
+                                        {% set CI010 = t %}
+                                         <span id="{{CI010}}" class="badge badge-secondary Filter_kane CI010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CI010}}
+                                        </span>
+
+                                        {% elif t == 'CJ010' %}
+                                        {% set CJ010 = t %}
+                                         <span id="{{CJ010}}" class="badge badge-secondary Filter_kane CJ010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CJ010}}
+                                        </span>
+
+                                        {% elif t == 'CM010' %}
+                                        {% set CM010 = t %}
+                                         <span id="{{CM010}}" class="badge badge-secondary Filter_kane CM010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CM010}}
+                                        </span>
+
+                                        {% elif t == 'CF010' %}
+                                        {% set CF010 = t %}
+                                         <span id="{{CF010}}" class="badge badge-secondary Filter_kane CF010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CF010}}
+                                        </span>
+
+                                        {% elif t == 'CP010' %}
+                                        {% set CP010 = t %}
+                                         <span id="{{CP010}}" class="badge badge-secondary Filter_kane CP010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CP010}}
+                                        </span>
+
+                                        {% elif t == 'CE010' %}
+                                        {% set CE010 = t %}
+                                         <span id="{{CE010}}" class="badge badge-secondary Filter_kane CE010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CE010}}
+                                        </span>
+
+                                        {% elif t == 'CH010' %}
+                                        {% set CH010 = t %}
+                                         <span id="{{CH010}}" class="badge badge-secondary Filter_kane CH010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CH010}}
+                                        </span>
+
+                                        {% elif t == 'CK010' %}
+                                        {% set CK010 = t %}
+                                         <span id="{{CK010}}" class="badge badge-secondary Filter_kane CK010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CK010}}
+                                        </span>
+
+                                        {% elif t == 'CN010' %}
+                                        {% set CN010 = t %}
+                                         <span id="{{CN010}}" class="badge badge-secondary Filter_kane CN010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CN010}}
+                                        </span>
+
+                                        {% elif t == 'CD010' %}
+                                        {% set CD010 = t %}
+                                         <span id="{{CD010}}" class="badge badge-secondary Filter_kane CD010">
+                                            <i class="fas fa-tags"></i>
+                                            {{CD010}}
+                                        </span>
+
+                                        {% elif t == 'RC010' %}
+                                        {% set RC010 = t %}
+                                         <span id="{{RC010}}" class="badge badge-secondary Filter_kane RC010">
+                                            <i class="fas fa-tags"></i>
+                                            {{RC010}}
+                                        </span>
+
+                                        {% elif t == 'RA010' %}
+                                        {% set RA010 = t %}
+                                         <span id="{{RA010}}" class="badge badge-secondary Filter_kane RA010">
+                                            <i class="fas fa-tags"></i>
+                                            {{RA010}}
+                                        </span>
+
+                                        {% elif t == 'RB010' %}
+                                        {% set RB010 = t %}
+                                         <span id="{{RB010}}" class="badge badge-secondary Filter_kane RB010">
+                                            <i class="fas fa-tags"></i>
+                                            {{RB010}}
+                                        </span>

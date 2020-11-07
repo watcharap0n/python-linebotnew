@@ -158,21 +158,21 @@
                                 <div class="dropdown-menu">
                                     <li class="dropdown-header">Select Tag</li>
                                     <li class="divider"></li>
-                                    {% for k in data.tag %}
+                                    {% for w in data.tag %}
                                     <a class="dropdown-item">
-                                        <input class="kaneja"
+                                        <input class="tag_sort"
                                                type="checkbox"
                                                name="tag"
-                                               id="{{k}}"
-                                               value="{{k}}"
+                                               id="{{w}}"
+                                               value="{{w}}"
                                                {% if k in data %} checked {% endif %}>
-                                        <label for="{{k}}" class="getvalue" id="labeltag">
-                                            {{k}}
+                                        <label for="{{w}}" class="getvalue" id="labeltag">
+                                            {{w}}
                                         </label>
                                         {% endfor %}
                                         <hr>
                                         <button type="submit" name="delete_button" value="RestTag"
-                                                class="btn btn-secondary btn-sm" id="tageang">
+                                                class="btn btn-secondary btn-sm" id="tag_rest">
                                             <i class="fas fa-tags"></i>
                                             Apply
                                         </button>
@@ -188,6 +188,7 @@
                                         <input type="checkbox" name="select1" id="select-all">
                                     </th>
                                     <th>Index</th>
+                                    <th>Tag</th>
                                     <th>Name</th>
                                     <th>Product</th>
                                     <th>Other</th>
@@ -200,7 +201,7 @@
                                     <th>Date/time</th>
                                     <th>UserImport</th>
                                     <th>ImportDate/Time</th>
-                                    <th>Tag</th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -217,9 +218,19 @@
                                         </div>
                                     </td>
                                     <td>{{e.index}}</td>
+                                    <td>
+                                        {% for j in e.Tag %}
+                                        {% if j %}
+                                        <a href="tagrest/{{j}}"><span class="badge badge-success">
+                                            <i class="fas fa-tags"></i>
+                                            {{j}}
+                                        </span></a>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
                                     <td>{{e.Name}}</td>
                                     <td>{{e.Product}}</td>
-                                    <td>{{e.other}}</td>
+                                    <td>{{e.Other}}</td>
                                     <td>{{e.Company}}</td>
                                     <td>{{e.Tel}}</td>
                                     <td>{{e.Email}}</td>
@@ -229,16 +240,7 @@
                                     <td>{{e.Date}} {{e.Time}}</td>
                                     <td>{{e.Username}}</td>
                                     <td>{{e.DateInsert}} {{e.TimeInsert}}</td>
-                                    <td>
-                                        {% for j in e.Tag %}
-                                        {% if j %}
-                                        <span class="badge badge-success">
-                                            <i class="fas fa-tags"></i>
-                                            {{j}}
-                                        </span>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </td>
+
                                 </tr>
                                 {% endfor %}
                                 </tbody>
@@ -283,7 +285,7 @@
                                                id="{{k}}"
                                                value="{{k}}"
                                                {% if k in data %} checked {% endif %}>
-                                        <label for="{{k}}" class="getvalue" id="labeltag">
+                                        <label for="{{k}}" class="getvalue">
                                             {{k}}
                                         </label>
                                         {% endfor %}
@@ -305,6 +307,7 @@
                                         <input type="checkbox" name="select2" id="select-rest">
                                     </th>
                                     <th>Index</th>
+                                    <th>Tag</th>
                                     <th>Name</th>
                                     <th>Product</th>
                                     <th>Other</th>
@@ -315,7 +318,7 @@
                                     <th>Message</th>
                                     <th>Profile</th>
                                     <th>Date/time</th>
-                                    <th>Tag</th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -334,6 +337,19 @@
                                     <td>
                                         {{r.index}}
                                     </td>
+                                    <td>
+                                        {% for t in r.tag %}
+
+                                        {% if t %}
+                                        <a href="tagliff/{{t}}"><span id="{{t}}" class="badge badge-secondary Filter_kane CC010">
+                                            <i class="fas fa-tags"></i>
+                                            {{t}}
+                                        </span></a>
+                                        {% endif %}
+
+
+                                        {% endfor %}
+                                    </td>
                                     <td>{{r.event.firstname}}</td>
                                     <td>{{r.event.product}}</td>
                                     <td>{{r.event.other}}</td>
@@ -344,16 +360,7 @@
                                     <td>{{r.event.comment}}</td>
                                     <td>{{r.event.displayName}}</td>
                                     <td>{{r.day}}/{{r.month}}/{{r.year}} {{r.hour}}:{{r.min}}:{{r.sec}}</td>
-                                    <td>
-                                        {% for t in r.tag %}
-                                        {% if t %}
-                                        <span id="{{t}}" class="badge badge-secondary kanejun">
-                                            <i class="fas fa-tags"></i>
-                                            {{t}}
-                                        </span>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </td>
+
                                 </tr>
                                 {% endfor %}
                                 </tbody>
@@ -397,6 +404,89 @@
 </div>
 
 
+
+<div>
+
+
+<!--<div id="myBtnContainer">-->
+<!--  <button class="btn btn-outline-dark active" onclick="filterSelection('all')"> Show all</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CB010')"> CB010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CC010')"> CC010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CG010')"> CG010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CI010')"> CI010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CJ010')"> CJ010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CM010')"> CM010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CF010')"> CF010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CP010')"> CP010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CE010')"> CE010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CH010')"> CH010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CK010')"> CK010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CN010')"> CN010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('CD010')"> CD010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('RC010')"> RC010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('RA010')"> RA010</button>-->
+<!--  <button class="btn btn-outline-dark" onclick="filterSelection('RB010')"> RB010</button>-->
+
+<!--</div>-->
+
+
+<script>
+// filterSelection("all")
+// function filterSelection(c) {
+//   let x, i;
+//   x = document.getElementsByClassName("Filter_kane");
+//     console.log(x, 'here')
+//   if (c == "all") c = "";
+//   for (i = 0; i < x.length; i++) {
+//     w3RemoveClass(x[i], "show");
+//     if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+//   }
+// }
+//
+// function w3AddClass(element, name) {
+//   let i, arr1, arr2;
+//   arr1 = element.className.split(" ");
+//   arr2 = name.split(" ");
+//   for (i = 0; i < arr2.length; i++) {
+//     if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+//   }
+// }
+//
+// function w3RemoveClass(element, name) {
+//   let i, arr1, arr2;
+//   arr1 = element.className.split(" ");
+//   arr2 = name.split(" ");
+//   for (i = 0; i < arr2.length; i++) {
+//     while (arr1.indexOf(arr2[i]) > -1) {
+//       arr1.splice(arr1.indexOf(arr2[i]), 1);
+//     }
+//   }
+//   element.className = arr1.join(" ");
+// }
+//
+// // Add active class to the current button (highlight it)
+// let btnContainer = document.getElementById("myBtnContainer");
+// let btns = btnContainer.getElementsByClassName("btn-outline-dark");
+// for (let i = 0; i < btns.length; i++) {
+//   btns[i].addEventListener("click", function(){
+//     let current = document.getElementsByClassName("active");
+//     current[0].className = current[0].className.replace(" active", "");
+//     this.className += " active";
+//   });
+// }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
         <div class="copyright text-center my-auto">
@@ -404,6 +494,17 @@
         </div>
     </div>
 </footer>
+
+
+
+
+
+
+
+
+
+
+
 
 
 <script>
@@ -472,6 +573,11 @@
         }
     }
 </script>
+
+
+
+
+
 
 
 {% endblock %}

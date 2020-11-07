@@ -1,6 +1,6 @@
 import firebase_admin
 import pyrebase
-import json, webbrowser, lxml
+import json, webbrowser
 from linebot import LineBotApi, WebhookHandler
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
@@ -33,13 +33,14 @@ group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
          'RA010', 'RB010']
 
 ref = db.child('LineLiff').get()
+lst = []
 for i in ref.each()[1:]:
-    # print(i.val())
-    test = db.child('LineLiff').child(i.key())
-    data = {'tag': ['', 'ok'][1:]}
-    long = test.update(data)
-    print(long)
+    if 'CC010' in i.val()['tag']:
+        lst.append(i.val())
 
+
+for l in range(0, len(lst)):
+    print(l)
 # for i in ref.each()[1:]:
 #     print(i.val()['Tag'])
 #     for t in i.val()['Tag']:
