@@ -6,7 +6,7 @@
 <script>
 
     $(window).on('load', function () {
-        liff.init({liffId: "1655104822-pR0REwNV"}, () => {
+        liff.init({liffId: "1655208213-qjWDbpKe"}, () => {
             if (liff.isLoggedIn()) {
                 runApp()
             } else {
@@ -41,6 +41,7 @@
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
                             'product': 'Power BI',
+                            'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
                             'token': liff.getDecodedIDToken().email,

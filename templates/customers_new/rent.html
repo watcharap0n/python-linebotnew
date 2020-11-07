@@ -6,7 +6,7 @@
 <script>
 
     $(window).on('load', function () {
-        liff.init({liffId: "1655104822-8nMB6y2m"}, () => {
+        liff.init({liffId: "1655208213-L8BOv6ky"}, () => {
             if (liff.isLoggedIn()) {
                 runApp()
             } else {
@@ -40,7 +40,8 @@
                             'email': $('#email').val(),
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
-                            'product': 'เช่าสุดคุ้ม',
+                            'product': $('#product').val(),
+                            'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
                             'token': liff.getDecodedIDToken().email,
@@ -92,7 +93,6 @@
 </script>
 
 <br>
-
 <div class="container">
     <center><img src="/static/images/mango-profile.jpg" class="rounded-circle" alt="Cinque Terre" height="140"></center>
     <form method="POST" id="perform" onsubmit="return validation()">
@@ -105,6 +105,19 @@
             <label for="compa">ชื่อบริษัท :</label>
             <input type="text" class="form-control" id="compa" placeholder="Company"
                    name="company" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="product">ผลิตภัณฑ์ที่ท่านสนใจ :</label><br>
+            <select class="form-control" name="product" id="product">
+                <option value="">Please product</option>
+                {% for p in lst %}
+                {% for i in p.product %}
+                <option value="{{i}}" {% if i == p.product %} selected {% endif %}>
+                    {{i}}
+                </option>
+                {% endfor %}
+                {% endfor %}
+            </select>
         </div>
         <div class="form-group">
             <label for="email">อีเมล :</label>

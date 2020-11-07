@@ -161,7 +161,7 @@ def flex_product():
                                         "action": {
                                             "type": "uri",
                                             "label": "action",
-                                            "uri": "https://liff.line.me/1655104822-k5dRGJez"
+                                            "uri": "https://liff.line.me/1655208213-8r59zjPv"
                                         }
                                     },
                                     {
@@ -286,7 +286,7 @@ def flex_product():
                                                 "action": {
                                                     "type": "uri",
                                                     "label": "action",
-                                                    "uri": "https://liff.line.me/1655104822-EKonO759"
+                                                    "uri": "https://liff.line.me/1655208213-bR4352Oe"
                                                 }
                                             },
                                             {
@@ -296,7 +296,7 @@ def flex_product():
                                         "action": {
                                             "type": "uri",
                                             "label": "action",
-                                            "uri": "https://liff.line.me/1655104822-EKonO759"
+                                            "uri": "https://liff.line.me/1655208213-bR4352Oe"
                                         }
                                     },
                                     {
@@ -384,7 +384,7 @@ def flex_newfeature():
                                 "action": {
                                     "type": "uri",
                                     "label": "ขอใบเสนอราคา",
-                                    "uri": "https://liff.line.me/1655104822-RnJlag2z"
+                                    "uri": "https://liff.line.me/1655208213-ZQVy12JM"
                                 },
                                 "style": "primary"
                             }
@@ -783,7 +783,7 @@ def flex_bus():
                         "action": {
                             "type": "uri",
                             "label": "POWER BI",
-                            "uri": "https://liff.line.me/1655104822-pR0REwNV"
+                            "uri": "https://liff.line.me/1655208213-qjWDbpKe"
                         }
                     },
                     {
@@ -2198,7 +2198,212 @@ def flex_profile(imageurl, profile):
     return flex_message
 
 
-def flex_pF(image_url, displayName, firstname, email, company, tel, product, comment):
+def flex_pF(image_url, displayName, firstname, email, company, tel, product, comment, other):
+    flex_test = FlexSendMessage(
+        alt_text='Flex message',
+        contents={
+            "type": "bubble",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "image",
+                                        "url": f"{image_url}",
+                                        "aspectMode": "cover",
+                                        "size": "full"
+                                    }
+                                ],
+                                "cornerRadius": "100px",
+                                "width": "72px",
+                                "height": "72px"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": "สวัสดี",
+                                                "weight": "bold",
+                                                "color": "#000000",
+                                                "size": "md"
+                                            },
+                                            {
+                                                "type": "span",
+                                                "text": "!",
+                                                "weight": "bold"
+                                            },
+                                            {
+                                                "type": "span",
+                                                "text": f" {displayName}",
+                                                "color": "#60F7BB",
+                                                "weight": "bold",
+                                                "size": "md"
+                                            }
+                                        ],
+                                        "size": "sm",
+                                        "wrap": True
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "baseline",
+                                        "contents": [
+                                            {
+                                                "type": "text",
+                                                "text": "ข้อมูลติดต่อ",
+                                                "size": "md",
+                                                "color": "#bcbcbc"
+                                            }
+                                        ],
+                                        "spacing": "sm",
+                                        "margin": "md"
+                                    }
+                                ]
+                            }
+                        ],
+                        "spacing": "xl",
+                        "paddingAll": "20px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"ชื่อ : {firstname}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"อีเมล : {email}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"บริษัท : {company}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"เบอร์ติดต่อ : {tel}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"ผลิตภัณฑ์ : {product}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"ผลิตภัณฑ์อื่นๆทีท่านสนใจ : {other}"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "spacing": "xl",
+                        "paddingAll": "20px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": "ข้อมูลเพิ่มเติม : "
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "hello, world",
+                                        "margin": "md",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"{comment}"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "spacing": "xl",
+                        "paddingAll": "20px"
+                    }
+                ],
+                "paddingAll": "0px"
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "www.mangoconsultant.com",
+                        "color": "#bcbcbc",
+                        "size": "xxs"
+                    }
+                ]
+            }
+        })
+    return flex_test
+
+
+def flex_other(image_url, displayName, firstname, email, company, tel, product, comment):
     flex_test = FlexSendMessage(
         alt_text='Flex message',
         contents={

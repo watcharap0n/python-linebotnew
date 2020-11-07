@@ -1,11 +1,13 @@
+import firebase_admin
 import pyrebase
 import json, webbrowser, lxml
 from linebot import LineBotApi, WebhookHandler
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
 from attacut import tokenize
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 from linebot import LineBotApi
+from firebase_admin import credentials, auth
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -13,6 +15,8 @@ import xlsxwriter
 
 app = Flask(__name__)
 
+cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
+firebase_auth = firebase_admin.initialize_app(cred)
 
 
 with open('model/config/database_new/firebase.json', encoding='utf8') as json_file:
@@ -24,7 +28,22 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     line_bot_api = LineBotApi(data['Channel_access_token'])
     handler = WebhookHandler(data['Channel_secret'])
 
+group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+         'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+         'RA010', 'RB010']
 
+ref = db.child('LineLiff').get()
+for i in ref.each()[1:]:
+    # print(i.val())
+    test = db.child('LineLiff').child(i.key())
+    data = {'tag': ['', 'ok'][1:]}
+    long = test.update(data)
+    print(long)
+
+# for i in ref.each()[1:]:
+#     print(i.val()['Tag'])
+#     for t in i.val()['Tag']:
+#         print(t)
 # def temperature():
 #     r = requests.get("https://weather.com/weather/today/l/13.72,100.40?par=google&temp=c")
 #     soup = BeautifulSoup(r.content, "html.parser")
@@ -38,7 +57,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #                                               humility.text)
 #     return x
 
-print(tokenize('แอปมีไหม'))
 
 
 
@@ -316,6 +334,5 @@ print(tokenize('แอปมีไหม'))
     #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
     #          'Picture': picture}
     # print(group)
-
 
 

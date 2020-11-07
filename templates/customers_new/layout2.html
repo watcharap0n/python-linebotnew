@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="icon" href="/static/images/meat.png" type="image/png" sizes="16x16">
-<!--    <link rel="stylesheet" href="css/custom.css">-->
+    <!--    <link rel="stylesheet" href="css/custom.css">-->
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <!-- Custom fonts for this template-->
@@ -92,11 +92,15 @@
             <div class="sidebar-brand-text mx-3">
                 MANGO AI <sup>consultant</sup>
             </div>
+
         </a>
         <div class="sidebar-heading text-white">Interface</div>
+        <div class="container" style="margin-top: 10px">
+            <div class="text-xs text-white">
+                <p class="text"><strong>Username: {{g.user}}</strong></p>
+            </div>
+        </div>
         <hr class="sidebar-divider bg-muted my-0"/>
-
-
         <li class="nav-item">
             <a class="nav-link" href="/index_new_customer">
                 <i class="far fa-comment-dots fa-2x"></i>
@@ -120,10 +124,10 @@
 
         <hr class="sidebar-divider bg-muted d-none d-md-block"/>
 
-<!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
-<!--        <div class="text-center">-->
-<!--            <p class="small text-white"></p>-->
-<!--        </div>-->
+        <!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
+        <!--        <div class="text-center">-->
+        <!--            <p class="small text-white"></p>-->
+        <!--        </div>-->
 
         <div class="text-center d-none d-md-inline">
             <a id="logout" href="/logout">

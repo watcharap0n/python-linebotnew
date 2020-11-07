@@ -6,7 +6,7 @@
 <script>
 
     $(window).on('load', function () {
-        liff.init({liffId: "1655104822-aQwL2k7d"}, () => {
+        liff.init({liffId: "1655208213-LYVWao4g"}, () => {
             if (liff.isLoggedIn()) {
                 runApp()
             } else {
@@ -41,6 +41,7 @@
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
                             'product': $('#pro').val(),
+                            'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
                             'token': liff.getDecodedIDToken().email,
@@ -112,7 +113,7 @@
                 <option value="">Please, select</option>
                 {% for p in lst %}
                 {% for i in p.product %}
-                <option value="{{i}}" {% if i== i %} selected {% endif %}>
+                <option value="{{i}}" {% if i == p.product %} selected {% endif %}>
                     {{i}}
                 </option>
                 {% endfor %}

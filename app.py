@@ -87,10 +87,10 @@ def before_request():
     try:
         login = db1.child('id').get()
         for l in login.each():
-            id = l.val()['email']
+            ide = l.val()['email']
             if 'user_id' in session:
-                user = session['user_id'] == id
-                g.user = id
+                user = session['user_id']['displayName']
+                g.user = user
             else:
                 g.user = None
     except:
@@ -101,6 +101,18 @@ def before_request():
 def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=60)
+
+
+@app.route('/log', methods=['GET', 'POST'])
+def log():
+    tag = ['#CB010', '#CC010', '#CG010', '#CI010', '#CJ010', '#CM010', '#CF010',
+           '#CP010', '#CE010', '#CH010', '#CK010', '#CN010', '#CD010', '#RC010',
+           '#RA010', '#RB010']
+    if request.method == 'POST':
+        event = request.get_json()
+        print(event)
+        return jsonify({'Internal': '200'}), 200
+    return render_template('customers_new/log.html', tag=tag)
 
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
@@ -119,6 +131,7 @@ def login(customer):
         for i in c_result:
             if i['customer'] == customer:
                 print(f'found: {i}')
+                print(session)
                 user = i
                 break
         if request.path == '/lg/new':
@@ -141,15 +154,15 @@ def login(customer):
             password = request.form['password']
             login = db1.child('id').get()
             for l in login.each():
-                id = l.val()['email']
                 try:
-                    login = pb.auth().sign_in_with_email_and_password(user, password)
+                    toLogin = pb.auth().sign_in_with_email_and_password(user, password)
                     with open('login_json.json', 'w') as json_login:
-                        json.dump(login, json_login)
-                    session['user_id'] = id
+                        json.dump(toLogin, json_login)
+                    session['user_id'] = toLogin
+                    print(session)
+                    print(toLogin['email'])
                     flash('You were successfully logged in')
-                    print('ok')
-                    return redirect(url_for('index_newcustomer'))
+                    return redirect(url_for('new_chart'))
                 except:
                     data = {
                         'user': user,
@@ -163,12 +176,12 @@ def login(customer):
             password = request.form['password']
             login = db1.child('id').get()
             for l in login.each():
-                id = l.val()['email']
+                ide = l.val()['email']
                 try:
-                    login = pb.auth().sign_in_with_email_and_password(user, password)
+                    toLogin = pb.auth().sign_in_with_email_and_password(user, password)
                     with open('login_json.json', 'w') as json_login:
-                        json.dump(login, json_login)
-                    session['user_id'] = id
+                        json.dump(toLogin, json_login)
+                    session['user_id'] = toLogin['email']
                     flash('You were successfully logged in')
                     print('ok')
                     return redirect(url_for('index_customer'))
@@ -185,6 +198,7 @@ def login(customer):
 @app.route('/logout')
 def logout():
     session.clear()
+    print(session)
     return redirect(url_for('welcome'))
 
 
@@ -193,6 +207,8 @@ def signup():
     if request.method == 'POST':
         error = 'Please fill in all information.'
         confirm_error = 'Passwords do not match.'
+        userId = request.form['userId']
+        position = request.form['staff']
         first_name = request.form['firstname']
         last_name = request.form['lastname']
         email = request.form['email']
@@ -203,7 +219,7 @@ def signup():
         if email is None or password is None or first_name is None or last_name is None:
             return render_template('/sbadmin/signup.html', error=error)
         try:
-            user = auth.create_user(email=email, password=password)
+            user = auth.create_user(email=email, password=password, display_name=userId)
             day = datetime.today().day
             month = datetime.today().month
             second = datetime.today().second
@@ -211,13 +227,12 @@ def signup():
             hour = datetime.today().hour
             year = datetime.today().year
             data = {'firstname': first_name, 'lastname': last_name, 'email': user.email, 'userToken': user.uid,
-                    'Datetime': {'day': day, 'month': month, 'year': year, 'hour': hour, 'minute': minute,
-                                 'second': second}}
+                    'userId': user.display_name, 'Datetime': {'day': day, 'month': month, 'year': year, 'hour': hour,
+                                                              'minute': minute, 'second': second}}
             db1.child('id').push(data)
             return redirect(url_for('welcome'))
         except:
             return render_template('/sbadmin/signup.html', error=error)
-
     return render_template('/sbadmin/signup.html')
 
 
@@ -255,7 +270,7 @@ def line_liff(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
+        product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         lst.append(product)
         return render_template('/customers_new/construction.html', lst=lst)
     elif request.path == '/mango/planing':
@@ -265,7 +280,7 @@ def line_liff(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
+        product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         lst.append(product)
         return render_template('/customers_new/planing.html', lst=lst)
     elif request.path == '/mango/reales':
@@ -275,7 +290,7 @@ def line_liff(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
+        product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         lst.append(product)
         return render_template('/customers_new/reales.html', lst=lst)
     elif request.path == '/mango/rent':
@@ -285,7 +300,7 @@ def line_liff(site):
         Insert = db2.child('chat-flex').push(page_data)
         print('show: ', Insert)
         lst = []
-        product = {'product': 'เช่าสุดคุ้ม'}
+        product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
         lst.append(product)
         return render_template('/customers_new/rent.html', lst=lst)
     elif request.path == '/mango/anywhere':
@@ -313,7 +328,7 @@ def letme():
         minute = datetime.today().minute
         hour = datetime.today().hour
         year = datetime.today().year
-        p = {'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
+        p = {'tag': [''], 'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
         print(event)
         with open('lineliff.json', 'w') as lineliff:
             json.dump(event, lineliff)
@@ -329,7 +344,7 @@ def letme():
         comment = event['comment']
         print(picture)
         if email and tel:
-            flex_profile = flex_pF(picture, displayName, firstname, email, company, tel, product, comment)
+            flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
             # x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
             line_bot_api2.push_message(userId, flex_profile)
             line_bot_api2.push_message(userId, TextSendMessage(text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
@@ -369,10 +384,11 @@ def index():
 
 @app.route('/index_new_customer')
 def index_newcustomer():
+    print(g.user)
     if not g.user:
         return redirect(url_for('welcome'))
     user = g.user
-    return render_template('/customers_new/index.html', user=user)
+    return render_template('/customers_new/index.html')
 
 
 @app.route('/index_customer')
@@ -438,6 +454,9 @@ def chart():
 
 @app.route('/new_chart', methods=['GET', 'POST'])
 def new_chart():
+    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+           'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+           'RA010', 'RB010']
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
@@ -464,6 +483,7 @@ def new_chart():
             eCount = eCount + 1
         rMsg = len(est)
         data = {
+            'tag': tag,
             'users': lst,
             'est': est,
             'msg': _id,
@@ -473,55 +493,103 @@ def new_chart():
     elif request.method == 'POST':
         try:
             broadcast = request.form['msg']
-            line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-            return redirect(url_for('push'))
+            broadImg = request.form['bcImg']
+            image_message = ImageSendMessage(
+                original_content_url=f'{broadImg}',
+                preview_image_url=f'{broadImg}'
+            )
+            if broadcast or broadImg is None:
+                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
+            elif broadImg or broadcast:
+                line_bot_api2.broadcast(image_message)
+            else:
+                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
+                line_bot_api2.broadcast(image_message)
+            return redirect(url_for('new_chart'))
         except:
             key = request.form.getlist('key')
             excel = request.form.getlist('excel')
             insert = request.form.getlist('insert')
-            print(insert)
-            print(key)
-            print(excel)
-            if request.form['delete_button'] == 'Delete_button':
-                print('Delete_button')
-                if key:
-                    for k in key:
-                        k = str(k)
-                        db2.child('RestCustomer').child(k).remove()
-                    return redirect(url_for('new_chart'))
-                elif insert:
+            tagIndex = request.form.getlist('tag')
+            jsontag = request.get_json()
+            print(jsontag)
+            print(tagIndex, 'tag')
+            button = request.form['delete_button']
+            print(insert, 'insert')
+            print(key, 'key')
+            print(excel, 'excel')
+            if button == 'Delete_button':
+                print('Keep Delete')
+                for k in key:
+                    k = str(k)
+                    db2.child('RestCustomer').child(k).remove()
+                return redirect(url_for('new_chart'))
+            elif button == 'Excel_button':
+                print('Keep Excel')
+                diplayName = session['user_id']['displayName']
+                _date = datetimeNow()
+                lst = []
+                for k in key:
+                    list_chart = group_chart(k, diplayName, _date[0], _date[1])
+                    lst.append(list_chart)
+                data = pd.DataFrame(lst)
+                datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+                data.to_excel(datatoexcel, sheet_name='Sheet1')
+                datatoexcel.save()
+                return send_from_directory('static/excel', 'Customers.xlsx')
+            elif button == 'Insert_button':
+                print('Rest Insert')
+                _date = datetimeNow()
+                diplayName = session['user_id']['displayName']
+                if not tagIndex:
+                    print('ja')
                     for i in insert:
+                        group = push_database(i, diplayName, _date[0], _date[1])
+                        db2.child('RestCustomer').push(group)
                         db2.child('LineLiff').child(i).remove()
                     return redirect(url_for('new_chart'))
-            elif request.form['delete_button'] == 'Excel_button':
-                print('Excel_button')
-                if key:
-                    lst = []
-                    for k in key:
-                        list_chart = group_chart(k)
-                        lst.append(list_chart)
-                    data = pd.DataFrame(lst)
-                    datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
-                    data.to_excel(datatoexcel, sheet_name='Sheet1')
-                    datatoexcel.save()
-                    return send_from_directory('static/excel', 'Customers.xlsx')
-                elif insert:
-                    est = []
-                    for e in insert:
-                        list_chart = push_database(e)
-                        est.append(list_chart)
-                    data = pd.DataFrame(est)
-                    datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
-                    data.to_excel(datatoexcel, sheet_name='Sheet1')
-                    datatoexcel.save()
-                    return send_from_directory('static/excel', 'newCustomers.xlsx')
-            elif request.form['delete_button'] == 'Insert_button':
-                print('Insert_button')
+                else:
+                    print('and')
+                    for i in insert:
+                        db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                        group = push_database(i, diplayName, _date[0], _date[1])
+                        db2.child('RestCustomer').push(group)
+                        db2.child('LineLiff').child(i).remove()
+
+            elif button == 'Excel_rest':
+                print('Rest Excel')
+                est = []
+                _date = datetimeNow()
+                eUser = session['user_id']['email']
+                diplayName = session['user_id']['displayName']
+                for e in insert:
+                    list_chart = push_database(e, diplayName, _date[0], _date[1])
+                    est.append(list_chart)
+                data = pd.DataFrame(est)
+                datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+                data.to_excel(datatoexcel, sheet_name='Sheet1')
+                datatoexcel.save()
+                return send_from_directory('static/excel', 'newCustomers.xlsx')
+            elif button == 'Delete_rest':
+                print('Rest Delete')
                 for i in insert:
-                    group = push_database(i)
-                    db2.child('RestCustomer').push(group)
                     db2.child('LineLiff').child(i).remove()
                 return redirect(url_for('new_chart'))
+            elif button == 'Tag':
+                print('tagIndex')
+                print(jsontag)
+                for i in insert:
+                    data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                    print(data)
+                return redirect(url_for('new_chart'))
+            elif button == 'RestTag':
+                print('resttag')
+                for k in key:
+                    data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
+                    print(data)
+                return redirect(url_for('new_chart'))
+                # return jsonify({'tagjson': tagIndex})
+
         return redirect(url_for('new_chart'))
 
 
@@ -594,7 +662,19 @@ def graph():
     return render_template('/customers_new/graph.html')
 
 
-def group_chart(e):
+def datetimeNow():
+    day = datetime.today().day
+    month = datetime.today().month
+    second = datetime.today().second
+    minute = datetime.today().minute
+    hour = datetime.today().hour
+    year = datetime.today().year
+    timeNow = f'{hour}:{minute}:{second}'
+    dateNow = f'{day}-{month}-{year}'
+    return dateNow, timeNow
+
+
+def group_chart(e, username, date, time):
     i = db2.child('RestCustomer').child(e).get()
     profile = i.val()['Profile']
     cTime = i.val()['Time']
@@ -605,15 +685,17 @@ def group_chart(e):
     message = i.val()['Message']
     picture = i.val()['Picture']
     product = i.val()['Product']
+    other = i.val()['Other']
     tel = i.val()['Tel']
+    tag = i.val()['Tag']
     name = i.val()['Name']
-    group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
+    group = {'Name': name, 'Product': product, 'Other': other, 'Company': company, 'Tel': tel, 'Email': email,
              'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
-             'Picture': picture}
+             'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag}
     return group
 
 
-def push_database(e):
+def push_database(e, username, date, time):
     py = db2.child('LineLiff').child(e).get()
     day = py.val()['day']
     month = py.val()['month']
@@ -621,6 +703,7 @@ def push_database(e):
     hour = py.val()['hour']
     minn = py.val()['min']
     sec = py.val()['sec']
+    tag = py.val()['tag']
     event = py.val()['event']
     comment = event['comment']
     company = event['company']
@@ -630,11 +713,12 @@ def push_database(e):
     picture = event['picture']
     product = event['product']
     tel = event['tel']
+    other = event['other']
     token = event['token']
-    group = {'Name': name, 'Product': product, 'Company': company,
+    group = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
              'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
              'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
-             'Picture': picture}
+             'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag}
     return group
 
 
@@ -655,9 +739,13 @@ def download():
             product = i.val()['Product']
             tel = i.val()['Tel']
             name = i.val()['Name']
+            username = i.val()['Username']
+            ImportDate = i.val()['DateInsert']
+            ImportTime = i.val()['TimeInsert']
             group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
                      'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
-                     'Picture': picture}
+                     'Picture': picture, 'Username': username, 'ImportDate/Time': f'{ImportDate} {ImportTime}',
+                     }
             date_time.append(group)
         dbDatetime = date_time
         data = pd.DataFrame(dbDatetime)
@@ -1210,9 +1298,10 @@ def get_datetime(x, line_bot_api):
     hour = datetime.today().hour
     year = datetime.today().year
     profile = line_bot_api.get_profile(userId)
+    img = profile.picture_url
     profile = profile.display_name
     profile = str(profile)
-    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'hour': hour, 'min': minute,
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'img': img, 'hour': hour, 'min': minute,
               'sec': second, 'day': day, 'month': month, 'year': year}
     return result
 
@@ -1268,6 +1357,8 @@ def intent_hello(model_linebot, event, label1, text1,
     profile = line_bot_api2.get_profile(result[4])
     displayName = profile.display_name
     y = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
+    inserted = get_datetime(y, line_bot_api2)
+    db2.child('chatbot_transactions').push(inserted)
     reply = line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}', quick_reply=QuickReply(items=[
         QuickReplyButton(action=MessageAction(label=f'{label1}', text=f'{text1}')),
         QuickReplyButton(action=MessageAction(label=f'{label2}', text=f'{text2}')),
@@ -1294,6 +1385,8 @@ def quick_camera(model_linebot, event, label1, text1, label2,
         QuickReplyButton(action=MessageAction(label=f'{label5}', text=f'{text5}')),
         QuickReplyButton(action=CameraAction(label='Camera'))
     ])))
+    inserted = get_datetime(x, line_bot_api2)
+    db2.child('chatbot_transactions').push(inserted)
     return reply
 
 
@@ -1385,14 +1478,32 @@ def handle_message_new(event):
                 user_profile = str(user_profile)
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
+            elif ['ขอ Demo'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='สวัสดีค่ะ แอดมินขออภัยในความไม่สะดวกนะคะ '
+                                                                                    'ทางบริษัทจะไม่มีตัว Demo ให้ทดลองใช้ แต่จะเป็นการนัดเข้าไป '
+                                                                                    'Demo เพื่อพรีเซนต์รายละเอียดโปรแกรมค่ะ หากต้องการให้ทีมงานเข้าไป '
+                                                                                    'Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกา นะคะขอบคุณค่ะ'))
+            elif ['สวัสดีจ่ะ'] == result[3]:
+                intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
+                             label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
+                             label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน',
+                             text5='สอบถามการใช้งาน')
             elif ['มาก'] == result[3]:
+                x = 'มาก'
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='น้อย'))
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['น้อย'] == result[3]:
+                x = 'น้อย'
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['คือ'] == result[3]:
                 x = ['นั้นสินะ', 'อิหยังวะ', 'ว่า']
                 z = random.choice(x)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+            elif ['แมงโก้คืออะไร'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, productR7())
             elif ['อะไรอะ'] == result[3]:
                 x = ['นั้นสิ', 'อิหยังวะ', 'ป๊าวว']
                 z = random.choice(x)
@@ -1413,6 +1524,8 @@ def handle_message_new(event):
                 x = ['แมงโก้ค่า', 'น้องแมงโก้']
                 z = random.choice(x)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
+                inserted = get_datetime(z, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             else:
                 if result[2] == [3]:
                     intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
@@ -1425,14 +1538,21 @@ def handle_message_new(event):
                         QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
                         QuickReplyButton(action=MessageAction(label='สอบถามปัญหาโปรแกรม', text='สอบถามปัญหาโปรแกรม')),
                     ]))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [6]:
                     x = random.choice(result[1][int(result[2])])
                     quick_reply(event, x, QuickReply=QuickReply(items=[
                         QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น'))
                     ]))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [12]:
+                    x = 'ดูดวง'
                     line_bot_api2.push_message(result[4], flex_destiny())
                     line_bot_api2.push_message(result[4], destiny())
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [13]:
                     quick_camera(model_linebot_new(), event, label1='ทำอะไรอยู่', text1='ทำอะไรอยู่',
                                 label2='ชื่ออะไรหรอ', text2='ชื่ออะไรหรอ', label3='ดูดวง', text3='ดูดวง',
@@ -1466,8 +1586,13 @@ def handle_message_new(event):
                         QuickReplyButton(action=MessageAction(label='ขอข้อมูลผลิตภัณฑ์', text='ขอข้อมูลผลิตภัณฑ์')),
                         QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น'))
                     ]))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [11]:
+                    x = 'Template Image'
                     line_bot_api2.push_message(result[4], productR7())
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [18]:
                     x = random.choice(result[1][int(result[2])])
                     quick_reply(event=event, x=x, QuickReply=QuickReply(items=[
@@ -1475,6 +1600,8 @@ def handle_message_new(event):
                         QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
                         QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text="ขอใบเสนอราคา"))
                     ]))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [19]:
                     day = datetime.today().day
                     month = datetime.today().month
@@ -1536,6 +1663,8 @@ def handle_message_new(event):
                                 text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/entertain'))
                             line_bot_api2.push_message(result[4], TextSendMessage(
                                 text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                            inserted = get_datetime(x, line_bot_api2)
+                            db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [22]:
                     x = 'Software ERP Mango Anywhere จะทำงานอยู่บน 3 platform\n\n' \
                         '1.Window\n2.On Web\n3.Application\n\nในส่วนของ Application จะไม่ได้ครอบคลุมการทำงานทั้งหมดโดยเราได้พัฒนา' \
@@ -1543,10 +1672,13 @@ def handle_message_new(event):
                     quick_reply(event, x, QuickReply=QuickReply(items=[
                         QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิตภัณฑ์แมงโก้'))
                     ]))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [23]:
                     x = 'flex โปรโมชั่น'
                     line_bot_api2.reply_message(event.reply_token, promotion())
-                    get_datetime(x, line_bot_api2)
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif ['ไรงะ'] == result[3]:
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='อะไรงะ'))
                 elif ['งะ'] == result[3]:
@@ -1591,7 +1723,7 @@ def handle_message_new(event):
                 inserted = get_datetime(x, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
             elif ['แมงโก้'] == result[3]:
-                z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
+                z = ['ยินดีให้บริการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
                 x = random.choice(z)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
                 inserted = get_datetime(x, line_bot_api2)
@@ -1599,17 +1731,35 @@ def handle_message_new(event):
             elif ['น้อย'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='มาก'))
             elif ['ผลิตภัณฑ์แมงโก้'] == result[3]:
+                x = 'ผลิตภัณฑ์แมงโก้'
                 line_bot_api2.reply_message(event.reply_token, productR7())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['@Promotion'] == result[3]:
+                x = '@Promotion'
                 line_bot_api2.reply_message(event.reply_token, promotion())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['@ERPSoftware'] == result[3]:
+                x = '@ERPSoftware'
                 line_bot_api2.reply_message(event.reply_token, flex_product())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['@NewFeature'] == result[3]:
+                x = '@NewFeature'
                 line_bot_api2.reply_message(event.reply_token, flex_newfeature())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['@Optional'] == result[3]:
+                x = '@optional'
                 line_bot_api2.reply_message(event.reply_token, flex_optional())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['@Business'] == result[3]:
+                x = '@Business'
                 line_bot_api2.reply_message(event.reply_token, flex_bus())
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
             elif ['วาดรูป'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text='https://liff.line.me/1655104822-L5Ob5XdD'))
@@ -1636,14 +1786,11 @@ def handle_message_new(event):
                                                    QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
                                                    QuickReplyButton(action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
                                                    QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
-                                                   # QuickReplyButton(action=DatetimePickerAction(label='Datetime Picker', data='storeId=12345',
-                                                   #                                              mode='datetime', initial='2018-09-11T00:00',
-                                                   #                                              max='2018-12-31T23:59', min='2018-01-01T00:00')),
-                                                   # QuickReplyButton(action=CameraAction('Camera')),
-                                                   # QuickReplyButton(action=CameraRollAction('Gallery')),
-                                                   # QuickReplyButton(action=LocationAction('Location'))
                                                ]))
                 line_bot_api2.push_message(result[4], text_message)
+                x = 'ไม่เข้าใจ'
+                inserted = get_datetime(x, line_bot_api2)
+                db2.child('chatbot_transactions').push(inserted)
     except LineBotApiError:
         abort(400)
 
