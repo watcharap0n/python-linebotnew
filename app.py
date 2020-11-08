@@ -834,7 +834,6 @@ def tagrest(lifftag):
             print('Rest Excel')
             est = []
             _date = datetimeNow()
-            eUser = session['user_id']['email']
             diplayName = session['user_id']['displayName']
             for e in insert:
                 list_chart = push_database(e, diplayName, _date[0], _date[1])
