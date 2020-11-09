@@ -85,14 +85,11 @@ handler3 = data_older[2]
 @app.before_request
 def before_request():
     try:
-        login = db1.child('id').get()
-        for l in login.each():
-            ide = l.val()['email']
-            if 'user_id' in session:
-                user = session['user_id']['displayName']
-                g.user = user
-            else:
-                g.user = None
+        if 'user_id' in session:
+            user = session['user_id']['displayName']
+            g.user = user
+        else:
+            g.user = None
     except:
         print("error login")
 
@@ -152,46 +149,41 @@ def login(customer):
             session.pop('user_id', None)
             user = request.form['username']
             password = request.form['password']
-            login = db1.child('id').get()
-            for l in login.each():
-                try:
-                    toLogin = pb.auth().sign_in_with_email_and_password(user, password)
-                    with open('login_json.json', 'w') as json_login:
-                        json.dump(toLogin, json_login)
-                    session['user_id'] = toLogin
-                    print(session)
-                    print(toLogin['email'])
-                    flash('You were successfully logged in')
-                    return redirect(url_for('new_chart'))
-                except:
-                    data = {
-                        'user': user,
-                        'customer': 'Customer',
-                        'error': error
-                    }
-                    return render_template('/sbadmin/login.html', data=data)
+            try:
+                toLogin = pb.auth().sign_in_with_email_and_password(user, password)
+                with open('login_json.json', 'w') as json_login:
+                    json.dump(toLogin, json_login)
+                session['user_id'] = toLogin
+                print(session)
+                print(toLogin['email'])
+                flash('You were successfully logged in')
+                return redirect(url_for('new_chart'))
+            except:
+                data = {
+                    'user': user,
+                    'customer': 'Customer',
+                    'error': error
+                }
+                return render_template('/sbadmin/login.html', data=data)
         elif request.path == '/lg/old':
             session.pop('user_id', None)
             user = request.form['username']
             password = request.form['password']
-            login = db1.child('id').get()
-            for l in login.each():
-                ide = l.val()['email']
-                try:
-                    toLogin = pb.auth().sign_in_with_email_and_password(user, password)
-                    with open('login_json.json', 'w') as json_login:
-                        json.dump(toLogin, json_login)
-                    session['user_id'] = toLogin['email']
-                    flash('You were successfully logged in')
-                    print('ok')
-                    return redirect(url_for('index_customer'))
-                except:
-                    data = {
-                        'user': user,
-                        'customer': 'Customer',
-                        'error': error
-                    }
-                    return render_template('/sbadmin/login.html', data=data)
+            try:
+                toLogin = pb.auth().sign_in_with_email_and_password(user, password)
+                with open('login_json.json', 'w') as json_login:
+                    json.dump(toLogin, json_login)
+                session['user_id'] = toLogin['email']
+                flash('You were successfully logged in')
+                print('ok')
+                return redirect(url_for('index_customer'))
+            except:
+                data = {
+                    'user': user,
+                    'customer': 'Customer',
+                    'error': error
+                }
+                return render_template('/sbadmin/login.html', data=data)
     return render_template('/sbadmin/login.html')
 
 
@@ -227,8 +219,9 @@ def signup():
             hour = datetime.today().hour
             year = datetime.today().year
             data = {'firstname': first_name, 'lastname': last_name, 'email': user.email, 'userToken': user.uid,
-                    'userId': user.display_name, 'Datetime': {'day': day, 'month': month, 'year': year, 'hour': hour,
-                                                              'minute': minute, 'second': second}}
+                    'userId': user.display_name, 'position': position, 'Datetime': {'day': day, 'month': month,
+                                                                                    'year': year, 'hour': hour,
+                                                                                    'minute': minute, 'second': second}}
             db1.child('id').push(data)
             return redirect(url_for('welcome'))
         except:
@@ -328,7 +321,8 @@ def letme():
         minute = datetime.today().minute
         hour = datetime.today().hour
         year = datetime.today().year
-        p = {'tag': [''], 'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second, 'event': event}
+        p = {'tag': [''], 'day': day, 'month': month, 'year': year, 'hour': hour, 'min': minute, 'sec': second,
+             'event': event}
         print(event)
         with open('lineliff.json', 'w') as lineliff:
             json.dump(event, lineliff)
@@ -347,10 +341,12 @@ def letme():
             flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
             # x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
             line_bot_api2.push_message(userId, flex_profile)
-            line_bot_api2.push_message(userId, TextSendMessage(text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
+            line_bot_api2.push_message(userId, TextSendMessage(
+                text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
             db2.child('LineLiff').push(p)
         else:
-           line_bot_api2.push_message(userId, TextSendMessage(text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
+            line_bot_api2.push_message(userId, TextSendMessage(
+                text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
         return make_response(event)
 
 
@@ -449,7 +445,6 @@ def chart():
         line_bot_api1.broadcast(TextSendMessage(text=str(broadcast)))
         return redirect(url_for('chart'))
     return render_template('/sbadmin/charts.html', data=data)
-
 
 
 @app.route('/new_chart', methods=['GET', 'POST'])
@@ -1301,7 +1296,8 @@ def get_datetime(x, line_bot_api):
     img = profile.picture_url
     profile = profile.display_name
     profile = str(profile)
-    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'img': img, 'hour': hour, 'min': minute,
+    result = {'userid': userId, 'message': message, 'reply': x, 'profile': profile, 'img': img, 'hour': hour,
+              'min': minute,
               'sec': second, 'day': day, 'month': month, 'year': year}
     return result
 
@@ -1320,6 +1316,7 @@ class WebScraping():
                                                                 HighLow.text, valueTemp.text,
                                                                 humility.text)
         return x
+
     @staticmethod
     def new_common():
         r = requests.get("https://www.thairath.co.th/news/local")
@@ -1330,6 +1327,7 @@ class WebScraping():
         str_txt = ', \n '
         str_txt = str_txt.join(txt)
         return str_txt
+
     @staticmethod
     def new_sport():
         r = requests.get("https://www.thairath.co.th/sport")
@@ -1339,6 +1337,7 @@ class WebScraping():
         for i in score:
             t = t + '\n' + i.text
         return t
+
     @staticmethod
     def new_entertain():
         r = requests.get("https://www.thairath.co.th/entertain")
@@ -1350,44 +1349,8 @@ class WebScraping():
         return txt
 
 
-def intent_hello(model_linebot, event, label1, text1,
-                label2, text2, label3, text3, label4,
-                text4, label5, text5):
-    result = model_linebot
-    profile = line_bot_api2.get_profile(result[4])
-    displayName = profile.display_name
-    y = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
-    inserted = get_datetime(y, line_bot_api2)
-    db2.child('chatbot_transactions').push(inserted)
-    reply = line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{y}', quick_reply=QuickReply(items=[
-        QuickReplyButton(action=MessageAction(label=f'{label1}', text=f'{text1}')),
-        QuickReplyButton(action=MessageAction(label=f'{label2}', text=f'{text2}')),
-        QuickReplyButton(action=MessageAction(label=f'{label3}', text=f'{text3}')),
-        QuickReplyButton(action=MessageAction(label=f'{label4}', text=f'{text4}')),
-        QuickReplyButton(action=MessageAction(label=f'{label5}', text=f'{text5}'))
-    ])))
-    return reply
-
-
 def quick_reply(event, x, QuickReply):
-    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}', quick_reply=QuickReply))
-
-
-def quick_camera(model_linebot, event, label1, text1, label2,
-                 text2, label3, text3, label4, text4, label5, text5):
-    result = model_linebot
-    x = random.choice(result[1][int(result[2])])
-    reply = line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}', quick_reply=QuickReply(items=[
-        QuickReplyButton(action=MessageAction(label=f'{label1}', text=f'{text1}')),
-        QuickReplyButton(action=MessageAction(label=f'{label2}', text=f'{text2}')),
-        QuickReplyButton(action=MessageAction(label=f'{label3}', text=f'{text3}')),
-        QuickReplyButton(action=MessageAction(label=f'{label4}', text=f'{text4}')),
-        QuickReplyButton(action=MessageAction(label=f'{label5}', text=f'{text5}')),
-        QuickReplyButton(action=CameraAction(label='Camera'))
-    ])))
-    inserted = get_datetime(x, line_bot_api2)
-    db2.child('chatbot_transactions').push(inserted)
-    return reply
+    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=x, quick_reply=QuickReply))
 
 
 def integrate_send(model_linebot, event, pack, stick, line_bot_api):
@@ -1479,15 +1442,11 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token,
                                             TextSendMessage(text=f'เอ้า! ลืมชื่อตัวเองแล้วหรอ ก็ {user_profile} ไง'))
             elif ['ขอ Demo'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='สวัสดีค่ะ แอดมินขออภัยในความไม่สะดวกนะคะ '
-                                                                                    'ทางบริษัทจะไม่มีตัว Demo ให้ทดลองใช้ แต่จะเป็นการนัดเข้าไป '
-                                                                                    'Demo เพื่อพรีเซนต์รายละเอียดโปรแกรมค่ะ หากต้องการให้ทีมงานเข้าไป '
-                                                                                    'Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกา นะคะขอบคุณค่ะ'))
-            elif ['สวัสดีจ่ะ'] == result[3]:
-                intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
-                             label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
-                             label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน',
-                             text5='สอบถามการใช้งาน')
+                line_bot_api2.reply_message(event.reply_token,
+                                            TextSendMessage(text='สวัสดีค่ะ แอดมินขออภัยในความไม่สะดวกนะคะ '
+                                                                 'ทางบริษัทจะไม่มีตัว Demo ให้ทดลองใช้ แต่จะเป็นการนัดเข้าไป '
+                                                                 'Demo เพื่อพรีเซนต์รายละเอียดโปรแกรมค่ะ หากต้องการให้ทีมงานเข้าไป '
+                                                                 'Demo โปรแกรม กรุณาโทร. 063-565-4594 ติดต่อคุณเมทิกา นะคะขอบคุณค่ะ'))
             elif ['มาก'] == result[3]:
                 x = 'มาก'
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='น้อย'))
@@ -1526,17 +1485,29 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
                 inserted = get_datetime(z, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
+            elif ['เบอร์ติดต่อ Info'] == result[3]:
+                x = ["สามารถติต่อ Call Center : 02-123-3900\nหรือ Email : info@mangoconsultant.com 😉"]
+                z = random.choice(x)
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
             else:
                 if result[2] == [3]:
-                    intent_hello(model_linebot_new(), event, label1='ผลิตภัณฑ์แมงโก้', text1='ผลิตภัณฑ์แมงโก้',
-                                label2='โปรโมชั่น', text2='โปรโมชั่น', label3='ขอใบเสนอราคา', text3='ขอใบเสนอราคา',
-                                label4='สอบถามการอบรม', text4='สอบถามการอบรม', label5='สอบถามการใช้งาน', text5='สอบถามการใช้งาน')
+                    profile = line_bot_api2.get_profile(result[4])
+                    displayName = profile.display_name
+                    x = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
+                        QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
+                        QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
+                        QuickReplyButton(action=MessageAction(label='สอบถามการอบรม', text='สอบถามการอบรม')),
+                        QuickReplyButton(action=MessageAction(label='สอบถามการใช้งาน', text='สอบถามการใช้งาน'))
+                    ]))
                 elif result[2] == [5]:
                     x = random.choice(result[1][int(result[2])])
                     quick_reply(event, x, QuickReply=QuickReply(items=[
                         QuickReplyButton(action=MessageAction(label='ขอข้อมูลผลิตภัณฑ์', text='ขอข้อมูลผลิตภัณฑ์')),
                         QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
                         QuickReplyButton(action=MessageAction(label='สอบถามปัญหาโปรแกรม', text='สอบถามปัญหาโปรแกรม')),
+                        QuickReplyButton(action=MessageAction(label='เบอร์ติดต่อ Info', text='เบอร์ติดต่อ Info'))
                     ]))
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
@@ -1554,9 +1525,15 @@ def handle_message_new(event):
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [13]:
-                    quick_camera(model_linebot_new(), event, label1='ทำอะไรอยู่', text1='ทำอะไรอยู่',
-                                label2='ชื่ออะไรหรอ', text2='ชื่ออะไรหรอ', label3='ดูดวง', text3='ดูดวง',
-                                 label4='ข่าว ทั่วไป', text4='ข่าว ทั่วไป', label5='ข่าว บันเทิง', text5='ข่าว บันเทิง')
+                    x = random.choice(result[1][int(result[2])])
+                    quick_reply(event, x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label="ชื่ออะไร", text="ชื่ออะไร")),
+                        QuickReplyButton(action=MessageAction(label="ดูดวง", text="ดูดวง")),
+                        QuickReplyButton(action=MessageAction(label="ข่าว ทั่วไป", text="ข่าว ทั่วไป")),
+                        QuickReplyButton(action=MessageAction(label="ข่าว บันเทิง", text="ข่าว บันเทิง")),
+                        QuickReplyButton(action=MessageAction(label="ข่าว กีฬา", text="ข่าว กีฬา")),
+                        QuickReplyButton(action=CameraAction(label="Camera"))
+                    ]))
                 elif result[2] == [7]:
                     stick = ['51626520', '51626526']
                     pack = 11538
@@ -1643,8 +1620,10 @@ def handle_message_new(event):
                         if ans == ' ทั่วไป':
                             x = WebScraping.new_common()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                            line_bot_api2.push_message(result[4], TextSendMessage(text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
-                            line_bot_api2.push_message(result[4], TextSendMessage(text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='ดูข่าวเพิ่มเติมลิงค์นี้เลย\nhttps://www.thairath.co.th/news/local'))
+                            line_bot_api2.push_message(result[4], TextSendMessage(
+                                text='และยังสามารถพิมพ์ ข่าว เว้นวรรค ตามด้วยข่าวที่ต้องการได้ค่ะ\nเช่น ข่าว ทั่วไป, ข่าว กีฬา, ข่าว บันเทิง'))
                             inserted = get_datetime(x, line_bot_api2)
                             db2.child('chatbot_transactions').push(inserted)
                         elif ans == ' กีฬา':
@@ -1712,6 +1691,17 @@ def handle_message_new(event):
             elif ['ปิดไฟ'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'โอเคจ้า ทำการปิดไฟ'))
                 db2.child('Node1').update({'Relay1': 1})
+            elif ['สวัสดีจ่ะ'] == result[3]:
+                profile = line_bot_api2.get_profile(result[4])
+                displayName = profile.display_name
+                x = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
+                quick_reply(event, x, QuickReply=QuickReply(items=[
+                    QuickReplyButton(action=MessageAction(label="ผลิตภัณฑ์แมงโก้", text="ผลิภัณฑ์แมงโก้")),
+                    QuickReplyButton(action=MessageAction(label="โปรโมชั่น", text="โปรโมชั่น")),
+                    QuickReplyButton(action=MessageAction(label="ขอใบเสนอราคา", text="ขอใบเสนอราคา")),
+                    QuickReplyButton(action=MessageAction(label="สอบถามการอบรม", text="สอบถามการอบรม")),
+                    QuickReplyButton(action=MessageAction(label="สอบถามการใช้งาน", text="สอบถามการใช้งาน"))
+                ]))
             elif ['temp'] == result[3]:
                 temp = db2.child('Sensor Ultrasonic').get()
                 temp = temp.val()
@@ -1776,17 +1766,20 @@ def handle_message_new(event):
             else:
                 profile = line_bot_api2.get_profile(result[4])
                 displayName = profile.display_name
-                text_message = TextSendMessage(text=f'น้องแมงโก้ไม่แน่ใจ คุณ {displayName} ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
-                                                                                    'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ',
-                                               quick_reply=QuickReply(items=[
-                                                   QuickReplyButton(action=MessageAction(label="ขอข้อมูลผลิตภัณฑ์", text="ขอข้อมูลผลิตภัณฑ์")),
-                                                   QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคาทำอย่างไร')),
-                                                   QuickReplyButton(action=MessageAction(label='ลูกค้าที่ใช้งานโปรแกรม', text='ลูกค้าที่ใช้งานโปรแกรม')),
-                                                   QuickReplyButton(action=MessageAction(label='ราคาโปรแกรม', text='ราคาโปรแกรม')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
-                                                   QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
-                                               ]))
+                text_message = TextSendMessage(
+                    text=f'น้องแมงโก้ไม่แน่ใจ คุณ {displayName} ลองถามคำถามใหม่ อีกครั้ง เช่น ขอใบเสนอราคายังไง\n\n'
+                         'หรือเลือกเรื่องที่ต้องการสอบถาม เจ้าหน้าที่จะมาดูแลต่อนะคะ',
+                    quick_reply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label="ขอข้อมูลผลิตภัณฑ์", text="ขอข้อมูลผลิตภัณฑ์")),
+                        QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคาทำอย่างไร')),
+                        QuickReplyButton(
+                            action=MessageAction(label='ลูกค้าที่ใช้งานโปรแกรม', text='ลูกค้าที่ใช้งานโปรแกรม')),
+                        QuickReplyButton(action=MessageAction(label='ราคาโปรแกรม', text='ราคาโปรแกรม')),
+                        QuickReplyButton(action=MessageAction(label='ติดปัญหาการใช้งาน', text='ติดปัญหาการใช้งาน')),
+                        QuickReplyButton(
+                            action=MessageAction(label='ติดต่ออบรมประจำเดือน', text='ติดต่ออบรมประจำเดือน')),
+                        QuickReplyButton(action=MessageAction(label='ติดต่อขอฝึกงาน', text='ติดต่อขอฝึกงาน')),
+                    ]))
                 line_bot_api2.push_message(result[4], text_message)
                 x = 'ไม่เข้าใจ'
                 inserted = get_datetime(x, line_bot_api2)
@@ -1871,9 +1864,6 @@ def richmenu(rich):
         return 'ok'
     elif rich == 'get_id':
         pass
-        # rich_menu = line_bot_api1.get_rich_menu(str(rich_Tranform))
-        # print(rich_menu.rich_menu_id)
-        # return jsonify(str(rich_menu))
     elif rich == 'deleteall':
         rich_menu_list = line_bot_api1.get_rich_menu_list()
         for rich_menu in rich_menu_list:
