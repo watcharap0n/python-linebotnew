@@ -254,6 +254,7 @@ def welcome():
     return render_template('/sbadmin/welcome.html')
 
 
+
 @app.route('/mango/<string:site>', methods=['GET', 'POST'])
 def line_liff(site):
     if request.path == '/mango/construction':
@@ -339,7 +340,6 @@ def letme():
         print(picture)
         if email and tel:
             flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
-            # x = f'คุณ: {displayName} สรุปรายการ\n\nชื่อของคุณ: {firstname}\nอีเมล: {email}\nบริษัท: {company}\nเบอร์ติดต่อ: {tel}\nผลิตภัณฑ์ที่คุณเลือก: {product}\n\nขอบคุณที่ทำรายการค่ะ'
             line_bot_api2.push_message(userId, flex_profile)
             line_bot_api2.push_message(userId, TextSendMessage(
                 text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
@@ -383,7 +383,6 @@ def index_newcustomer():
     print(g.user)
     if not g.user:
         return redirect(url_for('welcome'))
-    user = g.user
     return render_template('/customers_new/index.html')
 
 
@@ -449,12 +448,12 @@ def chart():
 
 @app.route('/new_chart', methods=['GET', 'POST'])
 def new_chart():
-    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
-           'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
-           'RA010', 'RB010']
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
+        tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+               'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+               'RA010', 'RB010']
         rest = db2.child('RestCustomer').get()
         lst = []
         count = 1
@@ -502,14 +501,14 @@ def new_chart():
                 line_bot_api2.broadcast(image_message)
             return redirect(url_for('new_chart'))
         except:
+            button = request.form['delete_button']
             key = request.form.getlist('key')
             excel = request.form.getlist('excel')
             insert = request.form.getlist('insert')
             tagIndex = request.form.getlist('tag')
-            jsontag = request.get_json()
-            print(jsontag)
+            jsonTag = request.get_json()
+            print(jsonTag)
             print(tagIndex, 'tag')
-            button = request.form['delete_button']
             print(insert, 'insert')
             print(key, 'key')
             print(excel, 'excel')
@@ -572,7 +571,7 @@ def new_chart():
                 return redirect(url_for('new_chart'))
             elif button == 'Tag':
                 print('tagIndex')
-                print(jsontag)
+                print(jsonTag)
                 for i in insert:
                     data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
                     print(data)
@@ -583,8 +582,277 @@ def new_chart():
                     data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
                     print(data)
                 return redirect(url_for('new_chart'))
-                # return jsonify({'tagjson': tagIndex})
+        return redirect(url_for('new_chart'))
 
+
+@app.route('/tagliff/<string:lifftag>', methods=['GET', 'POST'])
+def lifftag(lifftag):
+    if request.method == 'GET':
+        ref = db2.child('LineLiff').get()
+        if lifftag == 'RB010':
+            data = req_path('RB010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CC010':
+            data = req_path('CC010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CG010':
+            data = req_path('CG010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CI010':
+            data = req_path('CI010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CJ010':
+            data = req_path('CJ010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CM010':
+            data = req_path('CM010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CF010':
+            data = req_path('CF010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CP010':
+            data = req_path('CP010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CE010':
+            data = req_path('CE010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CH010':
+            data = req_path('CH010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CK010':
+            data = req_path('CK010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CN010':
+            data = req_path('CN010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RC010':
+            data = req_path('RC010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RA010':
+            data = req_path('RA010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'RB010':
+            data = req_path('RB010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+        elif lifftag == 'CD010':
+            data = req_path('CD010', ref, 'tag')
+            return render_template('/customers_new/liff_tag.html', data=data)
+    elif request.method == 'POST':
+        key = request.form.getlist('key')
+        excel = request.form.getlist('excel')
+        insert = request.form.getlist('insert')
+        tagIndex = request.form.getlist('tag')
+        jsontag = request.get_json()
+        button = request.form['delete_button']
+        print(jsontag)
+        print(tagIndex, 'tag')
+        print(insert, 'insert')
+        print(key, 'key')
+        print(excel, 'excel')
+        if button == 'Delete_button':
+            print('Keep Delete')
+            for k in key:
+                k = str(k)
+                db2.child('RestCustomer').child(k).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Excel_button':
+            print('Keep Excel')
+            diplayName = session['user_id']['displayName']
+            _date = datetimeNow()
+            lst = []
+            for k in key:
+                list_chart = group_chart(k, diplayName, _date[0], _date[1])
+                lst.append(list_chart)
+            data = pd.DataFrame(lst)
+            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'Insert_button':
+            print('Rest Insert')
+            _date = datetimeNow()
+            diplayName = session['user_id']['displayName']
+            if not tagIndex:
+                print('ja')
+                for i in insert:
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+                return redirect(url_for('new_chart'))
+            else:
+                print('and')
+                for i in insert:
+                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+        elif button == 'Excel_rest':
+            print('Rest Excel')
+            est = []
+            _date = datetimeNow()
+            eUser = session['user_id']['email']
+            diplayName = session['user_id']['displayName']
+            for e in insert:
+                list_chart = push_database(e, diplayName, _date[0], _date[1])
+                est.append(list_chart)
+            data = pd.DataFrame(est)
+            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'Delete_rest':
+            print('Rest Delete')
+            for i in insert:
+                db2.child('LineLiff').child(i).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Tag':
+            print('tagIndex')
+            print(jsontag)
+            for i in insert:
+                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        elif button == 'RestTag':
+            print('resttag')
+            for k in key:
+                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        return redirect(url_for('new_chart'))
+
+
+@app.route('/tagrest/<string:lifftag>', methods=['GET', 'POST'])
+def tagrest(lifftag):
+    if request.method == 'GET':
+        ref = db2.child('RestCustomer').get()
+        if lifftag == 'RB010':
+            data = req_path('RB010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CC010':
+            data = req_path('CC010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CG010':
+            data = req_path('CG010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CI010':
+            data = req_path('CI010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CJ010':
+            data = req_path('CJ010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CM010':
+            data = req_path('CM010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CF010':
+            data = req_path('CF010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CP010':
+            data = req_path('CP010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CE010':
+            data = req_path('CE010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CH010':
+            data = req_path('CH010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CK010':
+            data = req_path('CK010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CN010':
+            data = req_path('CN010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RC010':
+            data = req_path('RC010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RA010':
+            data = req_path('RA010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'RB010':
+            data = req_path('RB010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+        elif lifftag == 'CD010':
+            data = req_path('CD010', ref, 'Tag')
+            return render_template('/customers_new/tag_rest.html', data=data)
+    elif request.method == 'POST':
+        key = request.form.getlist('key')
+        excel = request.form.getlist('excel')
+        insert = request.form.getlist('insert')
+        tagIndex = request.form.getlist('tag')
+        jsontag = request.get_json()
+        button = request.form['delete_button']
+        print(jsontag)
+        print(tagIndex, 'tag')
+        print(insert, 'insert')
+        print(key, 'key')
+        print(excel, 'excel')
+        if button == 'Delete_button':
+            print('Keep Delete')
+            for k in key:
+                k = str(k)
+                db2.child('RestCustomer').child(k).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Excel_button':
+            print('Keep Excel')
+            diplayName = session['user_id']['displayName']
+            _date = datetimeNow()
+            lst = []
+            for k in key:
+                list_chart = group_chart(k, diplayName, _date[0], _date[1])
+                lst.append(list_chart)
+            data = pd.DataFrame(lst)
+            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'Insert_button':
+            print('Rest Insert')
+            _date = datetimeNow()
+            diplayName = session['user_id']['displayName']
+            if not tagIndex:
+                print('ja')
+                for i in insert:
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+                return redirect(url_for('new_chart'))
+            else:
+                print('and')
+                for i in insert:
+                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                    group = push_database(i, diplayName, _date[0], _date[1])
+                    db2.child('RestCustomer').push(group)
+                    db2.child('LineLiff').child(i).remove()
+        elif button == 'Excel_rest':
+            print('Rest Excel')
+            est = []
+            _date = datetimeNow()
+            diplayName = session['user_id']['displayName']
+            for e in insert:
+                list_chart = push_database(e, diplayName, _date[0], _date[1])
+                est.append(list_chart)
+            data = pd.DataFrame(est)
+            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'Delete_rest':
+            print('Rest Delete')
+            for i in insert:
+                db2.child('LineLiff').child(i).remove()
+            return redirect(url_for('new_chart'))
+        elif button == 'Tag':
+            print('tagIndex')
+            print(jsontag)
+            for i in insert:
+                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
+        elif button == 'RestTag':
+            print('resttag')
+            for k in key:
+                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
+                print(data)
+            return redirect(url_for('new_chart'))
         return redirect(url_for('new_chart'))
 
 
@@ -688,6 +956,26 @@ def group_chart(e, username, date, time):
              'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
              'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag}
     return group
+
+
+def req_path(tag, ref, upper):
+    tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+            'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+            'RA010', 'RB010']
+    lst = []
+    eCount = 1
+    for i in ref.each()[1:]:
+        if tag in i.val()[upper]:
+            k = i.key()
+            user = dict(i.val())
+            user.update({'index': str(eCount), 'key': k})
+            lst.append(user)
+            eCount = eCount + 1
+    data = {
+        'lst': lst,
+        'tag': tags
+    }
+    return data
 
 
 def push_database(e, username, date, time):
