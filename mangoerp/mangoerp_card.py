@@ -124,7 +124,7 @@ def product_buttons():
 
 def productR4():
     imagemap_message = ImagemapSendMessage(
-        base_url='https://sv1.picz.in.th/images/2020/10/22/bflT71.jpg',
+        base_url='https://sv1.picz.in.th/images/2020/11/12/bCWAPt.png',
         alt_text='imagemap',
         base_size=BaseSize(height=1600, width=1040),
         actions=[
@@ -147,13 +147,13 @@ def productR4():
                 )
             ),
             URIImagemapAction(
-                link_uri='https://liff.line.me/1655104822-OmWMl8NA',
+                link_uri='https://www.mangoconsultant.com/th/mango-anywhere-software',
                 area=ImagemapArea(
                     x=164, y=1421, width=863, height=200
                 )
             ),
             URIImagemapAction(
-                link_uri='https://liff.line.me/1655104822-V86LlWPo',
+                link_uri='https://www.mangoconsultant.com/th/mango-anywhere-software',
                 area=ImagemapArea(
                     x=366, y=1118, width=280, height=280
                 )
@@ -193,7 +193,7 @@ def productR7():
                 )
             ),
             URIImagemapAction(
-                link_uri='https://liff.line.me/1655104822-V86LlWPo',
+                link_uri='https://www.mangoconsultant.com/th/mango-anywhere-software/application-on-mobile2',
                 area=ImagemapArea(
                     x=369, y=591, width=240, height=300
                 )
@@ -205,7 +205,7 @@ def productR7():
                 )
             ),
             URIImagemapAction(
-                link_uri='https://liff.line.me/1655104822-OmWMl8NA',
+                link_uri='https://www.mangoconsultant.com/th/mango-anywhere-software',
                 area=ImagemapArea(
                     x=301, y=940, width=748, height=180
                 )

@@ -1,245 +1,245 @@
 {% extends "customers_new/layout2.html" %}
 {% block content %}
 
-<div class="container">
-    <br>
-    <br>
-    <div class="row">
-        <div class="col-sm-6">
-            <canvas id="myChart" height="140"></canvas>
-        </div>
-        <dvi class="col-sm-6">
-            <canvas id="sumChart" height="140"></canvas>
-        </dvi>
-    </div>
-    <br>
-
-    <div class="row">
-        <div class="col-xl-4 col-lg-5 d-none">
-            <div class="card shadow mb-4">
-
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">intent</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <hr>
-
-                </div>
+    <div class="container">
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-sm-6">
+                <canvas id="myChart" height="140"></canvas>
             </div>
+            <dvi class="col-sm-6">
+                <canvas id="sumChart" height="140"></canvas>
+            </dvi>
         </div>
-    </div>
+        <br>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h6 class="m-0 font-weight-bold text-primary">ความสนใจ</h6>
-                </div>
-                <div class="col-sm-6">
-                    <div class="align-content-end">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="/stats_download" class="btn btn-success btn-sm">Download Excel</a>
+        <div class="row">
+            <div class="col-xl-4 col-lg-5 d-none">
+                <div class="card shadow mb-4">
+
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">intent</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-pie pt-4">
+                            <canvas id="myPieChart"></canvas>
+                        </div>
+                        <hr>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card-body">
-            <div class="table-responsive">
-                <form action="" method="POST">
-                    <table class="display" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr>
-                            <th>
-                            <div>
-                            &nbsp;&nbsp;<input type="checkbox" name="key" id="select-all">
-                            </div>
-                            </th>
-                            <th>Index</th>
-                            <th>Profile</th>
-                            <th>Type</th>
-                            <th>Target</th>
-                            <th>Date/time</th>
-                            <th>Delete</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i in data.user %}
-                        <tr>
-                            <td>
-                                    <input
-                                           type="checkbox"
-                                           name="key"
-                                           id="{{i.key}}"
-                                           value="{{i.key}}"
-                                           {% if i.key in data.user.key %} checked {% endif %}
-                                    >
-                            </td>
-                            <td>
-                                {{i.index}}
-                            </td>
-                            <td>
-                                {{i.profile}}
-                            </td>
-                            <td>{{i.message}}</td>
-                            <td>
-                                {{i.reply}}
-                            </td>
-                            <td>
-                                {{i.day}}/{{i.month}}/{{i.year}} {{i.hour}}:{{i.min}}:{{i.sec}}
-                            </td>
-                            <td>
-                                <div>
-                                    <a href="/r_stat/{{i.key}}" class="btn btn-danger btn-sm">Delete</a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                       <button type="submit" class="btn btn-danger btn-sm">Select Delete</button>
-                </form>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h6 class="m-0 font-weight-bold text-primary">ความสนใจ</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="align-content-end">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="/stats_download" class="btn btn-success btn-sm">Download Excel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form action="" method="POST">
+                        <table class="display" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <div>
+                                        &nbsp;&nbsp;<input type="checkbox" name="key" id="select-all">
+                                    </div>
+                                </th>
+                                <th>Index</th>
+                                <th>Profile</th>
+                                <th>Type</th>
+                                <th>Target</th>
+                                <th>Date/time</th>
+                                <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for i in data.user %}
+                                <tr>
+                                    <td>
+                                        <input
+                                                type="checkbox"
+                                                name="key"
+                                                id="{{ i.key }}"
+                                                value="{{ i.key }}"
+                                                {% if i.key in data.user.key %} checked {% endif %}
+                                        >
+                                    </td>
+                                    <td>
+                                        {{ i.index }}
+                                    </td>
+                                    <td>
+                                        {{ i.profile }}
+                                    </td>
+                                    <td>{{ i.message }}</td>
+                                    <td>
+                                        {{ i.reply }}
+                                    </td>
+                                    <td>
+                                        {{ i.day }}/{{ i.month }}/{{ i.year }} {{ i.hour }}:{{ i.min }}:{{ i.sec }}
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <a href="/r_stat/{{ i.key }}" class="btn btn-danger btn-sm">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <button type="submit" class="btn btn-danger btn-sm">Select Delete</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var constuction = {{data.con}}
-    var realestate = {{data.real}}
-    var projectplanning = {{data.pj}}
-    var rental = {{data.rental}}
-    var csm = {{data.csm}}
-    var qcm = {{data.qcm}}
-    var main = {{data.main}}
-    var mrp = {{data.mrp}}
-    var rent = {{data.rent}}
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var constuction = '{{data.con}}'
+        var realestate = '{{data.real}}'
+        var projectplanning = '{{data.pj}}'
+        var rental = '{{data.rental}}'
+        var csm = '{{data.csm}}'
+        var qcm = '{{data.qcm}}'
+        var main = '{{data.main}}'
+        var mrp = '{{data.mrp}}'
+        var rent = '{{data.rent}}'
 
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Construction', 'Real Estate', 'Project Planning', 'Promotion', 'Maintenance', 'CSM', 'QCM', 'MRP', 'Rental'],
-            datasets: [{
-                label: 'Stats Customers',
-                data: [constuction, realestate, projectplanning, rent, main, csm, qcm, mrp, rental],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(181, 222, 0, 0.2)',
-                    'rgba(255, 255, 255, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 0
-            }]
-        },
-        // options: {
-        //     scales: {
-        //         yAxes: [{
-        //             ticks: {
-        //                 beginAtZero: true
-        //             }
-        //         }]
-        //     }
-        // }
-    });
-
-</script>
-
-<script>
-    var ctx = document.getElementById('sumChart').getContext('2d');
-    var constuction = {{data.con}}
-    var realestate = {{data.real}}
-    var projectplanning = {{data.pj}}
-    var rental = {{data.rental}}
-    var csm = {{data.csm}}
-    var qcm = {{data.qcm}}
-    var main = {{data.main}}
-    var mrp = {{data.mrp}}
-    var rent = {{data.rent}}
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Construction', 'Real Estate', 'Project Planning', 'Promotion', 'Maintenance', 'CSM', 'QCM', 'MRP', 'Rental'],
-            datasets: [{
-                label: 'Stats Customers',
-                data: [constuction, realestate, projectplanning, rent, main, csm, qcm, mrp, rental],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(181, 222, 0, 0.2)',
-                    'rgba(255, 255, 255, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(181, 222, 0, 1)',
-                    'rgba(255, 255, 255, 1)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Construction', 'Real Estate', 'Project Planning', 'Promotion', 'Maintenance', 'CSM', 'QCM', 'MRP', 'Rental'],
+                datasets: [{
+                    label: 'Stats Customers',
+                    data: [constuction, realestate, projectplanning, rent, main, csm, qcm, mrp, rental],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(181, 222, 0, 0.2)',
+                        'rgba(255, 255, 255, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 0
                 }]
+            },
+            // options: {
+            //     scales: {
+            //         yAxes: [{
+            //             ticks: {
+            //                 beginAtZero: true
+            //             }
+            //         }]
+            //     }
+            // }
+        });
+
+    </script>
+
+    <script>
+        var ctx = document.getElementById('sumChart').getContext('2d');
+        var constuction = '{{data.con}}'
+        var realestate = '{{data.real}}'
+        var projectplanning = '{{data.pj}}'
+        var rental = '{{data.rental}}'
+        var csm = '{{data.csm}}'
+        var qcm = '{{data.qcm}}'
+        var main = '{{data.main}}'
+        var mrp = '{{data.mrp}}'
+        var rent = '{{data.rent}}'
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Construction', 'Real Estate', 'Project Planning', 'Promotion', 'Maintenance', 'CSM', 'QCM', 'MRP', 'Rental'],
+                datasets: [{
+                    label: 'Stats Customers',
+                    data: [constuction, realestate, projectplanning, rent, main, csm, qcm, mrp, rental],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(181, 222, 0, 0.2)',
+                        'rgba(255, 255, 255, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(181, 222, 0, 1)',
+                        'rgba(255, 255, 255, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "order": [[0, "desc"]]
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+
+    </script>
+
+
+    <script>
+        document.getElementById('select-all').onclick = function () {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
             }
         }
-    });
-
-
-</script>
-<script>
-    $(document).ready(function () {
-        $('#dataTable').DataTable({
-            "order": [[0, "desc"]]
-        });
-        $('.dataTables_length').addClass('bs-select');
-    });
-
-
-</script>
-
-
-<script>
-    document. getElementById('select-all'). onclick = function() {
-    var checkboxes = document. querySelectorAll('input[type="checkbox"]');
-    for (var checkbox of checkboxes) {
-        checkbox. checked = this. checked;
-        }
-    }
-</script>
+    </script>
 
 
 

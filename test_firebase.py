@@ -27,20 +27,23 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     db = firebase.database()
     line_bot_api = LineBotApi(data['Channel_access_token'])
     handler = WebhookHandler(data['Channel_secret'])
-
-group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
-         'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
-         'RA010', 'RB010']
-
-ref = db.child('LineLiff').get()
-lst = []
-for i in ref.each()[1:]:
-    if 'CC010' in i.val()['tag']:
-        lst.append(i.val())
+#
+# group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
+#          'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
+#          'RA010', 'RB010']
 
 
-for l in range(0, len(lst)):
-    print(l)
+
+#
+# ref = db.child('LineLiff').get()
+# lst = []
+# for i in ref.each()[1:]:
+#     if 'CC010' in i.val()['tag']:
+#         lst.append(i.val())
+#
+#
+# for l in range(0, len(lst)):
+#     print(l)
 # for i in ref.each()[1:]:
 #     print(i.val()['Tag'])
 #     for t in i.val()['Tag']:
@@ -335,5 +338,58 @@ for l in range(0, len(lst)):
     #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
     #          'Picture': picture}
     # print(group)
+# i = 0
+
+# xs = [x for x in lst if '2' in x]
+
+
+# daat = {'Name': 'name', 'Product': 'product', 'Company': ["gg", 'g'],
+#            'Tel': 'tel', 'Email': 'email', 'EmailLiff': 'token', 'Message': 'comment',
+#            'Profile': 'displayName', 'Date': 'ja', 'Time': 'ja',
+#            'Picture': 'picture'}
+#
+#
+# value = (daat['Company'])
+# if '' not in value:
+#     print('ok')
+# else:
+#     print('no')
+# # print(value)
+# if value > 1:
+#     print('ok')
+# else:
+#     print('not')
+
+#
+# ref = db.child('requestDemo').get()
+#
+#
+# def demoAPI():
+#     test = []
+#     for demo in ref.each()[1:]:
+#         company = demo.val()['company']
+#         email = demo.val()['email']
+#         fname = demo.val()['fname']
+#         product = demo.val()['message']
+#         message = demo.val()['product']
+#         tel = demo.val()['tel']
+#         apiDemo = {'Name': fname, 'Company': company, 'Email': email,
+#                    'Product': product, 'Message': message, 'tel': tel}
+#         test.append(apiDemo)
+#     return test
+
+
+showTag = ['รับเหมาสาธารณูปโภค', 'รับเหมาก่อสร้างระบบวางท่อ', 'งานระบบประกอบอาคาร',
+           'รับเหมาก่อสร้างพลังงานทดแทน', 'รับเหมาก่อสร้างงานอาคาร', 'ออกแบบตกแต่ง', 'รับเหมาขุดเจาะ',
+           'งานอลูมิเนียม', 'ผลิตและติดตั้ง', 'งานบริการ', 'รับสร้างบ้าน', 'ไม่แน่ใจ', 'อสังหาฯ', 'แนวราบ', 'แนวสูง',
+           'ขาย']
+
+tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+       'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+       'RC010', 'RA010', 'RB010']
+
+
+
+print(showTag)
 
 

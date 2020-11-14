@@ -1,0 +1,92 @@
+{% extends "customers_new/layout2.html" %}
+{% block content %}
+
+<div class="row" style="background-color:#fff;">
+    <div class="col-lg-8 offset-lg-2">
+        <form method="POST" action="/students/update/">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Student form: </h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="student_id">Student ID:</label>
+                        <input type="text" class="form-control" id="student_id" placeholder="Enter student id"
+                               name="student_id"
+                               value="{">
+                    </div>
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" class="form-control" id="first_name" placeholder="Enter first name"
+                               name="first_name" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" class="form-control" id="last_name" placeholder="Enter last name"
+                               name="last_name" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="faculty_code">Faculty:</label><br>
+                        <select name="faculty_code" id="faculty_code">
+                            <option value="">Please, select</option>
+                            {% for faculty in data.faculties %}
+                            <option value="{{faculty.code}}" {% if faculty== data.student.faculty %} selected {% endif %}>
+
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="major_code">Major:</label><br>
+                        <select name="major_code" id="major_code">
+                            <option value="">Please, select</option>
+                            {% for major in data.majors %}
+                            <option value="" {% if major== data.student.major %} selected {% endif %}>
+                                {{major.code}}-{{major.major_name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="genders">Gender:</label>
+                        {% for gender in data.genders %}
+                        <input type="radio"
+                               name="genders"
+                               id="{{gender}}"
+                               value="{{gender}}"
+                               {% if gender in data.student.gender %} checked {% endif %}> {{gender}} </input>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="programmings">Programmings:</label><br>
+                        {% for p in data.programmings %}
+                        <input type="checkbox"
+                               name="programmings"
+                               id="{{p._id}}"
+                               value="{{p._id}}"
+                               {% if p in data.student.programmings %} checked {% endif %}>
+                        <label for="{{p._id}}">{{p.programmings}}</label>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="hobbies">Hobbies:</label><br>
+                        {% for hobby in data.hobbies %}
+                        <input type="checkbox"
+                               name="hobbies"
+                               id="{{hobby}}"
+                               value="{{hobby}}"
+                               {% if hobby in data.student.hobbies %} checked {% endif %}>
+                        <label for="{{hobby}}">{{hobby}}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="{{class}} btn-sm btn-primary">Submit</button>
+                    &nbsp;<button type="button" class="btn-sm btn-danger"><a class="text-light" href="/students">Back</a></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

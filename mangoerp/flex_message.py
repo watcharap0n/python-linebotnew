@@ -782,7 +782,7 @@ def flex_bus():
                         "height": "sm",
                         "action": {
                             "type": "uri",
-                            "label": "POWER BI",
+                            "label": "BI Dashboard",
                             "uri": "https://liff.line.me/1655208213-qjWDbpKe"
                         }
                     },
@@ -2198,7 +2198,7 @@ def flex_profile(imageurl, profile):
     return flex_message
 
 
-def flex_pF(image_url, displayName, firstname, email, company, tel, product, comment, other):
+def flex_pF(image_url, displayName, firstname, email, company, tel, comment):
     flex_test = FlexSendMessage(
         alt_text='Flex message',
         contents={
@@ -2320,26 +2320,6 @@ def flex_pF(image_url, displayName, firstname, email, company, tel, product, com
                                             {
                                                 "type": "span",
                                                 "text": f"เบอร์ติดต่อ : {tel}"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": "hello, world",
-                                        "contents": [
-                                            {
-                                                "type": "span",
-                                                "text": f"ผลิตภัณฑ์ : {product}"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": "hello, world",
-                                        "contents": [
-                                            {
-                                                "type": "span",
-                                                "text": f"ผลิตภัณฑ์อื่นๆทีท่านสนใจ : {other}"
                                             }
                                         ]
                                     }
@@ -2821,6 +2801,89 @@ def flex_profile_erp(image_url, displayName, status):
                         "size": "xxs"
                     }
                 ]
+            }
+        })
+    return flex_test
+
+
+def flex_event(img, displayname):
+    flex_test = FlexSendMessage(
+        alt_text='Flex message',
+        contents={
+            "type": "bubble",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "image",
+                                        "url": f"{img}",
+                                        "aspectMode": "cover",
+                                        "size": "full"
+                                    }
+                                ],
+                                "cornerRadius": "100px",
+                                "width": "72px",
+                                "height": "72px"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "contents": [
+                                            {
+                                                "type": "span",
+                                                "text": f"คุณ {displayname}",
+                                                "weight": "bold",
+                                                "color": "#000000"
+                                            },
+                                            {
+                                                "type": "span",
+                                                "text": "     "
+                                            },
+                                            {
+                                                "type": "span",
+                                                "text": "\nขอบคุณที่สนใจบูธของเรา\nกรุณากรอกข้อมูลดังต่อไปนี้เพื่อร่วมกิจกรรมค่ะ"
+                                            }
+                                        ],
+                                        "size": "sm",
+                                        "wrap": True
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                            {
+                                                "type": "button",
+                                                "action": {
+                                                    "type": "uri",
+                                                    "label": "คลิกตรงนี้เลย",
+                                                    "uri": "https://liff.line.me/1655208213-G2OlJgNA"
+                                                },
+                                                "style": "secondary",
+                                                "height": "sm"
+                                            }
+                                        ],
+                                        "margin": "md"
+                                    }
+                                ]
+                            }
+                        ],
+                        "spacing": "xl",
+                        "paddingAll": "20px"
+                    }
+                ],
+                "paddingAll": "0px"
             }
         })
     return flex_test

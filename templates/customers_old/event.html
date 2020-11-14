@@ -1,0 +1,172 @@
+{% extends "sbadmin/loginLayout.html" %}
+{% block content %}
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+    <script>
+
+        $(window).on('load', function () {
+            liff.init({liffId: "1655240902-7A1woKDm"}, () => {
+                if (liff.isLoggedIn()) {
+                    runApp()
+                } else {
+                    liff.login();
+                }
+            }, err => console.error(err.code, error.message));
+            // liff.init(function (data) {
+        });
+    </script>
+
+    <script src="https://static.line-scdn.net/liff/edge/versions/2.3.0/sdk.js"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+
+        {#$(document).ready(function () {#}
+        {#    let list = []#}
+        {#    $("#btn").click(function (e) {#}
+        {#        e.preventDefault()#}
+        {#        $("input[class='kaneeang']").each(function () {#}
+        {#            if ($(this).prop("checked")) {#}
+        {#                let radio = $(this).attr('id')#}
+        {#                list.push(radio)#}
+        {#                console.log(list)#}
+        {#            }#}
+        {#        });#}
+        {#        let str = list[1].toString()#}
+        {#        console.log(str)#}
+        {#    });#}
+
+        $(document).ready(function () {
+            $('#btn').on('click', function () {
+                document.getElementById("comment").defaultValue = "None"
+                let firstname = $('#first').val()
+                let tel = $('#tel').val()
+                let lst = []
+                $("input[class='kaneeang']").each(function () {
+                    if ($(this).prop("checked")) {
+                        let radio = $(this).attr('id')
+                        lst.push(radio)
+                        console.log(lst)
+                    }
+                });
+                if (firstname === '' || tel === '' || lst == null || lst.toString() == '' || lst.toString() == null || lst == '') {
+                    $("#message").html("some field is empty!!")
+                } else {
+                    liff.getProfile().then(profile => {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/trainLetme',
+                            data: {
+                                'firstname': $('#first').val(),
+                                'email': $('#email').val(),
+                                'company': $('#compa').val(),
+                                'tel': $('#tel').val(),
+                                'news': lst.toString() + ' ',
+                                'comment': $('#comment').val(),
+                                'userId': profile.userId,
+                                'token': liff.getDecodedIDToken().email + '.',
+                                'displayName': profile.displayName,
+                                'picture': profile.pictureUrl
+                            },
+                            success: function (res, status) {
+                                liff.getProfile().then(function (profile) {
+                                    console.log("res eang: ", res)
+                                    console.log("status: ", status)
+                                    liff.closeWindow();
+                                })
+                            },
+
+                        });
+                    });
+                }
+            });
+        });
+
+
+        // $('#btn').on('click', function () {
+        //     liff.getProfile().then(profile => {
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: '/letme',
+        //             data: {
+        //                 'firstname': $('#first').val(),
+        //                 'email': $('#email').val(),
+        //                 'company': $('#compa').val(),
+        //                 'tel': $('#tel').val(),
+        //                 'product': $('#pro').val(),
+        //                 'userId': profile.userId,
+        //                 'token': liff.getDecodedIDToken().email,
+        //                 'displayName': profile.displayName,
+        //                 'picture': profile.pictureUrl
+        //             },
+        //             success: function (res, status) {
+        //                 liff.getProfile().then(function (profile) {
+        //                     console.log("res eang: ", res)
+        //                     console.log("status: ", status)
+        //                     liff.closeWindow();
+        //                 })
+        //             },
+        //
+        //         });
+        //     });
+        // });
+
+    </script>
+
+    <br>
+
+    <div class="container">
+        <center><img src="/static/images/update.png" class="" style="margin-bottom: 14px" alt="Cinque Terre"
+                     width="380" height="120"></center>
+        <form method="POST" action="">
+            <div class="form-group">
+                <label for="first">ชื่อผู้ติดต่อ :</label>
+                <input type="text" class="form-control" id="first" placeholder="Name"
+                       name="firstname" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="compa">ชื่อบริษัท :</label>
+                <input type="text" class="form-control" id="compa" placeholder="Company"
+                       name="company" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="position">ตำแหน่ง :</label>
+                <input type="text" class="form-control" id="position" placeholder="Position"
+                       name="company" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="email">อีเมล :</label>
+                <input type="email" class="form-control" id="email" placeholder="Email"
+                       name="email" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="tel">เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ :</label>
+                <input type="tel" class="form-control" id="tel" placeholder="Tel"
+                       name="tel" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="genders">ท่านต้องการรับข้อมูลข่าวสารหรือไม่ :</label>
+                <br>
+                {% for l in lst %}
+                    {% for n in l.news %}
+                        <input type="radio"
+                               class="kaneeang"
+                               name="news"
+                               id="{{ n }}"
+                               value="{{ n }}"
+                                {% if n in lst.news %} checked {% endif %}> {{ n }} </input>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="comment">รายละเอียดเพิ่มเติม :</label>
+                <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
+            </div>
+            <button id="btn" type="button" class="btn btn-success btn-block">Submit</button>
+        </form>
+    </div>
+    <br>
+    <br>
+{% endblock %}
+
