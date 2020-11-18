@@ -1,4 +1,4 @@
-{% extends "sbadmin/loginLayout.html" %}
+{% extends "main/loginLayout.html" %}
 {% block content %}
 
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
@@ -56,13 +56,14 @@
                     liff.getProfile().then(profile => {
                         $.ajax({
                             type: 'POST',
-                            url: '/trainLetme',
+                            url: '/ajax_training',
                             data: {
                                 'firstname': $('#first').val(),
                                 'email': $('#email').val(),
                                 'company': $('#compa').val(),
                                 'tel': $('#tel').val(),
                                 'news': lst.toString() + ' ',
+                                'channel': 'LINE',
                                 'comment': $('#comment').val(),
                                 'userId': profile.userId,
                                 'token': liff.getDecodedIDToken().email + '.',
@@ -148,14 +149,14 @@
             <div class="form-group">
                 <label for="genders">ท่านต้องการรับข้อมูลข่าวสารหรือไม่ :</label>
                 <br>
-                {% for l in lst %}
-                    {% for n in l.news %}
+                {% for toNew in data %}
+                    {% for new in toNew.news %}
                         <input type="radio"
                                class="kaneeang"
                                name="news"
-                               id="{{ n }}"
-                               value="{{ n }}"
-                                {% if n in lst.news %} checked {% endif %}> {{ n }} </input>
+                               id="{{ new }}"
+                               value="{{ new }}"
+                                {% if new in data.news %} checked {% endif %}> {{ new }} </input>
                     {% endfor %}
                 {% endfor %}
             </div>

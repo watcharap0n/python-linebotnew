@@ -1,4 +1,4 @@
-{% extends "sbadmin/loginLayout.html" %}
+{% extends "main/loginLayout.html" %}
 
 {% block content %}
 
@@ -34,13 +34,14 @@
                 liff.getProfile().then(profile => {
                     $.ajax({
                         type: 'POST',
-                        url: '/letme',
+                        url: '/ajax_marketing',
                         data: {
                             'firstname': $('#first').val(),
                             'email': $('#email').val(),
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
                             'product': 'Real Estates',
+                            'channel': 'LINE',
                             'other': $('#pro').val(),
                             'comment': $('#comment').val(),
                             'userId': profile.userId,

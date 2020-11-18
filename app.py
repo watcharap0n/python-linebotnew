@@ -1,13 +1,13 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
     make_response, send_from_directory
-import json, uuid, time, os, warnings, pyrebase, firebase_admin, base64, pandas as pd
+import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
 from datetime import timedelta
 from random import randrange
 from numpy import random
 from model_image import *
 from PIL import Image
-from mangoerp.question import *
+from mangoerp.myClass import *
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -15,11 +15,10 @@ from datetime import datetime
 from firebase_admin import credentials, auth
 from mangoerp.mangoerp_card import *
 from mangoerp.flex_message import *
+from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
-from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
-                            StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize)
-
-warnings.simplefilter('error', Image.DecompressionBombWarning)
+from linebot.models import (MessageEvent, TextMessage, TextSendMessage, ImageSendMessage, QuickReplyButton, QuickReply,
+                            StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, CameraAction)
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -92,29 +91,30 @@ def before_request():
         print("error login")
 
 
+def sessionCustomer(user, password):
+    getLogin = pb.auth().sign_in_with_email_and_password(user, password)
+    with open('log_LoginSession', 'w') as logLogin:
+        json.dump(getLogin, logLogin)
+    session['user_id'] = getLogin
+
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=60)
 
 
-@app.route('/log', methods=['GET', 'POST'])
-def log():
-    return render_template('customers_new/log.html')
-
-
 @app.route('/api/demorequest', methods=['GET', 'POST'])
-def customerDemo():
+def apiDemoReq():
     if request.method == 'POST':
         try:
-            to = TimeDate
+            to = TimeDate()
             event_email = request.get_json()
             event_email = dict(event_email)
-            groupBy = {'event': event_email, 'Date': f'{to.day}-{to.month}-{to.year}',
+            apiDict = {'event': event_email, 'Date': f'{to.day}-{to.month}-{to.year}',
                        'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ['']}
-            print(groupBy)
-            db2.child('requestDemo').push(groupBy)
-            db2.child('feature_selection').push(groupBy)
+            db2.child('requestDemo').push(apiDict)
+            db2.child('feature_selection').push(apiDict)
             response = app.response_class(
                 response=json.dumps(event_email),
                 mimetype='application/json'
@@ -125,19 +125,18 @@ def customerDemo():
 
 
 @app.route('/api/contract', methods=['GET', 'POST'])
-def customerContract():
+def apiContractReq():
     if request.method == 'POST':
         try:
-            to = TimeDate
-            event_email = request.get_json()
-            event_email = dict(event_email)
-            groupBy = {'event': event_email, 'Date': f'{to.day}-{to.month}-{to.year}',
+            to = TimeDate()
+            event_contract = request.get_json()
+            event_contract = dict(event_contract)
+            apiDict = {'event': event_contract, 'Date': f'{to.day}-{to.month}-{to.year}',
                        'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ['']}
-            print(groupBy)
-            db2.child('requestcontract').push(groupBy)
-            db2.child('feature_selectionBycontract').push(groupBy)
+            db2.child('requestContract').push(apiDict)
+            db2.child('feature_selectionByContract').push(apiDict)
             response = app.response_class(
-                response=json.dumps(event_email),
+                response=json.dumps(event_contract),
                 mimetype='application/json'
             )
             return response
@@ -145,104 +144,26 @@ def customerContract():
             return jsonify({'error Sending: Please try again'}, 400)
 
 
-@app.route('/lg/<string:customer>', methods=['GET', 'POST'])
-def login(customer):
-    if request.path == '/lg/new':
-        if g.user:
-            return redirect(url_for('index_newcustomer'))
-    elif request.path == '/lg/old':
-        if g.user:
-            return redirect(url_for('index_customer'))
-    user = None
-    new_customer = {'customer': 'new'}
-    old_customer = {'customer': 'old'}
-    c_result = [new_customer, old_customer]
-    if request.method == 'GET':
-        for i in c_result:
-            if i['customer'] == customer:
-                print(f'found: {i}')
-                print(session)
-                user = i
-                break
-        if request.path == '/lg/new':
-            data = {
-                'user': user,
-                'customer': 'New Customer'
-            }
-            return render_template('sbadmin/login.html', data=data)
-        elif request.path == '/lg/old':
-            data = {
-                'user': user,
-                'customer': 'Customer',
-            }
-            return render_template('sbadmin/login.html', data=data)
-    if request.method == 'POST':
-        error = 'Invalid credentials. Please try again. '
-        if request.path == '/lg/new':
-            session.pop('user_id', None)
-            user = request.form['username']
-            password = request.form['password']
-            try:
-                toLogin = pb.auth().sign_in_with_email_and_password(user, password)
-                with open('login_json.json', 'w') as json_login:
-                    json.dump(toLogin, json_login)
-                session['user_id'] = toLogin
-                print(session)
-                print(toLogin['email'])
-                flash('You were successfully logged in')
-                return redirect(url_for('new_chart'))
-            except:
-                data = {
-                    'user': user,
-                    'customer': 'Customer',
-                    'error': error
-                }
-                return render_template('sbadmin/login.html', data=data)
-        elif request.path == '/lg/old':
-            session.pop('user_id', None)
-            user = request.form['username']
-            password = request.form['password']
-            try:
-                toLogin = pb.auth().sign_in_with_email_and_password(user, password)
-                with open('login_json.json', 'w') as json_login:
-                    json.dump(toLogin, json_login)
-                session['user_id'] = toLogin
-                flash('You were successfully logged in')
-                print('ok')
-                return redirect(url_for('index_customer'))
-            except:
-                data = {
-                    'user': user,
-                    'customer': 'Customer',
-                    'error': error
-                }
-                return render_template('sbadmin/login.html', data=data)
-    return render_template('sbadmin/login.html')
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    print(session)
-    return redirect(url_for('welcome'))
-
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == 'POST':
+    if not g.user:
+        return redirect(url_for('welcome'))
+    if request.method == 'GET':
+        return render_template('main/signup.html')
+    elif request.method == 'POST':
         error = 'Please fill in all information.'
         confirm_error = 'Passwords do not match.'
         userId = request.form['userId']
-        position = request.form['staff']
+        position = request.form['position']
         first_name = request.form['firstname']
         last_name = request.form['lastname']
         email = request.form['email']
         password = request.form['password']
         confirm_pwd = request.form['confirmpwd']
         if password != confirm_pwd:
-            return render_template('sbadmin/signup.html', error=confirm_error)
+            return render_template('main/signup.html', error=confirm_error)
         if email is None or password is None or first_name is None or last_name is None:
-            return render_template('sbadmin/signup.html', error=error)
+            return render_template('main/signup.html', error=error)
         try:
             user = auth.create_user(email=email, password=password, display_name=userId)
             to = TimeDate()
@@ -253,21 +174,56 @@ def signup():
             hour = to.hour
             year = to.year
             data = {'firstname': first_name, 'lastname': last_name, 'email': user.email, 'userToken': user.uid,
-                    'userId': user.display_name, 'position': position, 'Datetime': {'day': day, 'month': month,
-                                                                                    'year': year, 'hour': hour,
-                                                                                    'minute': minute, 'second': second}}
+                    'userId': user.display_name, 'position': position, 'Datetime':
+                        {'day': day, 'month': month, 'year': year, 'hour': hour, 'minute': minute, 'second': second}}
             db1.child('id').push(data)
             return redirect(url_for('welcome'))
         except:
-            return render_template('sbadmin/signup.html', error=error)
-    return render_template('sbadmin/signup.html')
+            return render_template('main/signup.html', error=error)
 
 
-@app.route('/setting')
-def settingPage():
-    if not g.user:
-        return redirect(url_for('welcome'))
-    return render_template('sbadmin/setting.html')
+@app.route('/lg/<string:customer>', methods=['GET', 'POST'])
+def login(customer):
+    user = None
+    newCustomer = {'customer': 'new'}
+    trainCustomer = {'customer': 'old'}
+    customers = [newCustomer, trainCustomer]
+    if request.method == 'GET':
+        for i in customers:
+            if i['customer'] == customer:
+                user = i['customer']
+                break
+        data = {
+            'customer': user
+        }
+        return render_template('main/login.html', data=data)
+    if request.method == 'POST':
+        error = 'Invalid credentials. Please try again.'
+        session.pop('user_id', None)
+        user = request.form['username']
+        password = request.form['password']
+        if customer == 'new':
+            try:
+                sessionCustomer(user, password)
+                flash('You were successfully logged in')
+                return redirect(url_for('marketing_import'))
+            except:
+                data = {
+                    'user': user,
+                    'error': error
+                }
+                return render_template('main/login.html', data=data)
+        elif customer == 'old':
+            try:
+                sessionCustomer(user, password)
+                flash('You were successfully logged in')
+                return redirect(url_for('training_import'))
+            except:
+                data = {
+                    'user': user,
+                    'error': error
+                }
+                return render_template('main/login.html', data=data)
 
 
 @app.route('/forgot', methods=['GET', 'POST'])
@@ -276,191 +232,35 @@ def forgot():
         forgot = request.form['email']
         try:
             pb.auth().send_password_reset_email(forgot)
-            return render_template('sbadmin/forgot.html', error='Please check your email verify reset password.')
+            return render_template('main/forgot.html', error='Please check your email verify reset password.')
         except:
-            return render_template('sbadmin/forgot.html', error='error')
-    return render_template('sbadmin/forgot.html')
+            return render_template('main/forgot.html', error='error')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('welcome'))
 
 
 @app.route('/')
 @app.route('/welcome')
 def welcome():
-    return render_template('sbadmin/welcome.html')
+    return render_template('main/welcome.html')
 
 
-@app.route('/training/<string:site>', methods=['GET', 'POST'])
-def trianing(site):
-    if request.method == 'GET':
-        if request.path == '/training/event':
-            lst = []
-            news = {'news': ['รับข้อมูลข่าวสาร', 'ไม่รับข้อมูลข่าวสาร']}
-            lst.append(news)
-            return render_template('customers_old/event.html', lst=lst)
+@app.route('/bot_marketing')
+def bot_marketing():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    return render_template('customers_new/index.html')
 
 
-@app.route('/mango/<string:site>', methods=['GET', 'POST'])
-def line_liff(site):
-    if request.path == '/mango/construction':
-        print(site)
-        x = 'Construction'
-        page_data = get_link(x)
-        Insert = db2.child('chat-flex').push(page_data)
-        print('show: ', Insert)
-        lst = []
-        product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
-        lst.append(product)
-        return render_template('customers_new/construction.html', lst=lst)
-    elif request.path == '/mango/planing':
-        print(site)
-        x = 'Project Planning'
-        page_data = get_link(x)
-        Insert = db2.child('chat-flex').push(page_data)
-        print('show: ', Insert)
-        lst = []
-        product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
-        lst.append(product)
-        return render_template('customers_new/planing.html', lst=lst)
-    elif request.path == '/mango/reales':
-        print(site)
-        x = 'Real Estate'
-        page_data = get_link(x)
-        Insert = db2.child('chat-flex').push(page_data)
-        print('show: ', Insert)
-        lst = []
-        product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
-        lst.append(product)
-        return render_template('customers_new/reales.html', lst=lst)
-    elif request.path == '/mango/rent':
-        print(site)
-        x = 'เช่าสุดคุ้ม'
-        page_data = get_link(x)
-        Insert = db2.child('chat-flex').push(page_data)
-        print('show: ', Insert)
-        lst = []
-        product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
-        lst.append(product)
-        return render_template('customers_new/rent.html', lst=lst)
-    elif request.path == '/mango/anywhere':
-        print('anywhere')
-        lst = []
-        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
-        lst.append(product)
-        return render_template('customers_new/quote.html', lst=lst)
-    elif request.path == '/mango/powerbi':
-        print(site)
-        lst = []
-        product = {'product': 'Power BI'}
-        lst.append(product)
-        return render_template('customers_new/powerbi.html', lst=lst)
-
-
-@app.route('/trainLetme', methods=['GET', 'POST'])
-def trainLetme():
-    if request.method == 'POST':
-        event = request.form.to_dict()
-        print(event)
-        to = TimeDate()
-        insert = {'channel': 'LINE Training', 'tag': [''], 'day': to.day, 'month': to.month,
-                  'year': to.year, 'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
-        db3.child('trainCustomer').push(insert)
-        return make_response(event)
-
-
-@app.route('/letme', methods=['GET', 'POST'])
-def letme():
-    if request.method == 'POST':
-        event = request.form.to_dict()
-        to = TimeDate()
-        p = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month, 'year': to.year, 'hour': to.hour,
-             'min': to.minute, 'sec': to.second,
-             'event': event}
-        print(event)
-        with open('lineliff.json', 'w') as lineliff:
-            json.dump(event, lineliff)
-        firstname = event['firstname']
-        email = event['email']
-        company = event['company']
-        tel = event['tel']
-        product = event['product']
-        userId = event['userId']
-        picture = event['picture']
-        displayName = event['displayName']
-        comment = event['comment']
-        print(picture)
-        if email and tel:
-            flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
-            line_bot_api2.push_message(userId, flex_profile)
-            line_bot_api2.push_message(userId, TextSendMessage(
-                text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
-            db2.child('LineLiff').push(p)
-        else:
-            line_bot_api2.push_message(userId, TextSendMessage(
-                text='เนื่องจากคุณลูกค้าทำการกรอกข้อมูลไม่ครบถ้วน โปรดกรอกข้อมูลให้ครบถ้วยด้วยค่ะ\n\nขอบคุณค่ะ'))
-        return make_response(event)
-
-
-@app.route('/paint')
-def paint():
-    return render_template('sbadmin/painting.html')
-
-
-@app.route('/event/<string:event>', methods=['GET', 'POST'])
-def event(event):
-    if request.method == 'GET':
-        if event == 'event':
-            print('event')
-            lst = []
-            product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
-            lst.append(product)
-            return render_template('customers_new/event.html', lst=lst)
-    elif request.method == 'POST':
-        if event == 'event':
-            r = request.form.to_dict()
-            print(r)
-            to = TimeDate()
-            Inserted = {'channel': 'event Impact', 'tag': [''], 'day': to.day, 'month': to.month, 'year': to.year,
-                        'hour': to.hour, 'min': to.minute, 'sec': to.second,
-                        'event': r}
-            print(Inserted)
-            db2.child('LineLiff').push(Inserted)
-            firstname = r['firstname']
-            email = r['email']
-            company = r['company']
-            tel = r['tel']
-            userId = r['userId']
-            picture = r['picture']
-            displayName = r['displayName']
-            comment = r['comment']
-            product = r['product']
-            flex_profile = flex_pF(picture, displayName, firstname, email, company, tel, comment)
-            line_bot_api2.push_message(userId, flex_profile)
-            line_bot_api2.push_message(userId, TextSendMessage(
-                text='ขอบคุณลูกค้ามากค่ะ 😁'))
-            return make_response(r)
-    return render_template('customers_new/event.html')
-
-
-@app.route('/saveimage', methods=['POST'])
-def saveimage():
-    if request.method == 'POST':
-        event = request.form.to_dict()
-        dir_name = 'static/img_paint'
-        img_name = uuid.uuid4().hex
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
-        with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as img:
-            img.write(base64.b64decode(event['image'].split(",")[1]))
-        original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
-        if (original.format != 'JPEG'):
-            return make_response('Unsupported image type.', 400)
-        original.thumbnail((240, 240), Image.ANTIALIAS)
-        original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
-        return make_response(img_name, 200)
-
-
-@app.route('/admin_index')
-def index():
-    return render_template('sbadmin/index.html')
+@app.route('/bot_training')
+def bot_training():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    return render_template('customers_old/index.html')
 
 
 @app.route('/index_new_customer')
@@ -481,19 +281,15 @@ def index_customer():
 
 @app.route('/intent/<string:id>', methods=['GET', 'POST'])
 def intent(id):
-    data = {
-        'id': id,
-    }
-    return render_template('sbadmin/intent.html', data=data)
+    data = {'id': id}
+    return render_template('main/intent.html', data=data)
 
 
 @app.route('/new_intent/<string:id>', methods=['GET', 'POST'])
 def new_intent(id):
     if not g.user:
         return redirect(url_for('welcome'))
-    data = {
-        'id': id,
-    }
+    data = {'id': id}
     return render_template('customers_new/intent.html', data=data)
 
 
@@ -501,14 +297,131 @@ def new_intent(id):
 def old_intent(id):
     if not g.user:
         return redirect(url_for('welcome'))
-    data = {
-        'id': id,
-    }
+    data = {'id': id}
     return render_template('customers_old/intent.html', data=data)
 
 
-@app.route('/chart', methods=['GET', 'POST'])
-def chart():
+def dataPath_marketing(statProduct):
+    inserted = statProduct
+    show_data = TagChart.get_link(inserted)
+    db2.child('chat-flex').push(show_data)
+
+
+@app.route('/LIFF_training/<string:site>', methods=['GET', 'POST'])
+def LIFF_training(site):
+    if request.method == 'GET':
+        if site == 'event':
+            toLst = []
+            news = {'news': ['รับข้อมูลข่าวสาร', 'ไม่รับข้อมูลข่าวสาร']}
+            toLst.append(news)
+            return render_template('customers_old/event.html', data=toLst)
+
+
+@app.route('/ajax_training', methods=['POST'])
+def ajax_training():
+    if request.method == 'POST':
+        event = request.form.to_dict()
+        to = TimeDate()
+        toDict = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month,
+                  'year': to.year, 'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
+        db3.child('trainCustomer').push(toDict)
+        return make_response(event)
+
+
+@app.route('/LIFF_marketing/<string:site>', methods=['GET', 'POST'])
+def LIFF_marketing(site):
+    if site == 'construction':
+        toList = []
+        dataPath_marketing('Construction')
+        product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
+        toList.append(product)
+        return render_template('customers_new/event/construction.html', lst=toList)
+    elif site == 'planing':
+        toList = []
+        dataPath_marketing('Project Planning')
+        product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
+        toList.append(product)
+        return render_template('customers_new/event/planing.html', lst=toList)
+    elif site == 'reales':
+        toList = []
+        dataPath_marketing('Real Estate')
+        product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
+        toList.append(product)
+        return render_template('customers_new/event/reales.html', lst=toList)
+    elif site == 'rent':
+        toList = []
+        dataPath_marketing('เช่าสุดคุ้ม')
+        product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
+        toList.append(product)
+        return render_template('customers_new/event/rent.html', lst=toList)
+    elif site == 'anywhere':
+        toList = []
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
+        toList.append(product)
+        return render_template('customers_new/event/quote.html', lst=toList)
+    elif site == 'powerbi':
+        toList = []
+        dataPath_marketing('powerBI')
+        product = {'product': 'Power BI'}
+        toList.append(product)
+        return render_template('customers_new/event/powerbi.html', lst=toList)
+    elif site == 'event':
+        toList = []
+        dataPath_marketing('Event')
+        product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
+        toList.append(product)
+        return render_template('customers_new/event/event.html')
+
+
+@app.route('/ajax_marketing', methods=['POST'])
+def ajax_marketing():
+    if request.method == 'POST':
+        event = request.form.to_dict()
+        to = TimeDate()
+        insertDatabase = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month, 'year': to.year,
+                          'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
+        db2.child('LineLiff').push(insertDatabase)
+        firstname = event['firstname']
+        email = event['email']
+        company = event['company']
+        tel = event['tel']
+        product = event['product']
+        userId = event['userId']
+        picture = event['picture']
+        displayName = event['displayName']
+        comment = event['comment']
+        flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
+        line_bot_api2.push_message(userId, flex_profile)
+        line_bot_api2.push_message(userId, TextSendMessage(
+            text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
+        return make_response(event)
+
+
+@app.route('/paint')
+def paint():
+    return render_template('main/painting.html')
+
+
+@app.route('/saveimage', methods=['POST'])
+def saveimage():
+    if request.method == 'POST':
+        event = request.form.to_dict()
+        dir_name = 'static/img_paint'
+        img_name = uuid.uuid4().hex
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as img:
+            img.write(base64.b64decode(event['image'].split(",")[1]))
+        original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
+        if (original.format != 'JPEG'):
+            return make_response('Unsupported image type.', 400)
+        original.thumbnail((240, 240), Image.ANTIALIAS)
+        original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
+        return make_response(img_name, 200)
+
+
+@app.route('/training_import', methods=['GET', 'POST'])
+def training_import():
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
@@ -516,503 +429,400 @@ def chart():
                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
                'RC010', 'RA010', 'RB010']
         fire = FirebaseCustomer(db=db3)
-        lst = fire.importCustomer()
-        amountImport = len(lst)
+        training_import = fire.importCustomer()
+        amountImport = len(training_import)
         data = {
-            'tags': tag,
-            'import': lst,
+            'tag': tag,
+            'imports': training_import,
             'amountImport': amountImport
         }
-        return render_template('customers_old/charts.html', data=data)
+        return render_template('customers_old/training_import.html', data=data)
+    elif request.method == 'POST':
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_import = request.form.getlist('key_import')
+        button_event = ButtonEvent(loop=key_import, db=db3, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('trainCustomer', 'tag')
+        elif button == 'button_insert':
+            pass
+        elif button == 'button_excel':
+            button_event.button_excel_import_train()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'button_delete':
+            button_event.button_delete('trainCustomer')
+            return redirect(url_for('training_import'))
+        return redirect(url_for('training_import'))
 
 
-@app.route('/new_chart', methods=['GET', 'POST'])
-def new_chart():
+@app.route('/marketing_import', methods=['GET', 'POST'])
+def marketing_import():
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
-        tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-               'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
-               'RC010', 'RA010', 'RB010']
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
         fire = FirebaseNewCustomer(db=db2)
-        lst = fire.restCustomer()
-        est = fire.liffCustomer()
-        _id = len(lst)
-        rMsg = len(est)
-        demo = fire.demoCustomer()
+        marketing_import = fire.liffCustomer()
+        information = fire.restCustomer()
+        getDemo = fire.demoCustomer()
+        amount = len(marketing_import)
+        information = len(information)
+        getDemo = len(getDemo)
         data = {
-            'tag': tag,
-            'users': lst,
-            'est': est,
-            'msg': _id,
-            'rmsg': rMsg,
-            'demo': str(demo[1])
+            'tag': tags,
+            'amount': amount,
+            'getDemo': getDemo,
+            'information': information,
+            'imports': marketing_import
         }
-        return render_template('customers_new/charts.html', data=data, amount=len)
+        return render_template('customers_new/table/import.html', data=data)
     elif request.method == 'POST':
-        try:
-            broadcast = request.form['msg']
-            broadImg = request.form['bcImg']
-            image_message = ImageSendMessage(
-                original_content_url=f'{broadImg}',
-                preview_image_url=f'{broadImg}'
-            )
-            if broadcast or broadImg is None:
-                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-            elif broadImg or broadcast:
-                line_bot_api2.broadcast(image_message)
-            else:
-                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-                line_bot_api2.broadcast(image_message)
-            return redirect(url_for('new_chart'))
-        except:
-            tag = TagChart()
-            button = request.form['delete_button']
-            key = request.form.getlist('key')
-            excel = request.form.getlist('excel')
-            insert = request.form.getlist('insert')
-            tagIndex = request.form.getlist('tag')
-            jsonTag = request.get_json()
-            print(jsonTag)
-            print(tagIndex, 'tag')
-            print(insert, 'insert')
-            print(key, 'key')
-            print(excel, 'excel')
-            if button == 'Delete_button':
-                print('Keep Delete')
-                for k in key:
-                    db2.child('RestCustomer').child(k).remove()
-                return redirect(url_for('new_chart'))
-            elif button == 'Excel_button':
-                print('Keep Excel')
-                lst = []
-                for k in key:
-                    list_chart = tag.group_chart(k, db2)
-                    lst.append(list_chart)
-                data = pd.DataFrame(lst)
-                datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
-                data.to_excel(datatoexcel, sheet_name='Sheet1')
-                datatoexcel.save()
-                return send_from_directory('static/excel', 'Customers.xlsx')
-            elif button == 'Insert_button':
-                _date = datetimeNow()
-                diplayName = session['user_id']['displayName']
-                if not tagIndex:
-                    for i in insert:
-                        group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                        db2.child('RestCustomer').push(group)
-                        db2.child('LineLiff').child(i).remove()
-                    return redirect(url_for('new_chart'))
-                else:
-                    for i in insert:
-                        db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                        group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                        db2.child('RestCustomer').push(group)
-                        db2.child('LineLiff').child(i).remove()
-            elif button == 'Excel_rest':
-                print('Rest Excel')
-                est = []
-                for e in insert:
-                    list_chart = tag.excel_liff(e, db2)
-                    est.append(list_chart)
-                data = pd.DataFrame(est)
-                datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
-                data.to_excel(datatoexcel, sheet_name='Sheet1')
-                datatoexcel.save()
-                return send_from_directory('static/excel', 'newCustomers.xlsx')
-            elif button == 'Delete_rest':
-                print('Rest Delete')
-                for i in insert:
-                    db2.child('LineLiff').child(i).remove()
-                return redirect(url_for('new_chart'))
-            elif button == 'Tag':
-                print('tagIndex')
-                print(jsonTag)
-                for i in insert:
-                    data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                    print(data)
-                return redirect(url_for('new_chart'))
-            elif button == 'RestTag':
-                print('resttag')
-                for k in key:
-                    data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
-                    print(data)
-                return redirect(url_for('new_chart'))
-        return redirect(url_for('new_chart'))
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_import = request.form.getlist('key_import')
+        button_event = ButtonEvent(loop=key_import, db=db2, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('LineLiff', 'tag')
+        elif button == 'button_insert':
+            to = TimeDate()
+            date = f'{to.day}-{to.month}-{to.year}'
+            time = f'{to.hour}:{to.minute}:{to.second}'
+            displayName = session['user_id']['displayName']
+            button_event.button_insert_import(displayName, date, time, db2)
+        elif button == 'button_excel':
+            button_event.button_excel_import()
+            return send_from_directory('static/excel', 'newCustomers.xlsx')
+        elif button == 'button_delete':
+            button_event.button_delete('LineLiff')
+            return redirect(url_for('marketing_import'))
+        return redirect(url_for('marketing_import'))
+
+
+@app.route('/marketing_information', methods=['GET', 'POST'])
+def marketing_information():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    if request.method == 'GET':
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
+        fire = FirebaseNewCustomer(db=db2)
+        marketing_information = fire.restCustomer()
+        marketing_import = fire.liffCustomer()
+        getDemo = len(fire.demoCustomer())
+        amount = len(marketing_information)
+        marketing_import = len(marketing_import)
+        data = {
+            'getDemo': getDemo,
+            'information': marketing_information,
+            'import': marketing_import,
+            'amount': amount,
+            'tag': tags
+        }
+        return render_template('customers_new/table/information.html', data=data)
+    elif request.method == 'POST':
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_information = request.form.getlist('key_information')
+        button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags)
+        print(tags)
+        if button == 'button_tag':
+            button_event.button_tag('RestCustomer', 'Tag')
+        elif button == 'button_excel':
+            button_event.button_excel_information()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'button_delete':
+            button_event.button_delete('RestCustomer')
+            return redirect(url_for('marketing_information'))
+        elif button == 'button_edit':
+            for key in key_information:
+                return redirect(url_for('marketing_information_update', id=key))
+        elif button == 'button_sorting':
+            req = TagChart
+            ref = db2.child('RestCustomer').get()
+            data = req.req_path_list(tags, ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        return redirect(url_for('marketing_information'))
 
 
 @app.route('/getDemo', methods=['GET', 'POST'])
 def getDemo():
-    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-           'CF010',
-           'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
-           'RA010', 'RB010']
+    if not g.user:
+        return redirect(url_for('welcome'))
     if request.method == 'GET':
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
         fire = FirebaseNewCustomer(db=db2)
-        lst = fire.restCustomer()
         getDemo = fire.demoCustomer()
-        rest = len(lst)
+        information = fire.restCustomer()
+        _import = fire.liffCustomer()
+        len_getDemo = len(getDemo)
+        len_information = len(information)
+        len_import = len(_import)
         data = {
-            'amountLiff': fire.lenLIFF(),
-            'amountRest': rest,
-            'tag': tag,
-            'rest': lst,
-            'amount': getDemo[1],
-            'demo': getDemo[0]
+            'getDemo': getDemo,
+            'amount_getDemo': len_getDemo,
+            'amount_information': len_information,
+            'amount_import': len_import,
+            'tag': tags
         }
-        return render_template('customers_new/getDemo.html', data=data)
+        return render_template('customers_new/table/getDemo.html', data=data)
     elif request.method == 'POST':
-        try:
-            broadcast = request.form['msg']
-            broadImg = request.form['bcImg']
-            image_message = ImageSendMessage(
-                original_content_url=f'{broadImg}',
-                preview_image_url=f'{broadImg}'
-            )
-            if broadcast or broadImg is None:
-                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-            elif broadImg or broadcast:
-                line_bot_api2.broadcast(image_message)
-            else:
-                line_bot_api2.broadcast(TextSendMessage(text=str(broadcast)))
-                line_bot_api2.broadcast(image_message)
-            return redirect(url_for('getDemo'))
-        except:
-            gm = TagChart()
-            button = request.form['delete_button']
-            key = request.form.getlist('key')
-            excel = request.form.getlist('excel')
-            inserted = request.form.getlist('inserted')
-            tagIndex = request.form.getlist('tag')
-            print(f'button {button}, key {key}, excel {excel} inserted {inserted} tagIndex {tagIndex}')
-            if button == 'RestTag':
-                for i in key:
-                    data = db2.child('requestDemo').child(i).update({'tag': tagIndex})
-                    print(data)
-            elif button == 'TagInformation':
-                for i in inserted:
-                    data = db2.child('RestCustomer').child(i).update({'Tag': tagIndex})
-                    print(data)
-            elif button == 'Insert_button':
-                _date = datetimeNow()
-                diplayName = session['user_id']['displayName']
-                if not tagIndex:
-                    for i in key:
-                        group = gm.chart_demo(i, diplayName, _date[0], _date[1], db2)
-                        db2.child('RestCustomer').push(group)
-                        db2.child('requestDemo').child(i).remove()
-            elif button == 'Excel_rest':
-                lst = []
-                for i in key:
-                    list_chart = gm.excel_demo(i, db2)
-                    lst.append(list_chart)
-                data = pd.DataFrame(lst)
-                datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
-                data.to_excel(datatoexcel, sheet_name='Sheet1')
-                datatoexcel.save()
-                return send_from_directory('static/excel', 'newCustomers.xlsx')
-            elif button == 'Excel_button':
-                lst = []
-                for k in inserted:
-                    list_chart = gm.group_chart(k, db2)
-                    lst.append(list_chart)
-                data = pd.DataFrame(lst)
-                datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
-                data.to_excel(datatoexcel, sheet_name='Sheet1')
-                datatoexcel.save()
-                return send_from_directory('static/excel', 'Customers.xlsx')
-            elif button == 'Delete_rest':
-                for i in key:
-                    db2.child('requestDemo').child(i).remove()
-            elif button == 'Delete_button':
-                for k in inserted:
-                    db2.child('RestCustomer').child(k).remove()
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_getDemo = request.form.getlist('key_getDemo')
+        button_event = ButtonEvent(loop=key_getDemo, db=db2, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('requestDemo', 'tag')
+        elif button == 'button_insert':
+            to = TimeDate()
+            date = f'{to.day}-{to.month}-{to.year}'
+            time = f'{to.hour}:{to.minute}:{to.second}'
+            displayName = session['user_id']['displayName']
+            button_event.button_insert_getDemo(displayName, date, time, db2)
+        elif button == 'button_excel':
+            button_event.button_excel_getDemo()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'button_delete':
+            button_event.button_delete('requestDemo')
             return redirect(url_for('getDemo'))
 
 
-@app.route('/tagliff/<string:lifftag>', methods=['GET', 'POST'])
-def lifftag(lifftag):
+@app.route('/marketing_import_update/<string:id>', methods=['GET', 'POST'])
+def marketing_import_update(id):
     if request.method == 'GET':
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
+        product = ['RealEstate', 'Construction', 'PowerBI', 'Project Planning']
+        ref = db2.child('RestCustomer').child(id).get()
+        data = {
+            'product': product,
+            'user': ref.val(),
+            'tag': tags
+        }
+        return render_template('customers_new/form/updateMG.html', data=data)
+
+
+@app.route('/marketing_information_update/<string:id>', methods=['GET', 'POST'])
+def marketing_information_update(id):
+    if not g.user:
+        return redirect(url_for('welcome'))
+    if request.method == 'GET':
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
+        product = ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning']
+        other = ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM',
+                 'QCM', 'Maintenance', 'Rental', 'MRP']
+        ref = db2.child('RestCustomer').child(id).get()
+        data = {
+            'product': product,
+            'user': ref.val(),
+            'tag': tags,
+            'other': other
+        }
+        return render_template('customers_new/form/updateMG.html', data=data)
+    elif request.method == 'POST':
+        product = request.form['product']
+        name = request.form['name']
+        tags = request.form.getlist('tag')
+        company = request.form['company']
+        tel = request.form['tel']
+        other = request.form['other']
+        channel = request.form['channel']
+        displayName = request.form['displayName']
+        message = request.form['message']
+        email = request.form['email']
+        emailLIFF = request.form['token']
+        if tags:
+            groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
+                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
+                       'Profile': displayName, 'Channel': channel, 'Tag': tags}
+            db2.child('RestCustomer').child(id).update(groupBy)
+        else:
+            groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
+                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
+                       'Profile': displayName, 'Channel': channel, 'Tag': ['']}
+            db2.child('RestCustomer').child(id).update(groupBy)
+        return redirect(url_for('marketing_information'))
+
+
+@app.route('/excel_all/<string:excel>', methods=['GET', 'POST'])
+def excel_all(excel):
+    if request.method == 'GET':
+        if excel == 'import':
+            excel_all = TagChart()
+            dbDatetime = excel_all.import_excel_all(db2)
+            data = pd.DataFrame(dbDatetime)
+            datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'FromPython.xlsx')
+        elif excel == 'information':
+            excel_all = TagChart()
+            dbDatetime = excel_all.information_excel_all(db2)
+            data = pd.DataFrame(dbDatetime)
+            datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'FromPython.xlsx')
+        elif excel == 'getDemo':
+            excel_all = TagChart()
+            dbDatetime = excel_all.demo_excel_all(db2)
+            data = pd.DataFrame(dbDatetime)
+            datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
+            data.to_excel(datatoexcel, sheet_name='Sheet1')
+            datatoexcel.save()
+            return send_from_directory('static/excel', 'FromPython.xlsx')
+        return redirect(url_for('marketing_import'))
+
+
+@app.route('/tagImport/<string:tag>', methods=['GET', 'POST'])
+def tagImport(tag):
+    if request.method == 'GET':
+        req = TagChart
         ref = db2.child('LineLiff').get()
-        if lifftag == 'CB010':
-            data = req_path('CB010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CC010':
-            data = req_path('CC010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CG010':
-            data = req_path('CG010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CI010':
-            data = req_path('CI010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CJ010':
-            data = req_path('CJ010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CM010':
-            data = req_path('CM010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CF010':
-            data = req_path('CF010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CP010':
-            data = req_path('CP010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CE010':
-            data = req_path('CE010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CH010':
-            data = req_path('CH010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CK010':
-            data = req_path('CK010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CN010':
-            data = req_path('CN010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'CD010':
-            data = req_path('CD010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'RC010':
-            data = req_path('RC010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'RA010':
-            data = req_path('RA010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
-        elif lifftag == 'RB010':
-            data = req_path('RB010', ref, 'tag')
-            return render_template('customers_new/liff_tag.html', data=data)
+        if tag == 'CB010':
+            data = req.req_path('CB010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CC010':
+            data = req.req_path('CC010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CG010':
+            data = req.req_path('CG010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CI010':
+            data = req.req_path('CI010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CJ010':
+            data = req.req_path('CJ010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CM010':
+            data = req.req_path('CM010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CF010':
+            data = req.req_path('CF010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CP010':
+            data = req.req_path('CP010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CE010':
+            data = req.req_path('CE010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CH010':
+            data = req.req_path('CH010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CK010':
+            data = req.req_path('CK010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CN010':
+            data = req.req_path('CN010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'CD010':
+            data = req.req_path('CD010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'RC010':
+            data = req.req_path('RC010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'RA010':
+            data = req.req_path('RA010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
+        elif tag == 'RB010':
+            data = req.req_path('RB010', ref, 'tag', db2)
+            return render_template('customers_new/table/tagImport.html', data=data)
     elif request.method == 'POST':
-        tag = TagChart()
-        key = request.form.getlist('key')
-        excel = request.form.getlist('excel')
-        insert = request.form.getlist('insert')
-        tagIndex = request.form.getlist('tag')
-        jsontag = request.get_json()
-        button = request.form['delete_button']
-        print(jsontag)
-        print(tagIndex, 'tag')
-        print(insert, 'insert')
-        print(key, 'key')
-        print(excel, 'excel')
-        if button == 'Delete_button':
-            print('Keep Delete')
-            for k in key:
-                k = str(k)
-                db2.child('RestCustomer').child(k).remove()
-            return redirect(url_for('new_chart'))
-        elif button == 'Excel_button':
-            print('Keep Excel')
-            lst = []
-            for k in key:
-                list_chart = tag.group_chart(k, db2)
-                lst.append(list_chart)
-            data = pd.DataFrame(lst)
-            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
-            data.to_excel(datatoexcel, sheet_name='Sheet1')
-            datatoexcel.save()
-            return send_from_directory('static/excel', 'Customers.xlsx')
-        elif button == 'Insert_button':
-            print('Rest Insert')
-            _date = datetimeNow()
-            diplayName = session['user_id']['displayName']
-            if not tagIndex:
-                print('ja')
-                for i in insert:
-                    group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                    db2.child('RestCustomer').push(group)
-                    db2.child('LineLiff').child(i).remove()
-                return redirect(url_for('new_chart'))
-            else:
-                print('and')
-                for i in insert:
-                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                    group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                    db2.child('RestCustomer').push(group)
-                    db2.child('LineLiff').child(i).remove()
-        elif button == 'Excel_rest':
-            print('Rest Excel')
-            est = []
-            _date = datetimeNow()
-            eUser = session['user_id']['email']
-            diplayName = session['user_id']['displayName']
-            for e in insert:
-                list_chart = tag.push_database(e, diplayName, _date[0], _date[1], db2)
-                est.append(list_chart)
-            data = pd.DataFrame(est)
-            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
-            data.to_excel(datatoexcel, sheet_name='Sheet1')
-            datatoexcel.save()
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_import = request.form.getlist('key_import')
+        button_event = ButtonEvent(loop=key_import, db=db2, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('LineLiff', 'tag')
+        elif button == 'button_insert':
+            to = TimeDate()
+            date = f'{to.day}-{to.month}-{to.year}'
+            time = f'{to.hour}:{to.minute}:{to.second}'
+            displayName = session['user_id']['displayName']
+            button_event.button_insert_import(displayName, date, time, db2)
+        elif button == 'button_excel':
+            button_event.button_excel_import()
             return send_from_directory('static/excel', 'newCustomers.xlsx')
-        elif button == 'Delete_rest':
-            print('Rest Delete')
-            for i in insert:
-                db2.child('LineLiff').child(i).remove()
-            return redirect(url_for('new_chart'))
-        elif button == 'Tag':
-            print('tagIndex')
-            print(jsontag)
-            for i in insert:
-                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                print(data)
-            return redirect(url_for('new_chart'))
-        elif button == 'RestTag':
-            print('resttag')
-            for k in key:
-                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
-                print(data)
-            return redirect(url_for('new_chart'))
-        return redirect(url_for('new_chart'))
+        elif button == 'button_delete':
+            button_event.button_delete('LineLiff')
+            return redirect(url_for('marketing_import'))
+        return redirect(url_for('marketing_import'))
 
 
-@app.route('/tagrest/<string:lifftag>', methods=['GET', 'POST'])
-def tagrest(lifftag):
+@app.route('/tagInformation/<string:tag>', methods=['GET', 'POST'])
+def tagInformation(tag):
     if request.method == 'GET':
-        tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-               'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
-               'RC010', 'RA010', 'RB010']
-
+        req = TagChart
         ref = db2.child('RestCustomer').get()
-        fire = FirebaseNewCustomer(db=db2)
-        lst = fire.restCustomer()
-        est = fire.liffCustomer()
-        _id = len(lst)
-        ee = len(est)
-        var = {
-            'tag': tag,
-            'users': lst,
-            'est': est,
-            'msg': _id,
-            'amount': ee
-        }
-        if lifftag == 'CB010':
-            data = req_path('CB010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CC010':
-            data = req_path('CC010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CG010':
-            data = req_path('CG010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CI010':
-            data = req_path('CI010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CJ010':
-            data = req_path('CJ010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CM010':
-            data = req_path('CM010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CF010':
-            data = req_path('CF010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CP010':
-            data = req_path('CP010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CE010':
-            data = req_path('CE010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CH010':
-            data = req_path('CH010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CK010':
-            data = req_path('CK010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CN010':
-            data = req_path('CN010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'CD010':
-            data = req_path('CD010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'RC010':
-            data = req_path('RC010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'RA010':
-            data = req_path('RA010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
-        elif lifftag == 'RB010':
-            data = req_path('RB010', ref, 'Tag')
-            return render_template('customers_new/tag_rest.html', data=data, index=var)
+        if tag == 'CB010':
+            data = req.req_path('CB010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CC010':
+            data = req.req_path('CC010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CG010':
+            data = req.req_path('CG010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CI010':
+            data = req.req_path('CI010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CJ010':
+            data = req.req_path('CJ010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CM010':
+            data = req.req_path('CM010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CF010':
+            data = req.req_path('CF010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CP010':
+            data = req.req_path('CP010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CE010':
+            data = req.req_path('CE010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CH010':
+            data = req.req_path('CH010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CK010':
+            data = req.req_path('CK010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CN010':
+            data = req.req_path('CN010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'CD010':
+            data = req.req_path('CD010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'RC010':
+            data = req.req_path('RC010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'RA010':
+            data = req.req_path('RA010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif tag == 'RB010':
+            data = req.req_path('RB010', ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
     elif request.method == 'POST':
-        tag = TagChart()
-        key = request.form.getlist('key')
-        excel = request.form.getlist('excel')
-        insert = request.form.getlist('insert')
-        tagIndex = request.form.getlist('tag')
-        jsontag = request.get_json()
-        button = request.form['delete_button']
-        print(jsontag)
-        print(tagIndex, 'tag')
-        print(insert, 'insert')
-        print(key, 'key')
-        print(excel, 'excel')
-        if button == 'Delete_button':
-            print('Keep Delete')
-            for k in key:
-                k = str(k)
-                db2.child('RestCustomer').child(k).remove()
-            return redirect(url_for('new_chart'))
-        elif button == 'Excel_button':
-            print('Keep Excel')
-            lst = []
-            for k in key:
-                list_chart = tag.group_chart(k, db2)
-                lst.append(list_chart)
-            data = pd.DataFrame(lst)
-            datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
-            data.to_excel(datatoexcel, sheet_name='Sheet1')
-            datatoexcel.save()
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_information = request.form.getlist('key_information')
+        button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('RestCustomer', 'Tag')
+        elif button == 'button_excel':
+            button_event.button_excel_information()
             return send_from_directory('static/excel', 'Customers.xlsx')
-        elif button == 'Insert_button':
-            print('Rest Insert')
-            _date = datetimeNow()
-            diplayName = session['user_id']['displayName']
-            if not tagIndex:
-                print('ja')
-                for i in insert:
-                    group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                    db2.child('RestCustomer').push(group)
-                    db2.child('LineLiff').child(i).remove()
-                return redirect(url_for('new_chart'))
-            else:
-                print('and')
-                for i in insert:
-                    db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                    group = tag.push_database(i, diplayName, _date[0], _date[1], db2)
-                    db2.child('RestCustomer').push(group)
-                    db2.child('LineLiff').child(i).remove()
-        elif button == 'Excel_rest':
-            print('Rest Excel')
-            est = []
-            _date = datetimeNow()
-            diplayName = session['user_id']['displayName']
-            for e in insert:
-                list_chart = tag.push_database(e, diplayName, _date[0], _date[1], db2)
-                est.append(list_chart)
-            data = pd.DataFrame(est)
-            datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
-            data.to_excel(datatoexcel, sheet_name='Sheet1')
-            datatoexcel.save()
-            return send_from_directory('static/excel', 'newCustomers.xlsx')
-        elif button == 'Delete_rest':
-            print('Rest Delete')
-            for i in insert:
-                db2.child('LineLiff').child(i).remove()
-            return redirect(url_for('new_chart'))
-        elif button == 'Tag':
-            print('tagIndex')
-            print(jsontag)
-            for i in insert:
-                data = db2.child('LineLiff').child(i).update({'tag': tagIndex})
-                print(data)
-            return redirect(url_for('new_chart'))
-        elif button == 'RestTag':
-            print('resttag')
-            for k in key:
-                data = db2.child('RestCustomer').child(k).update({'Tag': tagIndex})
-                print(data)
-            return redirect(url_for('new_chart'))
-        return redirect(url_for('new_chart'))
+        elif button == 'button_delete':
+            button_event.button_delete('RestCustomer')
+            return redirect(url_for('marketing_information'))
+        return redirect(url_for('marketing_information'))
 
 
 @app.route('/graph', methods=['GET', 'POST'])
@@ -1084,111 +894,10 @@ def graph():
     return render_template('customers_new/graph.html')
 
 
-def datetimeNow():
-    day = datetime.today().day
-    month = datetime.today().month
-    second = datetime.today().second
-    minute = datetime.today().minute
-    hour = datetime.today().hour
-    year = datetime.today().year
-    timeNow = f'{hour}:{minute}:{second}'
-    dateNow = f'{day}-{month}-{year}'
-    return dateNow, timeNow
-
-
-def req_path(tag, ref, upper):
-    tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-            'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
-            'RC010', 'RA010', 'RB010']
-    lst = []
-    eCount = 1
-    for i in ref.each()[1:]:
-        if tag in i.val()[upper]:
-            k = i.key()
-            user = dict(i.val())
-            user.update({'index': str(eCount), 'key': k})
-            lst.append(user)
-            eCount = eCount + 1
-    data = {
-        'lst': lst,
-        'tag': tags
-    }
-    return data
-
-
-@app.route('/download')
-def download():
-    if request.method == 'GET':
-        ref = db2.child('RestCustomer').get()
-        date_time = []
-        for i in ref.each()[1:]:
-            profile = i.val()['Profile']
-            cTime = i.val()['Time']
-            cDate = i.val()['Date']
-            company = i.val()['Company']
-            email = i.val()['Email']
-            pEmail = i.val()['EmailLiff']
-            message = i.val()['Message']
-            picture = i.val()['Picture']
-            product = i.val()['Product']
-            tag = i.val()['Tag']
-            tel = i.val()['Tel']
-            name = i.val()['Name']
-            username = i.val()['Username']
-            ImportDate = i.val()['DateInsert']
-            ImportTime = i.val()['TimeInsert']
-            group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
-                     'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
-                     'Picture': picture, 'Username': username, 'Tag': tag,
-                     'ImportDate/Time': f'{ImportDate} {ImportTime}',
-                     }
-            date_time.append(group)
-        dbDatetime = date_time
-        data = pd.DataFrame(dbDatetime)
-        datatoexcel = pd.ExcelWriter('static/excel/FromPython.xlsx', engine='xlsxwriter')
-        data.to_excel(datatoexcel, sheet_name='Sheet1')
-        datatoexcel.save()
-        return send_from_directory('static/excel', 'FromPython.xlsx')
-    return redirect(url_for('new_chart'))
-
-
-@app.route('/stats_download', methods=['GET'])
-def stats_download():
-    if request.method == 'GET':
-        date_time = []
-        ref = db2.child('chat-flex').get()
-        for e in ref.each():
-            # index = e['index']
-            profile = e.val()['profile']
-            erp = e.val()['message']
-            reply = e.val()['reply']
-            year = e.val()['year']
-            month = e.val()['month']
-            day = e.val()['day']
-            dbTime = {'profile': profile, 'question': erp, 'reply': reply, 'year': year, 'month': month, 'day': day}
-            date_time.append(dbTime)
-        dbDatetime = date_time
-        data = pd.DataFrame(dbDatetime)
-        datatoexcel = pd.ExcelWriter('static/excel/Stats.xlsx', engine='xlsxwriter')
-        data.to_excel(datatoexcel, sheet_name='Sheet1')
-        datatoexcel.save()
-        return send_from_directory('static/excel', 'Stats.xlsx')
-    return redirect(url_for('graph'))
-
-
 @app.route('/r_stat/<string:key>', methods=['GET'])
 def remove_stats(key):
     db2.child('chat-flex').child(key).remove()
     return redirect(url_for('graph'))
-
-
-@app.route('/api/upload', methods=['POST'])
-def upload():
-    image = cv2.imdecode(np.fromstring(request.files['image'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
-    img_processed = detect_object(image, None, None, None)
-    print(img_processed)
-    print(type(img_processed))
-    return jsonify(img_processed)
 
 
 @app.route('/webhook', methods=['GET', 'POST'])
@@ -2218,4 +1927,4 @@ def richmenu(rich):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5005)
+    app.run(debug=True, port=5000)

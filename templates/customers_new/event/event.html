@@ -1,4 +1,4 @@
-{% extends "sbadmin/loginLayout.html" %}
+{% extends "main/loginLayout.html" %}
 
 {% block content %}
 
@@ -6,7 +6,7 @@
 <script>
 
     $(window).on('load', function () {
-        liff.init({liffId: "1655208213-8r59zjPv"}, () => {
+        liff.init({liffId: "1655208213-G2OlJgNA"}, () => {
             if (liff.isLoggedIn()) {
                 runApp()
             } else {
@@ -24,24 +24,26 @@
     function runApp() {
         $('#btn').on('click', function () {
             document.getElementById("comment").defaultValue = "None"
-            var firstname = $('#first').val()
-            var email = $('#email').val()
-            var company = $('#compa').val()
-            var tel = $('#tel').val()
-            if (firstname === '' || company === '' || email === '' || tel === '') {
+            document.getElementById("pro").defaultValue = "None"
+            document.getElementById("email").defaultValue = "None"
+            document.getElementById("compa").defaultValue = "None"
+            var firstname = $('#tel').val()
+            var tel = $('#first').val()
+            if (firstname === '' || tel === '') {
                 $("#message").html("some field is empty!!")
             } else {
                 liff.getProfile().then(profile => {
                     $.ajax({
                         type: 'POST',
-                        url: '/letme',
+                        url: '/event/event',
                         data: {
                             'firstname': $('#first').val(),
                             'email': $('#email').val(),
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
-                            'product': 'Construction',
-                            'other': $('#pro').val(),
+                            'product': $('#pro').val(),
+                            'channel': 'Event Impact',
+                            'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
                             'token': liff.getDecodedIDToken().email + '.',
@@ -95,7 +97,7 @@
 <br>
 
 <div class="container">
-    <center><img src="/static/images/erp_con.1.png" class="" style="margin-bottom: 14px" alt="Cinque Terre" width="380" height="109"></center>
+    <center><img src="/static/images/mango-profile.jpg" class="rounded-circle" alt="Cinque Terre" height="140"></center>
     <form method="POST" id="perform" onsubmit="return validation()">
         <div class="form-group">
             <label for="first">ชื่อผู้ติดต่อ :</label>
@@ -108,6 +110,19 @@
                    name="company" value="" required>
         </div>
         <div class="form-group">
+            <label for="pro">ผลิตภัณฑ์ที่ท่านสนใจ :</label><br>
+            <select class="form-control" name="product" id="pro">
+                <option value="">Please, select</option>
+                {% for p in lst %}
+                {% for i in p.product %}
+                <option value="{{i}}" {% if i == p.product %} selected {% endif %}>
+                    {{i}}
+                </option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
             <label for="email">อีเมล :</label>
             <input type="email" class="form-control" id="email" placeholder="Email"
                    name="email" value="" required>
@@ -116,19 +131,6 @@
             <label for="tel">เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ :</label>
             <input type="tel" class="form-control" id="tel" placeholder="Tel"
                    name="tel" value="" required>
-        </div>
-        <div class="form-group">
-            <label for="pro">ผลิตภัณฑ์อื่นๆที่ท่านสนใจ :</label><br>
-            <select class="form-control" name="product" id="pro">
-                <option value="">Other</option>
-                {% for p in lst %}
-                {% for i in p.product %}
-                <option value="{{i}}" {% if i== p.product %} selected {% endif %}>
-                    {{i}}
-                </option>
-                {% endfor %}
-                {% endfor %}
-            </select>
         </div>
         <div class="form-group">
             <label for="comment">รายละเอียดเพิ่มเติม :</label>

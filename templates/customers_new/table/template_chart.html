@@ -2,34 +2,98 @@
 {% block content %}
 
 
-    <!-- Topbar -->
-    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-    </nav>
-    <!-- End of Topbar -->
 
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
-        <!-- Page Heading -->
+    <div class="container-fluid" style="margin-top: 30px">
 
+        <h1 class="h3 mb-2 text-gray-800">Boardcast</h1>
+
+        <div class="row">
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="col mr-2">
+                            <form class="user" method="POST" action="">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <label for="broadcast"
+                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Text:</label>
+                                        <input type="text" class="form-control" id="broadcast" name="msg" required>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <label for="broadcast"
+                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Image
+                                            URL:</label>
+                                        <input type="text" class="form-control" id="broadcast_img" name="bcImg">
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <br>
+                                        <button type="submit" class="btn btn-outline-success">
+                                            <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                                            Boardcast
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">จำนวนข้อความ
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800 mm">{{ data.msg }}</div>
+                            </div>
+                            <div class="">
+                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-8">
                         <ul class="nav nav-pills" role="tablist">
+                            <li class="nav-item">
+                                <a class="btn btn-outline-success " data-toggle="pill" href="#home">
+                                    <i class="fa fa-users"></i>
+                                    ข้อมูลลูกค้า
+                                    <span class="badge badge-light">{{ data.msg }}</span>
+                                </a>
+                            </li>
 
                             <li class="nav-item" style="margin-left: 10px">
-                                <a class="btn btn-outline-success active" data-toggle="pill" href="#menu1">
-                                    <i class="fa fa-list" aria-hidden="true"></i>
-                                    เรียงลำดับนำเข้า
+                                <a class="btn btn-outline-success active" data-toggle="pill" href="#import">
+                                    <i class="fa fa-reply" aria-hidden="true"></i>
+                                    นำเข้า
                                     <span class="badge badge-light">{{ data.rmsg }}</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item" style="margin-left: 10px">
+                                <a href="/getDemo">
+                                    <button
+                                            class="btn btn-outline-success" data-toggle="tooltip"
+                                            title="New Customers">
+                                        <i class="fa fa-globe" aria-hidden="true"></i>
+                                        นัดDemo
+                                        <span class="badge badge-light">{{ data.demo }}</span>
+                                    </button>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                    <div class="col-sm-4">
 
-                    </div>
                     <div class="col-sm-4">
                         <div class="align-content-end">
                             <a href="/download" class="btn btn-success">
@@ -66,10 +130,10 @@
                     </div>
                 </div>
             </div>
-            <form class="kane" action="" method="POST">
+            <form action="" method="POST">
                 <div class="card-body">
                     <div class="tab-content">
-                        <div id="menu1" class="tab-pane active">
+                        <div id="import" class="tab-pane active">
                             <div class="footer">
                                 <div class="dropdown" style="margin-bottom: 15px">
                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle"
@@ -80,17 +144,17 @@
                                         <li class="dropdown-header">Select Tag</li>
                                         <li class="divider"></li>
                                         {% for w in data.tag %}
-                                            {% if w == 'CB010' %}
+                                            {% if w == 'CG010' %}
                                                 <a class="dropdown-item">
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CB010"
+                                                           id="CG010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
-                                                    <label for="CB010" class="getvalue" data-toggle="CB010"
-                                                           title="รับเหมาสาธารณูปโภค (ถนน, สะพาน, รถไฟฟ้า, ระบบชลประทาน)">
-                                                        {{ w }}
+                                                    <label for="CG010" class="getvalue" data-toggle="CG010"
+                                                           title="งานระบบประกอบอาคาร(ระบบไฟฟ้า,ระบบปะปา,ระบบปรับอากาศ)">
+                                                        งานระบบประกอบอาคาร
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -99,26 +163,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CC010"
+                                                           id="CC010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CC010" class="getvalue" data-toggle="CC010"
                                                            title="รับเหมาก่อสร้างระบบวางท่อ">
-                                                        {{ w }}
-                                                    </label>
-                                                </a>
-                                            {% endif %}
-                                            {% if w == 'CG010' %}
-                                                <a class="dropdown-item">
-                                                    <input class="tag_sort"
-                                                           type="checkbox"
-                                                           name="tag"
-                                                           id="CG010"
-                                                           value="{{ w }}"
-                                                            {% if w in data %} checked {% endif %}>
-                                                    <label for="CG010" class="getvalue" data-toggle="CG010"
-                                                           title="งานระบบประกอบอาคาร (ระบบไฟฟ้า,ระบบปะปา,ระบบปรับอากาศ)">
-                                                        {{ w }}
+                                                        รับเหมาก่อสร้างระบบวางท่อ
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -127,12 +177,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CI010"
+                                                           id="CI010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CI010" class="getvalue" data-toggle="CI010"
                                                            title="รับเหมาก่อสร้างพลังงานทดแทน">
-                                                        {{ w }}
+                                                        รับเหมาก่อสร้างพลังงานทดแทน
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -141,12 +191,26 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CJ010"
+                                                           id="CJ010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CJ010" class="getvalue" data-toggle="CJ010"
                                                            title="รับเหมาก่อสร้างงานอาคาร">
-                                                        {{ w }}
+                                                        รับเหมาก่อสร้างงานอาคาร
+                                                    </label>
+                                                </a>
+                                            {% endif %}
+                                            {% if w == 'CB010' %}
+                                                <a class="dropdown-item">
+                                                    <input class="tag_sort"
+                                                           type="checkbox"
+                                                           name="tag"
+                                                           id="CB010R"
+                                                           value="{{ w }}"
+                                                            {% if w in data %} checked {% endif %}>
+                                                    <label for="CB010" class="getvalue" data-toggle="CB010"
+                                                           title="รับเหมาสาธารณูปโภค(ถนน, สะพาน, รถไฟฟ้า, ระบบชลประทาน)">
+                                                        รับเหมาสาธารณูปโภค
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -155,12 +219,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CM010"
+                                                           id="CM010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CM010" class="getvalue" data-toggle="CM010"
-                                                           title="ออกแบบ ตกแต่ง">
-                                                        {{ w }}
+                                                           title="ออกแบบตกแต่ง">
+                                                        ออกแบบตกแต่ง
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -169,12 +233,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CF010"
+                                                           id="CF010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CF010" class="getvalue" data-toggle="CF010"
                                                            title="รับเหมาขุดเจาะ">
-                                                        {{ w }}
+                                                        รับเหมาขุดเจาะ
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -183,12 +247,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CP010"
+                                                           id="CP010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CP010" class="getvalue" data-toggle="CP010"
                                                            title="งานอลูมิเนียม">
-                                                        {{ w }}
+                                                        งานอลูมิเนียม
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -197,12 +261,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CE010"
+                                                           id="CE010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CE010" class="getvalue" data-toggle="CE010"
                                                            title="ผลิตและติดตั้ง">
-                                                        {{ w }}
+                                                        ผลิตและติดตั้ง
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -211,12 +275,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CH010"
+                                                           id="CH010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CH010" class="getvalue" data-toggle="CH010"
                                                            title="งานบริการ">
-                                                        {{ w }}
+                                                        งานบริการ
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -225,26 +289,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CK010"
+                                                           id="CK010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CK010" class="getvalue" data-toggle="CK010"
                                                            title="รับสร้างบ้าน">
-                                                        {{ w }}
-                                                    </label>
-                                                </a>
-                                            {% endif %}
-                                            {% if w == 'CN010' %}
-                                                <a class="dropdown-item">
-                                                    <input class="tag_sort"
-                                                           type="checkbox"
-                                                           name="tag"
-                                                           id="CN010"
-                                                           value="{{ w }}"
-                                                            {% if w in data %} checked {% endif %}>
-                                                    <label for="CN010" class="getvalue" data-toggle="CN010"
-                                                           title="ไม่แน่ใจ">
-                                                        {{ w }}
+                                                        รับสร้างบ้าน
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -253,26 +303,26 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="CD010"
+                                                           id="CD010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="CD010" class="getvalue" data-toggle="CD010"
                                                            title="ขาย">
-                                                        {{ w }}
+                                                        ขาย
                                                     </label>
                                                 </a>
                                             {% endif %}
-                                            {% if w == 'RA010' %}
+                                            {% if w == 'RC010' %}
                                                 <a class="dropdown-item">
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="RC010"
+                                                           id="RC010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="RC010" class="getvalue" data-toggle="RC010"
                                                            title="อสังหาฯ">
-                                                        {{ w }}
+                                                        อสังหาฯ
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -281,13 +331,12 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="RA010"
+                                                           id="RA010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
-                                                    <label for="RA010" class="getvalue"
-                                                           data-toggle="RA010"
+                                                    <label for="RA010" class="getvalue" data-toggle="RA010"
                                                            title="แนวราบ">
-                                                        {{ w }}
+                                                        แนวราบ
                                                     </label>
                                                 </a>
                                             {% endif %}
@@ -296,132 +345,88 @@
                                                     <input class="tag_sort"
                                                            type="checkbox"
                                                            name="tag"
-                                                           id="RB010"
+                                                           id="RB010R"
                                                            value="{{ w }}"
                                                             {% if w in data %} checked {% endif %}>
                                                     <label for="RB010" class="getvalue"
                                                            data-toggle="RB010"
                                                            title="แนวสูง">
-                                                        {{ w }}
+                                                        แนวสูง
+                                                    </label>
+                                                </a>
+                                            {% endif %}
+                                            {% if w == 'CN010' %}
+                                                <a class="dropdown-item">
+                                                    <input class="tag_sort"
+                                                           type="checkbox"
+                                                           name="tag"
+                                                           id="CN010R"
+                                                           value="{{ w }}"
+                                                            {% if w in data %} checked {% endif %}>
+                                                    <label for="CN010" class="getvalue"
+                                                           data-toggle="CN010"
+                                                           title="ไม่แน่ใจ">
+                                                        ไม่แน่ใจ
                                                     </label>
                                                 </a>
                                             {% endif %}
                                         {% endfor %}
                                         <hr>
-                                        <button type="submit" name="delete_button" value="Tag" style="margin-left: 10px"
-                                                class="btn btn-secondary btn-sm" id="tageang">
+                                        <button type="submit" name="delete_button" style="margin-left: 10px"
+                                                value="Tag"
+                                                class="btn btn-secondary btn-sm"
+                                                id="tageang">
                                             <i class="fas fa-tags"></i>
                                             Apply
                                         </button>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
+
+
                             <div class="table-responsive">
-                                <table class="display" id="restTable" width="100%" cellspacing="0">
+                                <table class="display" id="restTable">
                                     <thead>
                                     <tr>
                                         <th>
-                                            <input type="checkbox" name="select2" id="select-rest">
+                                            <input type="checkbox" name="select" id="select-all-import">
                                         </th>
-                                        <th>Index</th>
-                                        <th>Tag</th>
-                                        <th>Name</th>
-                                        <th>Product</th>
-                                        <th>Other</th>
-                                        <th>Company</th>
-                                        <th>Tel</th>
-                                        <th>Email</th>
-                                        <th>Email(permission)</th>
-                                        <th>Message</th>
-                                        <th>Profile</th>
-                                        <th>Date/time</th>
-
+                                        <th data-visible="false">Index</th>
+                                        <th>แท็ก</th>
+                                        <th>ชื่อ</th>
+                                        <th>ผลิตภัณฑ์</th>
+                                        <th>ผลิตภัณฑ์อื่น</th>
+                                        <th>บริษัท</th>
+                                        <th>เบอร์</th>
+                                        <th>อีเมล</th>
+                                        <th>อีเมล(ไลน์)</th>
+                                        <th>ข้อความ</th>
+                                        <th>ชื่อโปรไฟล์</th>
+                                        <th>วัน/เวลา</th>
+                                        <th>ช่องทาง</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-
-                                    {% for r in data.lst %}
-                                        <tr>
-                                            <td>
-                                                <div class="form-group">
-                                                    <input type="checkbox"
-                                                           name="insert"
-                                                           id="insert"
-                                                           value="{{ r.key }}"
-                                                            {% if r.key in data.lst.key %} checked {% endif %}>
-                                                </div>
-                                            </td>
-                                            <td>{{ r.index }}</td>
-                                            <td>
-                                                {% set novalue = '' %}
-                                                {% if novalue not in r.tag %}
-                                                    <button type="button" class="btn btn-dark btn-xs"
-                                                            data-toggle="collapse"
-                                                            data-target="#liff">
-                                                        <i class="fas fa-tags"></i>
-                                                    </button>
-                                                {% endif %}
-                                                <div id="liff" class="collapse">
-                                                    {% for t in r.tag %}
-                                                        {% if t %}
-                                                            <a href="{{ t }}">
-                                                                <span id="{{ t }}"
-                                                                      class="badge badge-secondary Filter_kane CC010">
-                                                                        <i class="fas fa-tags"></i>
-                                                                    {% if t == 'CB010' %}
-                                                                        รับเหมาสาธารณูปโภค
-                                                                    {% elif t == 'CC010' %}
-                                                                        รับเหมาก่อสร้างระบบวางท่อ
-                                                                    {% elif t == 'CG010' %}
-                                                                        งานระบบประกอบอาคาร
-                                                                    {% elif t == 'CI010' %}
-                                                                        รับเหมาก่อสร้างพลังงานทดแทน
-                                                                    {% elif t == 'CJ010' %}
-                                                                        รับเหมาก่อสร้างงานอาคาร
-                                                                    {% elif t == 'CM010' %}
-                                                                        ออกแบบ ตกแต่ง
-                                                                    {% elif t == 'CF010' %}
-                                                                        รับเหมาขุดเจาะ
-                                                                    {% elif t == 'CP010' %}
-                                                                        งานอลูมิเนียม
-                                                                    {% elif t == 'CE010' %}
-                                                                        ผลิตและติดตั้ง
-                                                                    {% elif t == 'CH010' %}
-                                                                        งานบริการ
-                                                                    {% elif t == 'CK010' %}
-                                                                        รับสร้างบ้าน
-                                                                    {% elif t == 'CN010' %}
-                                                                        ไม่แน่ใจ
-                                                                    {% elif t == 'CD010' %}
-                                                                        ขาย
-                                                                    {% elif t == 'RC010' %}
-                                                                        อสังหาฯ
-                                                                    {% elif t == 'RA010' %}
-                                                                        แนวราบ
-                                                                    {% elif t == 'RB010' %}
-                                                                        แนวสูง
-                                                                    {% endif %}
-                                                                </span>
-                                                            </a>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </div>
-                                            </td>
-                                            <td>{{ r.event.firstname }}</td>
-                                            <td>{{ r.event.product }}</td>
-                                            <td>{{ r.event.other }}</td>
-                                            <td>{{ r.event.company }}</td>
-                                            <td>{{ r.event.tel }}</td>
-                                            <td>{{ r.event.email }}</td>
-                                            <td>{{ r.event.token }}</td>
-                                            <td>{{ r.event.comment }}</td>
-                                            <td>{{ r.event.displayName }}</td>
-                                            <td>{{ r.day }}/{{ r.month }}/{{ r.year }} {{ r.hour }}:{{ r.min }}:{{ r.sec }}</td>
-                                        </tr>
-                                    {% endfor %}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
                                     </tbody>
                                 </table>
+
+
                             </div>
                             <br>
                             <div class="footer">
@@ -447,63 +452,52 @@
                                             Delete Index
                                         </button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <br><br>
-                </div>
             </form>
         </div>
+
     </div>
 
-
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Copyright &copy; Your Website 2020</span>
-            </div>
-        </div>
-    </footer>
 
 
     <script>
         $(document).ready(function () {
             $('#restTable').DataTable({
                 // "order": [[0, "desc"]]
+                "columnDefs": [
+                    {"orderable": false, "targets": 0},
+                ]
             });
-        });
-
-        $(document).ready(function () {
-            $('[data-toggle="CJ010"]').tooltip()
+            $('[data-toggle="CB010"]').tooltip()
             $('[data-toggle="CC010"]').tooltip()
-            $('[data-toggle="CB010"]').tooltip();
             $('[data-toggle="CG010"]').tooltip();
             $('[data-toggle="CI010"]').tooltip();
+            $('[data-toggle="CJ010"]').tooltip();
             $('[data-toggle="CM010"]').tooltip();
             $('[data-toggle="CF010"]').tooltip();
             $('[data-toggle="CP010"]').tooltip();
             $('[data-toggle="CE010"]').tooltip();
             $('[data-toggle="CH010"]').tooltip();
             $('[data-toggle="CK010"]').tooltip();
-            $('[data-toggle="CN010"]').tooltip();
             $('[data-toggle="CD010"]').tooltip();
             $('[data-toggle="RC010"]').tooltip();
             $('[data-toggle="RA010"]').tooltip();
             $('[data-toggle="RB010"]').tooltip();
+            $('[data-toggle="CN010"]').tooltip();
         });
 
-        document.getElementById('select-rest').onclick = function () {
+        document.getElementById('select-all-import').onclick = function () {
             var checkboxes = document.getElementsByName('insert');
             for (var checkbox of checkboxes) {
                 checkbox.checked = this.checked;
             }
         }
-
     </script>
+
 
 
 {% endblock %}

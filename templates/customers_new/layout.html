@@ -108,7 +108,7 @@
             >
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/new_chart">
+            <a class="nav-link" href="/marketing_import">
                 <i class="far fa-book"></i>
                 <span>Information</span></a
             >
@@ -124,14 +124,12 @@
 
         <hr class="sidebar-divider bg-muted d-none d-md-block"/>
 
-        <!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
-        <!--        <div class="text-center">-->
-        <!--            <p class="small text-white"></p>-->
-        <!--        </div>-->
+
 
         <div class="text-center d-none d-md-inline">
             <a id="logout" href="/logout">
-                <button type="button" class="btn bg-danger text-white">
+                <button type="button" class="btn bg text-white">
+                    <i class="fa fa-sign-out" aria-hidden="true"></i>
                     Logout
                 </button>
             </a>
@@ -143,74 +141,25 @@
     <div id="content-wrapper" class="d-flex flex-column">
         <!-- Main Content -->
         <div id="content">{% block content %} {% endblock %}</div>
-        <!-- End of Main Content -->
 
-        <!-- Footer -->
-        <!-- <footer class="sticky-footer bg-white">
-          <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-              <span>Copyright &copy; Your Website 2020</span>
-            </div>
-          </div>
-        </footer> -->
-        <!-- End of Footer -->
     </div>
     <!-- End of Content Wrapper -->
 </div>
-<!-- End of Page Wrapper -->
 
-<!-- Scroll to Top Button-->
+
+
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- Logout Modal-->
-<div
-        class="modal fade"
-        id="logoutModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
->
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button
-                        class="close"
-                        type="button"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                >
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Select "Logout" below if you are ready to end your current session.
-            </div>
-            <div class="modal-footer">
-                <button
-                        class="btn btn-secondary"
-                        type="button"
-                        data-dismiss="modal"
-                >
-                    Cancel
-                </button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
+
+
+
 </body>
 <style>
-    #logout {
-        color: white;
-    }
 
-    #content {
-        background: #e7e7e7;
-    }
+
+
 
 
 </style>

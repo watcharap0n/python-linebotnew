@@ -1,9 +1,4 @@
-from linebot import (LineBotApi, WebhookHandler)
-from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
-from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
-                            ImageSendMessage, StickerSendMessage, AudioSendMessage, FlexSendMessage,
-                            ImagemapSendMessage,
-                            BaseSize, URIImagemapAction, ImagemapArea, QuickReply, QuickReplyButton, MessageAction)
+from linebot.models import (FlexSendMessage)
 
 
 def flex_erp():

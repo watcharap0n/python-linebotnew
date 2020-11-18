@@ -1,4 +1,4 @@
-{% extends "sbadmin/loginLayout.html" %}
+{% extends "main/loginLayout.html" %}
 
 {% block content %}
 
@@ -6,7 +6,7 @@
 <script>
 
     $(window).on('load', function () {
-        liff.init({liffId: "1655208213-G2OlJgNA"}, () => {
+        liff.init({liffId: "1655208213-L8BOv6ky"}, () => {
             if (liff.isLoggedIn()) {
                 runApp()
             } else {
@@ -24,24 +24,24 @@
     function runApp() {
         $('#btn').on('click', function () {
             document.getElementById("comment").defaultValue = "None"
-            document.getElementById("pro").defaultValue = "None"
-            document.getElementById("email").defaultValue = "None"
-            document.getElementById("compa").defaultValue = "None"
-            var firstname = $('#tel').val()
-            var tel = $('#first').val()
-            if (firstname === '' || tel === '') {
+            var firstname = $('#first').val()
+            var email = $('#email').val()
+            var company = $('#compa').val()
+            var tel = $('#tel').val()
+            if (firstname === '' || company === '' || email === '' || tel === '') {
                 $("#message").html("some field is empty!!")
             } else {
                 liff.getProfile().then(profile => {
                     $.ajax({
                         type: 'POST',
-                        url: '/event/event',
+                        url: '/ajax_marketing',
                         data: {
                             'firstname': $('#first').val(),
                             'email': $('#email').val(),
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
-                            'product': $('#pro').val(),
+                            'product': $('#product').val(),
+                            'channel': 'LINE',
                             'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
@@ -94,7 +94,6 @@
 </script>
 
 <br>
-
 <div class="container">
     <center><img src="/static/images/mango-profile.jpg" class="rounded-circle" alt="Cinque Terre" height="140"></center>
     <form method="POST" id="perform" onsubmit="return validation()">
@@ -109,9 +108,9 @@
                    name="company" value="" required>
         </div>
         <div class="form-group">
-            <label for="pro">ผลิตภัณฑ์ที่ท่านสนใจ :</label><br>
-            <select class="form-control" name="product" id="pro">
-                <option value="">Please, select</option>
+            <label for="product">ผลิตภัณฑ์ที่ท่านสนใจ :</label><br>
+            <select class="form-control" name="product" id="product">
+                <option value="">Please product</option>
                 {% for p in lst %}
                 {% for i in p.product %}
                 <option value="{{i}}" {% if i == p.product %} selected {% endif %}>

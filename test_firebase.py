@@ -18,7 +18,6 @@ app = Flask(__name__)
 cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
 firebase_auth = firebase_admin.initialize_app(cred)
 
-
 with open('model/config/database_new/firebase.json', encoding='utf8') as json_file:
     data = json.load(json_file)
     config = data['firebase']
@@ -27,11 +26,10 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     db = firebase.database()
     line_bot_api = LineBotApi(data['Channel_access_token'])
     handler = WebhookHandler(data['Channel_secret'])
-#
+
 # group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
 #          'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
 #          'RA010', 'RB010']
-
 
 
 #
@@ -60,8 +58,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #                                                HighLow.text, valueTemp.text,
 #                                               humility.text)
 #     return x
-
-
 
 
 # @app.route('/stats')
@@ -153,10 +149,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 # print(txt)
 
 
-
-
-
-
 # test = 'ค้นหา รถ'
 # x = test.split('ค้นหา')
 # t = ''
@@ -166,7 +158,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #     print(car)
 # else:
 #     print('No')
-
 
 
 # for i in range(len(data)):
@@ -251,7 +242,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #         print(s)
 
 
-
 # first = input('firstname: ')
 # last = ''
 # tel = ''
@@ -289,8 +279,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 # t4 = [e for e in d if '28-10-2020' in e]
 
 
-
-
 # ref = db.child('LineLiff').get()
 # lst = []
 # for o in ref.each():
@@ -316,28 +304,28 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #            'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
 #            'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
 #            'Picture': picture}
-    # db.child('RestCustomer').push(group)
-    # print(group)
+# db.child('RestCustomer').push(group)
+# print(group)
 
 #
 # rest = db.child('RestCustomer').child('-ML61O1X2uVFWg62dyeO').get()
 # for i in rest.each():
 #     print(i.val())
-    # profile = i.val()['Profile']
-    # cTime = i.val()['Time']
-    # cDate = i.val()['Date']
-    # company = i.val()['Company']
-    # email = i.val()['Email']
-    # pEmail = i.val()['EmailLiff']
-    # message = i.val()['Message']
-    # picture = i.val()['Picture']
-    # product = i.val()['Product']
-    # tel = i.val()['Tel']
-    # name = i.val()['Name']
-    # group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
-    #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
-    #          'Picture': picture}
-    # print(group)
+# profile = i.val()['Profile']
+# cTime = i.val()['Time']
+# cDate = i.val()['Date']
+# company = i.val()['Company']
+# email = i.val()['Email']
+# pEmail = i.val()['EmailLiff']
+# message = i.val()['Message']
+# picture = i.val()['Picture']
+# product = i.val()['Product']
+# tel = i.val()['Tel']
+# name = i.val()['Name']
+# group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
+#          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
+#          'Picture': picture}
+# print(group)
 # i = 0
 
 # xs = [x for x in lst if '2' in x]
@@ -378,18 +366,29 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #         test.append(apiDemo)
 #     return test
 
+t = ['CF010', 'CP010', 'CE010']
+ref = db.child('LineLiff').get()
+for i in ref.each():
+    for a in t:
+        if a in i.val()['tag']:
+            break
 
-showTag = ['รับเหมาสาธารณูปโภค', 'รับเหมาก่อสร้างระบบวางท่อ', 'งานระบบประกอบอาคาร',
-           'รับเหมาก่อสร้างพลังงานทดแทน', 'รับเหมาก่อสร้างงานอาคาร', 'ออกแบบตกแต่ง', 'รับเหมาขุดเจาะ',
-           'งานอลูมิเนียม', 'ผลิตและติดตั้ง', 'งานบริการ', 'รับสร้างบ้าน', 'ไม่แน่ใจ', 'อสังหาฯ', 'แนวราบ', 'แนวสูง',
-           'ขาย']
-
-tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-       'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
-       'RC010', 'RA010', 'RB010']
-
-
-
-print(showTag)
-
-
+eCount = 1
+lst = []
+for i in ref.each()[1:]:
+    for a in t:
+        if a in i.val()['tag']:
+            k = i.key()
+            user = dict(i.val())
+            user.update({'index': str(eCount), 'key': k})
+            lst.append(user)
+            eCount = eCount + 1
+            break
+print(lst)
+# print(lst)
+# e = [x.val()['tag'] for x in ref.each()]
+#
+#
+# a = ['CF010', 'CP010', 'CE010']
+# test = [a if a in e else print('ok')]
+# print(test)
