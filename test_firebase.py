@@ -1,7 +1,6 @@
 import firebase_admin
 import pyrebase
 import json, webbrowser
-
 from linebot import LineBotApi, WebhookHandler
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
@@ -9,14 +8,6 @@ from attacut import tokenize
 from flask import Flask, request, abort, jsonify, render_template
 from linebot import LineBotApi
 from firebase_admin import credentials, auth
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-import xlsxwriter
-from pusher import Pusher
-import uuid
-from random import randrange
-from mangoerp.myClass import *
 
 app = Flask(__name__)
 

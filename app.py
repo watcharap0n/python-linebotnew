@@ -8,7 +8,7 @@ from random import randrange
 from numpy import random
 from model_image import *
 from PIL import Image
-from mangoerp.myClass import *
+from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer, WebScraping, TagChart, pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -19,7 +19,7 @@ from mangoerp.flex_message import *
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.exceptions import (InvalidSignatureError, LineBotApiError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, ImageSendMessage, QuickReplyButton, QuickReply,
-                            StickerSendMessage, RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize, CameraAction)
+                            StickerSendMessage, CameraAction)
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -123,7 +123,7 @@ def test():
         fname = i.val()['firstname']
         group = {'channel': channel, 'message': message, 'fname': fname}
         lst.append(group)
-    return render_template('customers_new/vue.html', ref=lst, range=range, len=len)
+    return render_template('customers_new/form/templates/customers_new/vue.html', ref=lst, range=range, len=len)
 
 
 @app.route('/api/mango/<string:userId>')
@@ -290,14 +290,14 @@ def welcome():
 def bot_marketing():
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('customers_new/index.html')
+    return render_template('customers_old/form/index_intent.html')
 
 
 @app.route('/bot_training')
 def bot_training():
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('customers_old/index.html')
+    return render_template('customers_old/form/index_intent.html')
 
 
 @app.route('/index_new_customer')
@@ -305,7 +305,7 @@ def index_newcustomer():
     print(g.user)
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('customers_new/index.html')
+    return render_template('customers_new/form/index_intent.html')
 
 
 @app.route('/index_customer')
@@ -313,7 +313,7 @@ def index_customer():
     print(g.user)
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('customers_old/index.html')
+    return render_template('customers_old/form/index_intent.html')
 
 
 @app.route('/intent/<string:id>', methods=['GET', 'POST'])
@@ -327,7 +327,7 @@ def new_intent(id):
     if not g.user:
         return redirect(url_for('welcome'))
     data = {'id': id}
-    return render_template('customers_new/intent.html', data=data)
+    return render_template('customers_new/form/intent.html', data=data)
 
 
 @app.route('/c_intent/<string:id>', methods=['GET', 'POST'])
@@ -335,7 +335,7 @@ def old_intent(id):
     if not g.user:
         return redirect(url_for('welcome'))
     data = {'id': id}
-    return render_template('customers_old/intent.html', data=data)
+    return render_template('customers_old/form/intent.html', data=data)
 
 
 def dataPath_marketing(statProduct):
@@ -351,7 +351,7 @@ def LIFF_training(site):
             toLst = []
             news = {'news': ['รับข้อมูลข่าวสาร', 'ไม่รับข้อมูลข่าวสาร']}
             toLst.append(news)
-            return render_template('customers_old/event.html', data=toLst)
+            return render_template('customers_old/event/event.html', data=toLst)
 
 
 @app.route('/ajax_training', methods=['POST'])
@@ -490,7 +490,7 @@ def training_import():
             'imports': training_import,
             'amountImport': amountImport
         }
-        return render_template('customers_old/training_import.html', data=data)
+        return render_template('customers_old/table/training_import.html', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -686,7 +686,7 @@ def marketing_import_update(id):
             'tag': tags,
             'other': other
         }
-        return render_template('customers_new/form/updateIM.html', data=data)
+        return render_template('customers_new/form/update_import.html', data=data)
     elif request.method == 'POST':
         product = request.form['product']
         name = request.form['name']
@@ -729,7 +729,7 @@ def marketing_information_update(id):
             'tag': tags,
             'other': other
         }
-        return render_template('customers_new/form/updateMG.html', data=data)
+        return render_template('customers_new/form/update_information.html', data=data)
     elif request.method == 'POST':
         product = request.form['product']
         name = request.form['name']
@@ -922,7 +922,7 @@ def graph():
             'key_erp': key_erp,
             'value_erp': str(value_erp)
         }
-        return render_template('customers_new/graph.html', data=data)
+        return render_template('customers_new/form/graph.html', data=data)
     elif request.method == 'POST':
         key = request.form.getlist('key')
         print(key)
@@ -930,7 +930,7 @@ def graph():
             k = str(k)
             db2.child('chat-flex').child(k).remove()
         return redirect(url_for('graph'))
-    return render_template('customers_new/graph.html')
+    return render_template('customers_new/form/graph.html')
 
 
 @app.route('/r_stat/<string:key>', methods=['GET'])

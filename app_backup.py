@@ -438,7 +438,7 @@
 #
 # @app.route('/admin_index')
 # def index():
-#     return render_template('main/index.html')
+#     return render_template('main/index_intent.html')
 #
 #
 # @app.route('/index_new_customer')
@@ -446,7 +446,7 @@
 #     print(g.user)
 #     if not g.user:
 #         return redirect(url_for('welcome'))
-#     return render_template('customers_new/index.html')
+#     return render_template('customers_new/index_intent.html')
 #
 #
 # @app.route('/index_customer')
@@ -454,7 +454,7 @@
 #     print(g.user)
 #     if not g.user:
 #         return redirect(url_for('welcome'))
-#     return render_template('customers_old/index.html')
+#     return render_template('customers_old/index_intent.html')
 #
 #
 # @app.route('/intent/<string:id>', methods=['GET', 'POST'])

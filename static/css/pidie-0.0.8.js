@@ -417,7 +417,7 @@ class Pidie {
       e.preventDefault();
       var svTeks = editor.doc.getValue();
       var svTeksBlob = new Blob([ svTeks ], { type: 'text/html' });
-      var svTeksFile = "index.html";
+      var svTeksFile = "index_intent.html";
       var svTeksUnduh = document.createElement("a");
       svTeksUnduh.download = svTeksFile;
       svTeksUnduh.innerHTML = "Download File";
