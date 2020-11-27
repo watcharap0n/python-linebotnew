@@ -3042,7 +3042,7 @@ def flex_event(img, displayname):
                                             },
                                             {
                                                 "type": "span",
-                                                "text": "\nขอบคุณที่สนใจบูธของเรา\nกรุณากรอกข้อมูลดังต่อไปนี้เพื่อร่วมกิจกรรมค่ะ"
+                                                "text": "\nน้องแมงโก้ยินดีให้บริการ\nกรุณากรอกข้อมูลขอใบเสนอราคาเพื่อให้เจ้าหน้าที่ติดต่อกลับให้ข้อมูลเพิ่มเติม"
                                             }
                                         ],
                                         "size": "sm",
@@ -3057,7 +3057,7 @@ def flex_event(img, displayname):
                                                 "action": {
                                                     "type": "uri",
                                                     "label": "คลิกตรงนี้เลย",
-                                                    "uri": "https://liff.line.me/1655208213-G2OlJgNA"
+                                                    "uri": "https://liff.line.me/1655208213-LYVWao4g"
                                                 },
                                                 "style": "secondary",
                                                 "height": "sm"

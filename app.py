@@ -102,7 +102,7 @@ def before_request():
 
 def sessionCustomer(user, password):
     getLogin = pb.auth().sign_in_with_email_and_password(user, password)
-    with open('log_LoginSession', 'w') as logLogin:
+    with open('log/log_LoginSession', 'w') as logLogin:
         json.dump(getLogin, logLogin)
     session['user_id'] = getLogin
 
@@ -945,7 +945,7 @@ def webhook():
         raw_json = request.get_json()
         json_line = json.dumps(raw_json)
         decoded = json.loads(json_line)
-        with open('dataline.json', 'w') as dataline:
+        with open('log/dataline.json', 'w') as dataline:
             json.dump(raw_json, dataline)
         body = request.get_data(as_text=True)
         signature = request.headers['X-Line-Signature']
@@ -978,7 +978,7 @@ def webhookNew():
         raw_json = request.get_json()
         json_line = json.dumps(raw_json)
         decoded = json.loads(json_line)
-        with open('dataline.json', 'w') as dataline:
+        with open('log/dataline.json', 'w') as dataline:
             json.dump(raw_json, dataline)
         body = request.get_data(as_text=True)
         signature = request.headers['X-Line-Signature']
@@ -1012,7 +1012,7 @@ def webhookOld():
         raw_json = request.get_json()
         json_line = json.dumps(raw_json)
         decoded = json.loads(json_line)
-        with open('dataline.json', 'w') as dataline:
+        with open('log/dataline.json', 'w') as dataline:
             json.dump(raw_json, dataline)
         body = request.get_data(as_text=True)
         signature = request.headers['X-Line-Signature']
@@ -1849,7 +1849,8 @@ def handle_message_new(event):
                 profile = line_bot_api2.get_profile(result[4])
                 picture_url = profile.picture_url
                 userId = profile.user_id
-                line_bot_api2.push_message(result[4], flex_CSM(picture_url, userId))
+                displayName = profile.display_name
+                line_bot_api2.reply_message(event.reply_token, flex_event(picture_url, displayName))
             elif ['@helpdesk'] == result[3]:
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(
                     text='สอบถามการใช้งานโปรแกรม หรือหาก\nติดปัญหาการใช้งานสามารถติดต่อผ่าน\nCall Center 02-123-3900 ได้เลยค่ะ'
@@ -1925,7 +1926,7 @@ def handle_message_old(event):
 
 @app.route('/api/richmenu/<string:rich>', methods=['GET', 'POST'])
 def richmenu(rich):
-    with open('richmenu.json', encoding='utf8') as w:
+    with open('log/richmenu.json', encoding='utf8') as w:
         data = json.load(w)
         rich_id = data['id']
     if rich == 'create':
@@ -1946,7 +1947,7 @@ def richmenu(rich):
         rich_menu_id = line_bot_api1.create_rich_menu(rich_menu=rich_menu_to_create)
         txt = {'id': rich_menu_id}
         print(txt)
-        with open('richmenu.json', 'w') as r:
+        with open('log/richmenu.json', 'w') as r:
             json.dump(txt, r)
         return jsonify(txt)
     elif rich == 'uploadimg':
