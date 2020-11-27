@@ -1581,7 +1581,18 @@ def handle_message_new(event):
                 z = random.choice(x)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{z}'))
             else:
-                if result[2] == [3]:
+                if result[2] == [1]:
+                    profile = line_bot_api2.get_profile(result[4])
+                    picture_url = profile.picture_url
+                    displayName = profile.display_name
+                    line_bot_api2.push_message(result[4], flex_event(picture_url, displayName))
+                    inserted = get_datetime('ใบเสนอราคา', line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
+                elif result[2] == [2]:
+                    x = 'flex โปรแกรม'
+                    line_bot_api2.push_message(result[4], flex_product())
+                    get_datetime(x, line_bot_api2)
+                elif result[2] == [3]:
                     profile = line_bot_api2.get_profile(result[4])
                     displayName = profile.display_name
                     x = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
@@ -1629,20 +1640,6 @@ def handle_message_new(event):
                     stick = ['51626520', '51626526']
                     pack = 11538
                     integrate_send(model_linebot_new(), event, pack, stick, line_bot_api2)
-                elif result[2] == [2]:
-                    x = 'flex โปรแกรม'
-                    line_bot_api2.push_message(result[4], flex_product())
-                    get_datetime(x, line_bot_api2)
-                elif result[2] == [1]:
-                    x = random.choice(result[1][int(result[2])])
-                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    image_message = ImageSendMessage(
-                        original_content_url='https://sv1.picz.in.th/images/2020/10/21/bBc4NI.png',
-                        preview_image_url='https://sv1.picz.in.th/images/2020/10/21/bBc4NI.png'
-                    )
-                    line_bot_api2.push_message(result[4], image_message)
-                    inserted = get_datetime(x, line_bot_api2)
-                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [10]:
                     x = 'ขออภัยในความไม่สะดวกนะคะ\n\nช่องทางนี้สำหรับแนะนำผลิตภัณฑ์และประชาสัมพันธ์ข่าวสาร ค่ะ\n' \
                         'กรณีที่ลูกค้าติดปัญหาการใช้งานแนะนำให้ติดต่อฝ่าย Customer Service\n' \
@@ -1705,7 +1702,6 @@ def handle_message_new(event):
                         x = p.split('ข่าว')
                         tranform = ''
                         ans = tranform.join(x)
-                        print('string >: ', ans)
                         if ans == ' ทั่วไป':
                             x = WebScraping.new_common()
                             line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
@@ -1787,7 +1783,7 @@ def handle_message_new(event):
                 temp = temp.val()
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
             elif mango:
-                z = ['ยินดีให้บิรการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
+                z = ['ยินดีให้บริการค่า', 'อาการมันเป็นยังไงไหนบอกแมงโก้สิ', 'ว่าไงจ๊ะ']
                 x = random.choice(z)
                 line_bot_api2.reply_message(event.reply_token, TextSendMessage(text='{}'.format(x)))
                 inserted = get_datetime(x, line_bot_api2)
