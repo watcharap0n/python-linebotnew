@@ -8,53 +8,68 @@
         <h1 class="h3 mb-2 text-gray-800">Boardcast</h1>
 
         <div class="row">
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-primary o-hidden h-100">
                     <div class="card-body">
-                        <div class="col mr-2">
-                            <form class="user" method="POST" action="">
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Text:</label>
-                                        <input type="text" class="form-control" id="broadcast" name="msg" required>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Image
-                                            URL:</label>
-                                        <input type="text" class="form-control" id="broadcast_img" name="bcImg">
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <br>
-                                        <button type="submit" class="btn btn-outline-success">
-                                            <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                            Boardcast
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.CON }} </span>Construction</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-warning o-hidden h-100">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">จำนวนข้อความ
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800 mm">{{ data.msg }}</div>
-                            </div>
-                            <div class="">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.REAL }} </span>Real Estate</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-success o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.PLAN }} </span>Project Planning</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-danger o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.OTHER }} </span>OTHER</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -109,7 +124,8 @@
                                 Export Excel
                             </a>
 
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#myModal">
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal"
+                                    data-target="#myModal">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                 Remove All
                             </button>
@@ -143,115 +159,267 @@
                     <div class="tab-content">
                         <div id="information" class="tab-pane active">
                             <div class="footer">
-                                <div class="dropdown" style="margin-bottom: 15px">
-                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
-                                            data-toggle="dropdown">
-                                        Tag Sort
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <li class="dropdown-header">Select Tag</li>
-                                        <li class="divider"></li>
-                                        {% for tag in data.tag %}
-                                            <a class="dropdown-item">
-                                                <input class="tag_sort"
-                                                       type="checkbox"
-                                                       name="tags"
-                                                       id="{{ tag }}"
-                                                       value="{{ tag }}"
-                                                        {% if tag in data %} checked {% endif %}>
-                                                <label for="{{ tag }}" class="getvalue" data-toggle="{{ tag }}"
-                                                       title="">
-                                                    {% if tag == 'CB010' %}
-                                                        รับเหมาสาธารณูปโภค
-                                                    {% endif %}
-                                                    {% if tag == 'CC010' %}
-                                                        รับเหมาก่อสร้างระบบวางท่อ
-                                                    {% endif %}
-                                                    {% if tag == 'CG010' %}
-                                                        งานระบบประกอบอาคาร
-                                                    {% endif %}
-                                                    {% if tag == 'CI010' %}
-                                                        รับเหมาก่อสร้างพลังงานทดแทน
-                                                    {% endif %}
-                                                    {% if tag == 'CJ010' %}
-                                                        รับเหมาก่อสร้างงานอาคาร
-                                                    {% endif %}
-                                                    {% if tag == 'CM010' %}
-                                                        ออกแบบตกแต่ง
-                                                    {% endif %}
-                                                    {% if tag == 'CF010' %}
-                                                        รับเหมาขุดเจาะ
-                                                    {% endif %}
-                                                    {% if tag == 'CP010' %}
-                                                        งานอลูมิเนียม
-                                                    {% endif %}
-                                                    {% if tag == 'CE010' %}
-                                                        ผลิตและติดตั้ง
-                                                    {% endif %}
-                                                    {% if tag == 'CH010' %}
-                                                        งานบริการ
-                                                    {% endif %}
-                                                    {% if tag == 'CK010' %}
-                                                        รับสร้างบ้าน
-                                                    {% endif %}
-                                                    {% if tag == 'CN010' %}
-                                                        ไม่แน่ใจ
-                                                    {% endif %}
-                                                    {% if tag == 'CD010' %}
-                                                        ขาย
-                                                    {% endif %}
-                                                    {% if tag == 'RC010' %}
-                                                        อสังหาฯ
-                                                    {% endif %}
-                                                    {% if tag == 'RA010' %}
-                                                        แนวราบ
-                                                    {% endif %}
-                                                    {% if tag == 'RB010' %}
-                                                        แนวสูง
-                                                    {% endif %}
-                                                </label>
-                                            </a>
-                                        {% endfor %}
-                                        <hr>
-                                        <button type="submit" name="button_event" style="margin-left: 10px"
-                                                value="button_tag"
-                                                class="btn btn-secondary btn-sm"
-                                        >
-                                            <i class="fas fa-tags"></i>
-                                            Apply
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
+                                            <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    data-toggle="dropdown">
+                                                Tag Sort
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <div class="form-check">
+                                                    <li class="dropdown-header">Select Tag</li>
+                                                    <li class="divider"></li>
+                                                    {% for tag in data.tag %}
+                                                        <div class="dropdown-item">
+                                                            <input class="tag_sort"
+                                                                   type="checkbox"
+                                                                   name="tags"
+                                                                   id="{{ tag }}"
+                                                                   value="{{ tag }}"
+                                                                    {% if tag in data %} checked {% endif %}>
+                                                            <label for="{{ tag }}" class="getvalue"
+                                                                   data-toggle="{{ tag }}"
+                                                                   title="">
+                                                                {% if tag == '' %}
+                                                                    ล้างแท็ก
+                                                                {% endif %}
+                                                                {% if tag == 'CB010' %}
+                                                                    รับเหมาสาธารณูปโภค
+                                                                {% endif %}
+                                                                {% if tag == 'CC010' %}
+                                                                    รับเหมาก่อสร้างระบบวางท่อ
+                                                                {% endif %}
+                                                                {% if tag == 'CG010' %}
+                                                                    งานระบบประกอบอาคาร
+                                                                {% endif %}
+                                                                {% if tag == 'CI010' %}
+                                                                    รับเหมาก่อสร้างพลังงานทดแทน
+                                                                {% endif %}
+                                                                {% if tag == 'CJ010' %}
+                                                                    รับเหมาก่อสร้างงานอาคาร
+                                                                {% endif %}
+                                                                {% if tag == 'CM010' %}
+                                                                    ออกแบบตกแต่ง
+                                                                {% endif %}
+                                                                {% if tag == 'CF010' %}
+                                                                    รับเหมาขุดเจาะ
+                                                                {% endif %}
+                                                                {% if tag == 'CP010' %}
+                                                                    งานอลูมิเนียม
+                                                                {% endif %}
+                                                                {% if tag == 'CE010' %}
+                                                                    ผลิตและติดตั้ง
+                                                                {% endif %}
+                                                                {% if tag == 'CH010' %}
+                                                                    งานบริการ
+                                                                {% endif %}
+                                                                {% if tag == 'CK010' %}
+                                                                    รับสร้างบ้าน
+                                                                {% endif %}
+                                                                {% if tag == 'CN010' %}
+                                                                    ไม่แน่ใจ
+                                                                {% endif %}
+                                                                {% if tag == 'CD010' %}
+                                                                    ขาย
+                                                                {% endif %}
+                                                                {% if tag == 'RC010' %}
+                                                                    อสังหาฯ
+                                                                {% endif %}
+                                                                {% if tag == 'RA010' %}
+                                                                    แนวราบ
+                                                                {% endif %}
+                                                                {% if tag == 'RB010' %}
+                                                                    แนวสูง
+                                                                {% endif %}
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="dropdown-divider"></div>
+
+                                                <div class="row">
+
+                                                    <button type="submit" name="button_event"
+                                                            style="margin-left: 15px"
+                                                            value="button_tag"
+                                                            class="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i class="fas fa-tags"></i>
+                                                        Apply
+                                                    </button>
+
+
+                                                    <button type="submit" name="button_event"
+                                                            style="margin-left: 5px"
+                                                            value="button_sorting"
+                                                            class="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+                                                        Sorting
+                                                    </button>
+
+                                                    <button type="submit" name="button_event"
+                                                            style="margin-left: 5px"
+                                                            value="button_remove_tag"
+                                                            class="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i class="fa fa-eraser" aria-hidden="true"></i>
+                                                        Clear
+                                                    </button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
+                                            <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    data-toggle="dropdown">
+                                                <i class="fa fa-columns" aria-hidden="true"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <div class="form-check" id="columnshow">
+                                                    <li class="dropdown-header">Select Column</li>
+                                                    <li class="divider"></li>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_tag"
+                                                               id="col_2" checked="checked" data-column="2">
+                                                        <label>
+                                                            แท็ก
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_fname"
+                                                               id="col_3" data-column="3" checked="checked">
+                                                        <label>
+                                                            ชื่อ
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_product"
+                                                               id="col_4" data-column="4" checked="checked">
+                                                        <label>
+                                                            ผลิตภัณฑ์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_other"
+                                                               id="col_5" data-column="5">
+                                                        <label>
+                                                            ผลิตภัณฑ์อื่น
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_company"
+                                                               id="col_6" data-column="6" checked="checked">
+                                                        <label>
+                                                            บริษัท
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_tel"
+                                                               id="col_7" data-column="7" checked="checked">
+                                                        <label>
+                                                            เบอร์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_email"
+                                                               id="col_8" data-column="8" checked="checked">
+                                                        <label>
+                                                            อีเมล
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_LIFF"
+                                                               id="col_9" data-column="9" checked="checked">
+                                                        <label>
+                                                            อีเมล(ไลน์)
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_message"
+                                                               id="col_10" data-column="10">
+                                                        <label>
+                                                            ข้อความ
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_profile"
+                                                               id="col_11" data-column="11">
+                                                        <label>
+                                                            ชื่อโปรไฟล์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_date"
+                                                               id="col_12" data-column="12">
+                                                        <label>
+                                                            วัน/เวลา
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_channel"
+                                                               id="col_13" data-column="13">
+                                                        <label>
+                                                            ช่องทาง
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_username"
+                                                               id="col_14" data-column="14">
+                                                        <label>
+                                                            นำเข้าโดย
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="check_col" type="checkbox" name="_insert"
+                                                               id="col_15" data-column="15">
+                                                        <label>
+                                                            วันเวลานำเข้า
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" name="button_event" value="button_edit"
+                                                class="btn btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                            แก้ไข
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="table-responsive">
-                                <table class="display" id="informationTable">
+                                <table class="table-hover stripe" style="width:100%" id="informationTable">
                                     <thead>
                                     <tr>
                                         <th>
                                             <input type="checkbox" name="select" id="select-all-information">
                                         </th>
                                         <th data-visible="false">Index</th>
-                                        <th>แท็ก</th>
-                                        <th>ชื่อ</th>
-                                        <th>ผลิตภัณฑ์</th>
-                                        <th>ผลิตภัณฑ์อื่น</th>
-                                        <th>บริษัท</th>
-                                        <th>เบอร์</th>
-                                        <th>อีเมล</th>
-                                        <th>อีเมล(ไลน์)</th>
-                                        <th>ข้อความ</th>
-                                        <th>ชื่อโปรไฟล์</th>
-                                        <th>วัน/เวลา</th>
-                                        <th>ช่องทาง</th>
-                                        <th>นำเข้าโดย</th>
-                                        <th>วันเวลานำเข้า</th>
+                                        <th class="_tag">แท็ก</th>
+                                        <th class="_fname">ชื่อ</th>
+                                        <th class="_product">ผลิตภัณฑ์</th>
+                                        <th class="_other">ผลิตภัณฑ์อื่น</th>
+                                        <th class="_company">บริษัท</th>
+                                        <th class="_tel">เบอร์</th>
+                                        <th class="_email">อีเมล</th>
+                                        <th class="_LIFF">อีเมล(ไลน์)</th>
+                                        <th class="_message">ข้อความ</th>
+                                        <th class="_profile">ชื่อโปรไฟล์</th>
+                                        <th class="_date">วัน/เวลา</th>
+                                        <th class="_channel">ช่องทาง</th>
+                                        <th class="_username">นำเข้าโดย</th>
+                                        <th class="_insert">วันเวลานำเข้า</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for info in data.lst %}
                                         <tr>
-                                            <td>
+                                            <td class="_id">
                                                 <div class="form-group">
                                                     <input type="checkbox"
                                                            name="key_information"
@@ -262,7 +430,7 @@
                                                 </div>
                                             </td>
                                             <td>{{ info.index }}</td>
-                                            <td>
+                                            <td class="_tag">
                                                 {% set notvalue = '' %}
                                                 {% if notvalue not in info.Tag %}
                                                     <button type="button" class="btn btn-success btn-xs"
@@ -274,7 +442,7 @@
                                                 <div id="liff" class="collapse">
                                                     {% for tag in info.Tag %}
                                                         {% if tag %}
-                                                            <a href="tagliff/{{ tag }}">
+                                                            <a href="{{ tag }}">
                                                                 <span id="{{ tag }}"
                                                                       class="badge badge-secondary Filter_kane CC010">
                                                                         <i class="fas fa-tags"></i>
@@ -317,14 +485,14 @@
                                                     {% endfor %}
                                                 </div>
                                             </td>
-                                            <td>{{ info.Name }}</td>
-                                            <td>{{ info.Product }}</td>
-                                            <td>{{ info.Other }}</td>
-                                            <td>{{ info.Company }}</td>
-                                            <td>{{ info.Tel }}</td>
-                                            <td>{{ info.Email }}</td>
-                                            <td>{{ info.EmailLiff }}</td>
-                                            <td>{% set notvalue = 'None' %}
+                                            <td class="_fname">{{ info.Name }}</td>
+                                            <td class="_product">{{ info.Product }}</td>
+                                            <td class="_other">{{ info.Other }}</td>
+                                            <td class="_company">{{ info.Company }}</td>
+                                            <td class="_tel">{{ info.Tel }}</td>
+                                            <td class="_email">{{ info.Email }}</td>
+                                            <td class="_LIFF">{{ info.EmailLiff }}</td>
+                                            <td class="_message">{% set notvalue = 'None' %}
                                                 {% if notvalue not in info.Message %}
                                                     <button type="button" class="btn btn-primary btn-xs"
                                                             data-toggle="collapse"
@@ -336,11 +504,11 @@
                                                     {{ info.Message }}
                                                 </div>
                                             </td>
-                                            <td>{{ info.Profile }}</td>
-                                            <td>{{ info.Date }} {{ info.Time }}</td>
-                                            <td>{{ info.Channel }}</td>
-                                            <td>{{ info.Username }}</td>
-                                            <td>{{ info.DateInsert }} {{ info.TimeInsert }}</td>
+                                            <td class="_profile">{{ info.Profile }}</td>
+                                            <td class="_date">{{ info.Date }} {{ info.Time }}</td>
+                                            <td class="_channel">{{ info.Channel }}</td>
+                                            <td class="_username">{{ info.Username }}</td>
+                                            <td class="_insert">{{ info.DateInsert }} {{ info.TimeInsert }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -379,13 +547,52 @@
 
     <script>
         $(document).ready(function () {
-            $('#informationTable').DataTable({
-                // "order": [[0, "desc"]]
-                "columnDefs": [
-                    {"orderable": false, "targets": 0},
-                ]
+            var table = $('#informationTable').DataTable({
+                "order": [[0, false]],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }]
             });
+
         });
+
+        $(".check_col:not(:checked)").each(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).hide();
+        });
+
+        $(".check_col:checkbox").click(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).toggle();
+        });
+
+
+        {#$(".check_col").on('click', function () {#}
+        {#    var column = table.column($(this).attr('data-column'));#}
+        {#    column.visible(!column.visible());#}
+        {#    console.log(column)#}
+        {#})
+        #}
+
+        {#var check_col = $(".check_col").attr("checked", true).click(function () {#}
+        {#    var showColumn = "." + $(this).attr("name");#}
+        {#    $(showColumn).toggle();#}
+        {#})
+        #}
+
+
+
+        {#$("other").attr("checked", false).click(function (){#}
+        {#    var showColumn = "." + $(this).attr("name");#}
+        {#    $(showColumn).toggle();#}
+        {#})
+        #}
+        {#;#}
+
+
+        ;
+
 
         document.getElementById('select-all-information').onclick = function () {
             var checkboxes = document.getElementsByName('key_information');

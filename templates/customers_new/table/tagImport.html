@@ -8,53 +8,68 @@
         <h1 class="h3 mb-2 text-gray-800">Boardcast</h1>
 
         <div class="row">
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-primary o-hidden h-100">
                     <div class="card-body">
-                        <div class="col mr-2">
-                            <form class="user" method="POST" action="">
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Text:</label>
-                                        <input type="text" class="form-control" id="broadcast" name="msg" required>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Image
-                                            URL:</label>
-                                        <input type="text" class="form-control" id="broadcast_img" name="bcImg">
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <br>
-                                        <button type="submit" class="btn btn-outline-success">
-                                            <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                            Boardcast
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.CON }} </span>Construction</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-warning o-hidden h-100">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">จำนวนข้อความ
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800 mm">{{ data.msg }}</div>
-                            </div>
-                            <div class="">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.REAL }} </span>Real Estate</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-success o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.PLAN }} </span>Project Planning</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-danger o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.OTHER }} </span>OTHER</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -109,7 +124,8 @@
                                 Export Excel
                             </a>
 
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#myModal">
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal"
+                                    data-target="#myModal">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                 Remove All
                             </button>
@@ -143,7 +159,7 @@
                     <div class="tab-content">
                         <div id="import" class="tab-pane active">
                             <div class="footer">
-                                <div class="dropdown" style="margin-bottom: 15px">
+                                <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle"
                                             data-toggle="dropdown">
                                         Tag Sort
@@ -161,6 +177,9 @@
                                                         {% if tag in data %} checked {% endif %}>
                                                 <label for="{{ tag }}" class="getvalue" data-toggle="{{ tag }}"
                                                        title="">
+                                                    {% if tag == '' %}
+                                                        ล้างแท็ก
+                                                    {% endif %}
                                                     {% if tag == 'CB010' %}
                                                         รับเหมาสาธารณูปโภค
                                                     {% endif %}
@@ -212,38 +231,165 @@
                                                 </label>
                                             </a>
                                         {% endfor %}
-                                        <hr>
-                                        <button type="submit" name="button_event" style="margin-left: 10px"
-                                                value="button_tag"
-                                                class="btn btn-secondary btn-sm"
-                                        >
-                                            <i class="fas fa-tags"></i>
-                                            Apply
-                                        </button>
+                                        <div class="row">
+
+                                            <button type="submit" name="button_event"
+                                                    style="margin-left: 15px"
+                                                    value="button_tag"
+                                                    class="btn btn-secondary btn-sm"
+                                            >
+                                                <i class="fas fa-tags"></i>
+                                                Apply
+                                            </button>
+
+
+                                            <button type="submit" name="button_event"
+                                                    style="margin-left: 5px"
+                                                    value="button_sorting"
+                                                    class="btn btn-secondary btn-sm"
+                                            >
+                                                <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+                                                Sorting
+                                            </button>
+
+                                            <button type="submit" name="button_remove_tag"
+                                                    style="margin-left: 5px"
+                                                    value="button_sorting"
+                                                    class="btn btn-secondary btn-sm"
+                                            >
+                                                <i class="fa fa-eraser" aria-hidden="true"></i>
+                                                Remove
+                                            </button>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                            aria-haspopup="true" aria-expanded="false"
+                                            data-toggle="dropdown">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <div class="form-check" id="columnshow">
+                                            <li class="dropdown-header">Select Column</li>
+                                            <li class="divider"></li>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_tag"
+                                                       id="_tag" checked="checked">
+                                                <label>
+                                                    แท็ก
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_fname"
+                                                       id="fname" checked="checked">
+                                                <label>
+                                                    ชื่อ
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_product"
+                                                       id="product checked="checked">
+                                                <label>
+                                                    ผลิตภัณฑ์
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_other"
+                                                       id="other">
+                                                <label>
+                                                    ผลิตภัณฑ์อื่น
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_company"
+                                                       id="company" checked="checked">
+                                                <label>
+                                                    บริษัท
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_tel"
+                                                       id="tel" checked="checked">
+                                                <label>
+                                                    เบอร์
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_email"
+                                                       id="email" checked="checked">
+                                                <label>
+                                                    อีเมล
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_LIFF"
+                                                       id="LIFF" checked="checked">
+                                                <label>
+                                                    อีเมล(ไลน์)
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_message"
+                                                       id="LIFF">
+                                                <label>
+                                                    ข้อความ
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_profile"
+                                                       id="profile">
+                                                <label>
+                                                    ชื่อโปรไฟล์
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_date"
+                                                       id="date">
+                                                <label>
+                                                    วัน/เวลา
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <input class="tag_sort" type="checkbox" name="_channel"
+                                                       id="channel" checked="checked">
+                                                <label>
+                                                    ช่องทาง
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <button type="submit" name="button_event" value="button_edit"
+                                        class="btn btn-sm">
+                                    <i class="fa fa-edit"></i>
+                                    แก้ไข
+                                </button>
                             </div>
 
 
                             <div class="table-responsive">
-                                <table class="display" id="restTable">
+                                <table class="table-hover stripe" style="width:100%" id="restTable">
                                     <thead>
                                     <tr>
                                         <th>
                                             <input type="checkbox" name="select" id="select-all-import">
                                         </th>
-                                        <th>แท็ก</th>
-                                        <th>ชื่อ</th>
-                                        <th>ผลิตภัณฑ์</th>
-                                        <th>ผลิตภัณฑ์อื่น</th>
-                                        <th>บริษัท</th>
-                                        <th>เบอร์</th>
-                                        <th>อีเมล</th>
-                                        <th>อีเมล(ไลน์)</th>
-                                        <th>ข้อความ</th>
-                                        <th>ชื่อโปรไฟล์</th>
-                                        <th>วัน/เวลา</th>
-                                        <th>ช่องทาง</th>
+                                        <th class="_tag">แท็ก</th>
+                                        <th class="_fname">ชื่อ</th>
+                                        <th class="_product">ผลิตภัณฑ์</th>
+                                        <th class="_other">ผลิตภัณฑ์อื่น</th>
+                                        <th class="_company">บริษัท</th>
+                                        <th class="_tel">เบอร์</th>
+                                        <th class="_email">อีเมล</th>
+                                        <th class="_LIFF">อีเมล(ไลน์)</th>
+                                        <th class="_message">ข้อความ</th>
+                                        <th class="_profile">ชื่อโปรไฟล์</th>
+                                        <th class="_date">วัน/เวลา</th>
+                                        <th class="_channel">ช่องทาง</th>
                                     </tr>
                                     </thead>
                                     {% for tag in data.lst %}
@@ -257,7 +403,7 @@
                                                             {% if tag.key in data.lst.key %} checked {% endif %}>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td class="_tag">
                                                 {% set novalue = '' %}
                                                 {% if novalue not in tag.tag %}
                                                     <button type="button" class="btn btn-dark btn-xs"
@@ -273,6 +419,7 @@
                                                                 <span id="{{ tag }}"
                                                                       class="badge badge-secondary Filter_kane CC010">
                                                                         <i class="fas fa-tags"></i>
+
                                                                     {% if tag == 'CB010' %}
                                                                         รับเหมาสาธารณูปโภค
                                                                     {% elif tag == 'CC010' %}
@@ -312,17 +459,17 @@
                                                     {% endfor %}
                                                 </div>
                                             </td>
-                                            <td>{{ tag.event.firstname }}</td>
-                                            <td>{{ tag.event.product }}</td>
-                                            <td>{{ tag.event.other }}</td>
-                                            <td>{{ tag.event.company }}</td>
-                                            <td>{{ tag.event.tel }}</td>
-                                            <td>{{ tag.event.email }}</td>
-                                            <td>{{ tag.event.token }}</td>
-                                            <td>{{ tag.event.comment }}</td>
-                                            <td>{{ tag.event.displayName }}</td>
-                                            <td>{{ tag.day }}/{{ tag.month }}/{{ tag.year }} {{ tag.hour }}:{{ tag.min }}:{{ tag.sec }}</td>
-                                            <td>{{ tag.channel }}</td>
+                                            <td class="_fname">{{ tag.event.firstname }}</td>
+                                            <td class="_product">{{ tag.event.product }}</td>
+                                            <td class="_other">{{ tag.event.other }}</td>
+                                            <td class="_company">{{ tag.event.company }}</td>
+                                            <td class="_tel">{{ tag.event.tel }}</td>
+                                            <td class="_email">{{ tag.event.email }}</td>
+                                            <td class="_LIFF">{{ tag.event.token }}</td>
+                                            <td class="_message">{{ tag.event.comment }}</td>
+                                            <td class="_profile">{{ tag.event.displayName }}</td>
+                                            <td class="_date">{{ tag.day }}/{{ tag.month }}/{{ tag.year }} {{ tag.hour }}:{{ tag.min }}:{{ tag.sec }}</td>
+                                            <td class="_channel">{{ tag.channel }}</td>
                                         </tr>
                                     {% endfor %}
                                 </table>
@@ -368,12 +515,24 @@
     <script>
         $(document).ready(function () {
             $('#restTable').DataTable({
-                // "order": [[0, "desc"]]
-                "columnDefs": [
-                    {"orderable": false, "targets": 0},
-                ]
+                "order": [[0, false]],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }]
             });
         });
+
+        $(".tag_sort:not(:checked)").each(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).hide();
+        });
+
+        $(".tag_sort:checkbox").click(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).toggle();
+        });
+
 
         document.getElementById('select-all-import').onclick = function () {
             var checkboxes = document.getElementsByName('insert');

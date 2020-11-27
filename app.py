@@ -2,6 +2,7 @@ from flask import Flask, request, abort, render_template, jsonify, json, redirec
     make_response, send_from_directory
 import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
+from pusher import Pusher
 from datetime import timedelta
 from random import randrange
 from numpy import random
@@ -78,6 +79,14 @@ db3 = data_older[0]
 line_bot_api3 = data_older[1]
 handler3 = data_older[2]
 
+pusher = Pusher(
+    app_id='1109556',
+    key='a0e97466cb155b48d6b7',
+    secret='4ee7db08d28588a07177',
+    cluster='us2',
+    ssl=True
+)
+
 
 @app.before_request
 def before_request():
@@ -102,6 +111,36 @@ def sessionCustomer(user, password):
 def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=60)
+
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    ref = db2.child('id').get()
+    lst = []
+    for i in ref.each():
+        channel = i.val()['channel']
+        message = i.val()['comment']
+        fname = i.val()['firstname']
+        group = {'channel': channel, 'message': message, 'fname': fname}
+        lst.append(group)
+    return render_template('customers_new/vue.html', ref=lst, range=range, len=len)
+
+
+@app.route('/api/mango/<string:userId>')
+def mango_userId(userId):
+    users_by = db2.child("test_LIFF").order_by_child("userId").equal_to(userId).get()
+    customer = len(users_by.val())
+    return render_template('customers_new/tag_rest.html', data=users_by, range=range, customer=customer)
+
+
+@app.route('/LINELIFF/UserId', methods=['GET', 'POST'])
+def LINE_User():
+    if request.method == 'GET':
+        return render_template('customers_new/event/mango.html')
+    elif request.method == 'POST':
+        event = request.form.to_dict()
+        db2.child('test_LIFF').push(event)
+        return make_response(event)
 
 
 @app.route('/api/demorequest', methods=['GET', 'POST'])
@@ -146,8 +185,6 @@ def apiContractReq():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if not g.user:
-        return redirect(url_for('welcome'))
     if request.method == 'GET':
         return render_template('main/signup.html')
     elif request.method == 'POST':
@@ -381,6 +418,22 @@ def ajax_marketing():
         insertDatabase = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month, 'year': to.year,
                           'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
         db2.child('LineLiff').push(insertDatabase)
+        pusher.trigger(u'customer', u'add', {
+            u'key': '',
+            u'index': '',
+            u'tag': '',
+            u'name': event['firstname'],
+            u'product': event['product'],
+            u'other': event['other'],
+            u'company': event['company'],
+            u'tel': event['tel'],
+            u'email': event['email'],
+            u'emailLIFF': event['token'],
+            u'comment': event['comment'],
+            u'displayName': event['displayName'],
+            u'dtg': f'{to.day}/{to.month}/{to.year} {to.hour}:{to.minute}:{to.second}',
+            u'channel': event['channel']
+        })
         firstname = event['firstname']
         email = event['email']
         company = event['company']
@@ -393,7 +446,8 @@ def ajax_marketing():
         flex_profile = flex_other(picture, displayName, firstname, email, company, tel, product, comment)
         line_bot_api2.push_message(userId, flex_profile)
         line_bot_api2.push_message(userId, TextSendMessage(
-            text='ขอบคุณลูกค้ามากค่ะ ทางเราจะติดต่อกลับให้เร็วที่สุดค่ะ\nขอบคุณค่ะ'))
+            text='น้องแมงโก้ได้รับข้อมูลของท่านแล้ว โดยจะรีบดำเนินการประสานงานให้เจ้าหน้าที่ติดต่อกลับให้เร็วที่สุดค่ะ\n'
+                 'หรือหากต้องการขอใบเสนอราคาด่วนสามารถติดต่อได้ที่ 063-565-4594 😀'))
         return make_response(event)
 
 
@@ -413,7 +467,7 @@ def saveimage():
         with open(os.path.join(dir_name, '{}.jpg'.format(img_name)), 'wb') as img:
             img.write(base64.b64decode(event['image'].split(",")[1]))
         original = Image.open(os.path.join(dir_name, '{}.jpg'.format(img_name)))
-        if (original.format != 'JPEG'):
+        if original.format != 'JPEG':
             return make_response('Unsupported image type.', 400)
         original.thumbnail((240, 240), Image.ANTIALIAS)
         original.save(os.path.join(dir_name, '{}_240.jpg'.format(img_name)), 'JPEG')
@@ -475,7 +529,7 @@ def marketing_import():
             'amount': amount,
             'getDemo': getDemo,
             'information': information,
-            'imports': marketing_import
+            'imports': marketing_import,
         }
         return render_template('customers_new/table/import.html', data=data)
     elif request.method == 'POST':
@@ -497,37 +551,50 @@ def marketing_import():
         elif button == 'button_delete':
             button_event.button_delete('LineLiff')
             return redirect(url_for('marketing_import'))
+        elif button == 'button_edit':
+            for key in key_import:
+                return redirect(url_for('marketing_import_update', id=key))
+        elif button == 'button_sorting':
+            return redirect(url_for('tagImport', tag=tags))
         return redirect(url_for('marketing_import'))
 
 
 @app.route('/marketing_information', methods=['GET', 'POST'])
 def marketing_information():
+    tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+            'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+            'RC010', 'RA010', 'RB010']
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
-        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
-                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
-                'RC010', 'RA010', 'RB010']
         fire = FirebaseNewCustomer(db=db2)
         marketing_information = fire.restCustomer()
         marketing_import = fire.liffCustomer()
         getDemo = len(fire.demoCustomer())
         amount = len(marketing_information)
         marketing_import = len(marketing_import)
+        REAL = fire.lenProduct('RestCustomer', 'RealEstate')
+        CON = fire.lenProduct('RestCustomer', 'Construction')
+        PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
+        OTHER = fire.lenProduct('RestCustomer', 'Other')
         data = {
             'getDemo': getDemo,
             'information': marketing_information,
             'import': marketing_import,
             'amount': amount,
-            'tag': tags
+            'tag': tags,
+            'REAL': len(REAL),
+            'CON': len(CON),
+            'PLAN': len(PLAN),
+            'OTHER': len(OTHER)
         }
-        return render_template('customers_new/table/information.html', data=data)
+        return render_template('customers_new/table/information.html', data=data, randrange=randrange)
     elif request.method == 'POST':
         button = request.form['button_event']
-        tags = request.form.getlist('tags')
+        tags_index = request.form.getlist('tags')
         key_information = request.form.getlist('key_information')
-        button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags)
-        print(tags)
+        print(key_information)
+        button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags_index)
         if button == 'button_tag':
             button_event.button_tag('RestCustomer', 'Tag')
         elif button == 'button_excel':
@@ -540,10 +607,22 @@ def marketing_information():
             for key in key_information:
                 return redirect(url_for('marketing_information_update', id=key))
         elif button == 'button_sorting':
-            req = TagChart
-            ref = db2.child('RestCustomer').get()
-            data = req.req_path_list(tags, ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
+            return redirect(url_for('tagInformation', tag=tags_index))
+        elif button == 'button_remove_tag':
+            button_event.button_clean_tag('RestCustomer', 'Tag')
+        elif button == 'button_add':
+            authorized = request.form['authorized']
+            tax = request.form['tax']
+            position = request.form['position']
+            if len(key_information) > 1:
+                return redirect(url_for('marketing_information'))
+            else:
+                for i in key_information:
+                    print(i)
+                    _dict = {'Authorized': authorized, 'Tax': tax, 'Position': position}
+                    print(_dict)
+                    button_event.button_add('RestCustomer', i, _dict)
+                    break
         return redirect(url_for('marketing_information'))
 
 
@@ -567,7 +646,7 @@ def getDemo():
             'amount_getDemo': len_getDemo,
             'amount_information': len_information,
             'amount_import': len_import,
-            'tag': tags
+            'tag': tags,
         }
         return render_template('customers_new/table/getDemo.html', data=data)
     elif request.method == 'POST':
@@ -597,14 +676,39 @@ def marketing_import_update(id):
         tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
                 'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
                 'RC010', 'RA010', 'RB010']
-        product = ['RealEstate', 'Construction', 'PowerBI', 'Project Planning']
-        ref = db2.child('RestCustomer').child(id).get()
+        product = ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning']
+        other = ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM',
+                 'QCM', 'Maintenance', 'Rental', 'MRP']
+        ref = db2.child('LineLiff').child(id).get()
         data = {
             'product': product,
             'user': ref.val(),
-            'tag': tags
+            'tag': tags,
+            'other': other
         }
-        return render_template('customers_new/form/updateMG.html', data=data)
+        return render_template('customers_new/form/updateIM.html', data=data)
+    elif request.method == 'POST':
+        product = request.form['product']
+        name = request.form['name']
+        tags = request.form.getlist('tag')
+        company = request.form['company']
+        tel = request.form['tel']
+        other = request.form['other']
+        channel = request.form['channel']
+        displayName = request.form['displayName']
+        message = request.form['message']
+        email = request.form['email']
+        emailLIFF = request.form['token']
+        fire = FirebaseNewCustomer(db2)
+        if tags:
+            groupBy = fire.post_marketing_update(id, channel, message, company, tags, displayName, other, email, name,
+                                                 product, tel, emailLIFF)
+            db2.child('LineLiff').child(id).update(groupBy)
+        else:
+            groupBy = fire.post_marketing_update(id, channel, message, company, [''], displayName, other, email, name,
+                                                 product, tel, emailLIFF)
+            db2.child('LineLiff').child(id).update(groupBy)
+        return redirect(url_for('marketing_import'))
 
 
 @app.route('/marketing_information_update/<string:id>', methods=['GET', 'POST'])
@@ -638,15 +742,20 @@ def marketing_information_update(id):
         message = request.form['message']
         email = request.form['email']
         emailLIFF = request.form['token']
+        authorized = request.form['authorized']
+        tax = request.form['tax']
+        position = request.form['position']
         if tags:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
                        'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
-                       'Profile': displayName, 'Channel': channel, 'Tag': tags}
+                       'Profile': displayName, 'Channel': channel, 'Tag': tags, 'Authorized': authorized, 'Tax': tax,
+                       'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         else:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
                        'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
-                       'Profile': displayName, 'Channel': channel, 'Tag': ['']}
+                       'Profile': displayName, 'Channel': channel, 'Tag': [''], 'Authorized': authorized, 'Tax': tax,
+                       'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         return redirect(url_for('marketing_information'))
 
@@ -686,54 +795,11 @@ def tagImport(tag):
     if request.method == 'GET':
         req = TagChart
         ref = db2.child('LineLiff').get()
-        if tag == 'CB010':
-            data = req.req_path('CB010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CC010':
-            data = req.req_path('CC010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CG010':
-            data = req.req_path('CG010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CI010':
-            data = req.req_path('CI010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CJ010':
-            data = req.req_path('CJ010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CM010':
-            data = req.req_path('CM010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CF010':
-            data = req.req_path('CF010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CP010':
-            data = req.req_path('CP010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CE010':
-            data = req.req_path('CE010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CH010':
-            data = req.req_path('CH010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CK010':
-            data = req.req_path('CK010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CN010':
-            data = req.req_path('CN010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'CD010':
-            data = req.req_path('CD010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'RC010':
-            data = req.req_path('RC010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'RA010':
-            data = req.req_path('RA010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
-        elif tag == 'RB010':
-            data = req.req_path('RB010', ref, 'tag', db2)
-            return render_template('customers_new/table/tagImport.html', data=data)
+        txt = tag.strip('[]')
+        txt = txt.strip(" ' ")
+        txt = txt.split("'")
+        data = req.req_path_list(txt, ref, 'tag', db2)
+        return render_template('customers_new/table/tagImport.html', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -753,6 +819,12 @@ def tagImport(tag):
         elif button == 'button_delete':
             button_event.button_delete('LineLiff')
             return redirect(url_for('marketing_import'))
+        elif button == 'button_delete':
+            button_event.button_delete('LineLiff')
+            return redirect(url_for('marketing_import'))
+        elif button == 'button_edit':
+            for key in key_import:
+                return redirect(url_for('marketing_import_update', id=key))
         return redirect(url_for('marketing_import'))
 
 
@@ -761,54 +833,11 @@ def tagInformation(tag):
     if request.method == 'GET':
         req = TagChart
         ref = db2.child('RestCustomer').get()
-        if tag == 'CB010':
-            data = req.req_path('CB010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CC010':
-            data = req.req_path('CC010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CG010':
-            data = req.req_path('CG010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CI010':
-            data = req.req_path('CI010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CJ010':
-            data = req.req_path('CJ010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CM010':
-            data = req.req_path('CM010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CF010':
-            data = req.req_path('CF010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CP010':
-            data = req.req_path('CP010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CE010':
-            data = req.req_path('CE010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CH010':
-            data = req.req_path('CH010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CK010':
-            data = req.req_path('CK010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CN010':
-            data = req.req_path('CN010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'CD010':
-            data = req.req_path('CD010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'RC010':
-            data = req.req_path('RC010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'RA010':
-            data = req.req_path('RA010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
-        elif tag == 'RB010':
-            data = req.req_path('RB010', ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
+        txt = tag.strip('[]')
+        txt = txt.strip(" ' ")
+        txt = txt.split("'")
+        data = req.req_path_list(txt, ref, 'Tag', db2)
+        return render_template('customers_new/table/tagInformation.html', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -822,7 +851,17 @@ def tagInformation(tag):
         elif button == 'button_delete':
             button_event.button_delete('RestCustomer')
             return redirect(url_for('marketing_information'))
-        return redirect(url_for('marketing_information'))
+        elif button == 'button_edit':
+            for key in key_information:
+                return redirect(url_for('marketing_information_update', id=key))
+        elif button == 'button_sorting':
+            req = TagChart
+            ref = db2.child('RestCustomer').get()
+            data = req.req_path_list(tags, ref, 'Tag', db2)
+            return render_template('customers_new/table/tagInformation.html', data=data)
+        elif button == 'button_remove_tag':
+            button_event.button_clean_tag('RestCustomer', 'Tag')
+        return redirect(url_for('tagInformation', tag=tag))
 
 
 @app.route('/graph', methods=['GET', 'POST'])
@@ -1027,7 +1066,7 @@ def event_handler1(event):
     rtoken = event['replyToken']
     try:
         data = event['postback']['data']
-        userid = event['source']['userId']
+        userId = event['source']['userId']
         if postback == 'postback':
             print(data)
             if data == 'CSM':
@@ -1444,8 +1483,6 @@ def handle_message(event):
             elif ['ขอดู'] == result[3]:
                 x = 'https://liff.line.me/1655104822-k5dRGJez'
                 line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-            elif ['@mango'] == result[3]:
-                line_bot_api1.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
             elif ['ฉันชื่ออะไร'] == result[3]:
                 profile = line_bot_api1.get_profile(result[4])
                 user_profile = profile.display_name
@@ -1507,8 +1544,6 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token, productR4())
                 inserted = get_datetime(x, line_bot_api2)
                 db2.child('chatbot_transactions').push(inserted)
-            elif ['@mango'] == result[3]:
-                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
             elif ['ฉันชื่ออะไร'] == result[3]:
                 profile = line_bot_api2.get_profile(result[4])
                 user_profile = profile.display_name
@@ -1712,6 +1747,17 @@ def handle_message_new(event):
                     line_bot_api2.reply_message(event.reply_token, promotion())
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
+                elif result[2] == [28]:
+                    profile = line_bot_api2.get_profile(result[4])
+                    displayName = profile.display_name
+                    x = f'คุณ {displayName}\nสามารถเลือกช่องทางการติดต่อตามเมนูด้านล่างได้เลยนะคะ☺'
+                    quick_reply(event=event, x=x, QuickReply=QuickReply(items=[
+                        QuickReplyButton(action=MessageAction(label='Helpdesk️', text='@helpdesk')),
+                        QuickReplyButton(action=MessageAction(label='Sale', text='@sale'))
+                    ]))
+                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=x))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
                 elif areSure:
                     x = ['จ้า', 'ใช่จ้า', 'จริงสิ']
                     y = random.choice(x)
@@ -1734,6 +1780,8 @@ def handle_message_new(event):
                     QuickReplyButton(action=MessageAction(label="สอบถามการอบรม", text="สอบถามการอบรม")),
                     QuickReplyButton(action=MessageAction(label="สอบถามการใช้งาน", text="สอบถามการใช้งาน"))
                 ]))
+            elif ['@mango'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{result[4]}'))
             elif ['temp'] == result[3]:
                 temp = db2.child('Sensor Ultrasonic').get()
                 temp = temp.val()
@@ -1799,12 +1847,17 @@ def handle_message_new(event):
                 line_bot_api2.reply_message(event.reply_token, promotion())
             elif ['profile'] == result[3]:
                 profile = line_bot_api2.get_profile(result[4])
-                displayName = profile.display_name
                 picture_url = profile.picture_url
-                user_id = profile.user_id
-                status = profile.status_message
-                print(displayName, picture_url, user_id, status)
-                line_bot_api2.push_message(result[4], flex_profile_erp(picture_url, displayName, status))
+                userId = profile.user_id
+                line_bot_api2.push_message(result[4], flex_CSM(picture_url, userId))
+            elif ['@helpdesk'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(
+                    text='สอบถามการใช้งานโปรแกรม หรือหาก\nติดปัญหาการใช้งานสามารถติดต่อผ่าน\nCall Center 02-123-3900 ได้เลยค่ะ'
+                         '\n\nจะมีทีมงานผู้เชี่ยวชาญคอยให้คำปรึกษา\nเฉพาะด้านพร้อม ระบบบันทึกเสียงและเก็บ\nบันทึกข้อมูลปัญหาของลูกค้าทันทีนะคะ'))
+            elif ['@sale'] == result[3]:
+                line_bot_api2.reply_message(event.reply_token, TextSendMessage(
+                    text='หากต้องการขอใบเสนอราคา หรือต้องการ\nนัด DEMO เพื่อให้ทีมงานนำเสนอข้อมูล'
+                         '\nโปรแกรม ท่านสามารถติดต่อเจ้าหน้าที่\nฝ่ายขายโทร. 063-565-4594 ได้เลยค่ะ'))
             else:
                 profile = line_bot_api2.get_profile(result[4])
                 displayName = profile.display_name
@@ -1927,4 +1980,4 @@ def richmenu(rich):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5005)

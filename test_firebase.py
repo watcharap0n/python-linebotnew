@@ -1,17 +1,22 @@
 import firebase_admin
 import pyrebase
 import json, webbrowser
+
 from linebot import LineBotApi, WebhookHandler
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
 from attacut import tokenize
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, render_template
 from linebot import LineBotApi
 from firebase_admin import credentials, auth
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import xlsxwriter
+from pusher import Pusher
+import uuid
+from random import randrange
+from mangoerp.myClass import *
 
 app = Flask(__name__)
 
@@ -26,6 +31,65 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     db = firebase.database()
     line_bot_api = LineBotApi(data['Channel_access_token'])
     handler = WebhookHandler(data['Channel_secret'])
+
+# ref = db.child('RestCustomer').get()
+# _str = str(['CN010', 'RC010'])
+# txt = _str.strip('[]')
+# txt = txt.strip(" ' ")
+# txt = txt.split("'")
+# for i in ref.each()[1:]:
+#     for a in txt:
+#         if a in i.val()['Tag']:
+#             k = i.key()
+#             print(i.val())
+#             break
+
+# users_by = db.child("test_LIFF").order_by_child("userId").equal_to('Ue5dadd2dd3552271033e77d1518415c9').get()
+
+# line_bot_api.push_message('Ue5dadd2dd3552271033e77d1518415c9', TextSendMessage(text='ok'))
+
+ref = db.child('RestCustomer').get()
+
+vat = {'Tax': '', 'Authorized': '', 'Position': ''}
+
+
+print(ref.each()[0])
+# print(single.val())
+
+# while True:
+#     x = datetime.now()
+#     y = f'{x.hour}:{x.minute}:{x.second}'
+#     print(f'{x.hour}:{x.minute}:{x.second}')
+#     if y == '9:44:00':
+#         print('ok')
+# print(dict(users_by.val()))
+# for u in users_by:
+#     print(u.val()['picture'])
+# ref = db.child('id').get()
+# lst = []
+# for i in ref.each():
+#     channel = i.val()['channel']
+#     message = i.val()['comment']
+#     fname = i.val()['firstname']
+#     group = {'channel': channel, 'message': message, 'fname': fname}
+#     lst.append(group)
+#
+#
+# len_lst = len(lst)
+#
+# for l in range(0, len_lst):
+#     if l == 0:
+#         print(lst[l])
+#         for i in lst[1:]:
+#             print(i)
+            # print(i)
+
+
+
+# print(lst)
+
+
+# for i in ref.each()[1:]:
 
 # group = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010', 'CF010',
 #          'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010', 'RC010',
@@ -366,25 +430,25 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #         test.append(apiDemo)
 #     return test
 
-t = ['CF010', 'CP010', 'CE010']
-ref = db.child('LineLiff').get()
-for i in ref.each():
-    for a in t:
-        if a in i.val()['tag']:
-            break
-
-eCount = 1
-lst = []
-for i in ref.each()[1:]:
-    for a in t:
-        if a in i.val()['tag']:
-            k = i.key()
-            user = dict(i.val())
-            user.update({'index': str(eCount), 'key': k})
-            lst.append(user)
-            eCount = eCount + 1
-            break
-print(lst)
+# t = ['CF010', 'CP010', 'CE010']
+# ref = db.child('LineLiff').get()
+# for i in ref.each():
+#     for a in t:
+#         if a in i.val()['tag']:
+#             break
+#
+# eCount = 1
+# lst = []
+# for i in ref.each()[1:]:
+#     for a in t:
+#         if a in i.val()['tag']:
+#             k = i.key()
+#             user = dict(i.val())
+#             user.update({'index': str(eCount), 'key': k})
+#             lst.append(user)
+#             eCount = eCount + 1
+#             break
+# print(lst)
 # print(lst)
 # e = [x.val()['tag'] for x in ref.each()]
 #
@@ -392,3 +456,17 @@ print(lst)
 # a = ['CF010', 'CP010', 'CE010']
 # test = [a if a in e else print('ok')]
 # print(test)
+
+
+# ref = db.child('LineLiff').child('-MMRjUWjn-bL79ZCsDvR').get()
+#
+# userId = ref.val()['event']['userId']
+# picture = ref.val()['event']['picture']
+# token = ref.val()['event']['token']
+# other = ref.val()['event']['other']
+#
+# groupBy = {'tag': 'tag', 'event': {'channel': 'channel', 'comment': 'None', 'company': 'ะดก', 'displayName': 'Kane',
+#                                    'email': 'b', 'firstname': 'firstname', 'other': other, 'product': 'RealEstate',
+#                                    'tel': '6', 'token': token, 'userId': userId, 'picture': picture}}
+#
+# db.child('LineLiff').child('-MMRjUWjn-bL79ZCsDvR').update(groupBy)

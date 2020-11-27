@@ -18,7 +18,7 @@
                                     <label for="name">ชื่อ</label>
                                     <input type="text" class="form-control" id="name" placeholder="Enter Name"
                                            name="name" onchange="myFuc()"
-                                           value="{{ data.user.Name }}">
+                                           value="{{ data.user.event.firstname }}">
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -26,7 +26,7 @@
                                     <label for="company">บริษัท</label>
                                     <input type="text" class="form-control" id="student_id" placeholder="Enter Company"
                                            name="company"
-                                           value="{{ data.user.Company }}">
+                                           value="{{ data.user.event.company }}">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
                             <label for="tel">เบอร์</label>
                             <input type="tel" class="form-control" id="tel" placeholder="Enter Tel"
                                    name="tel"
-                                   value="{{ data.user.Tel }}">
+                                   value="{{ data.user.event.tel }}">
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
@@ -42,7 +42,7 @@
                                     <label for="email">อีเมล</label>
                                     <input type="email" class="form-control" id="email" placeholder="Enter Email"
                                            name="email"
-                                           value="{{ data.user.Email }}">
+                                           value="{{ data.user.event.email }}">
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -50,7 +50,7 @@
                                     <label for="token">อีเมลไลน์</label>
                                     <input type="email" class="form-control" id="token" placeholder="Enter Email LINE"
                                            name="token"
-                                           value="{{ data.user.EmailLiff }}">
+                                           value="{{ data.user.event.token }}">
                                 </div>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                     <input type="text" class="form-control" id="displayName"
                                            placeholder="Enter displayName"
                                            name="displayName"
-                                           value="{{ data.user.Profile }}">
+                                           value="{{ data.user.event.displayName }}">
                                 </div>
                             </div>
                             <div class="col">
@@ -69,7 +69,7 @@
                                     <label for="channel">ช่องทาง</label>
                                     <input type="text" class="form-control" id="channel" placeholder="Enter Channel"
                                            name="channel"
-                                           value="{{ data.user.Channel }}">
+                                           value="{{ data.user.event.channel }}">
                                 </div>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                             <label for="message">ข้อความ</label>
                             <input type="text" class="form-control" id="message" placeholder="Enter Message"
                                    name="message"
-                                   value="{{ data.user.Message }}">
+                                   value="{{ data.user.event.comment }}">
                         </div>
 
                         <div class="row">
@@ -87,7 +87,7 @@
                                     <select name="product" id="product" class="form-control form-control-sm">
                                         <option value="">Please, select</option>
                                         {% for user in data.product %}
-                                            <option value="{{ user }}" {% if user == data.user.Product %}
+                                            <option value="{{ user }}" {% if user == data.user.event.product %}
                                                     selected {% endif %}>
                                                 {{ user }}
                                             </option>
@@ -101,7 +101,7 @@
                                     <select name="other" id="other" class="form-control form-control-sm">
                                         <option value="">Please, select</option>
                                         {% for user in data.other %}
-                                            <option value="{{ user }}" {% if user == data.user.Other %}
+                                            <option value="{{ user }}" {% if user == data.user.event.other %}
                                                     selected {% endif %}>
                                                 {{ user }}
                                             </option>
@@ -120,7 +120,7 @@
                                 {% for tag in data.tag %}
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="{{ tag }}"
-                                                {% if tag in data.user.Tag %} checked {% endif %}
+                                                {% if tag in data.user.tag %} checked {% endif %}
                                                id="{{ tag }}"
                                                name="tag">
                                         <label class="form-check-label" for="{{ tag }}">
@@ -178,33 +178,6 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="channel">ทุนจดทะเบียน</label>
-                                    <input type="text" class="form-control" id="channel" placeholder="Enter Authorized"
-                                           name="authorized"
-                                           value="{{ data.user.Authorized }}">
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="channel">เลขผู้เสียภาษี</label>
-                                    <input type="text" class="form-control" id="channel" placeholder="Enter Tax"
-                                           name="tax"
-                                           value="{{ data.user.Tax }}">
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="channel">ตำแหน่ง</label>
-                                    <input type="text" class="form-control" id="channel" placeholder="Enter Position"
-                                           name="position"
-                                           value="{{ data.user.Position }}">
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                     <div class="card-footer">
                         <button type="submit"
@@ -213,7 +186,7 @@
                             ตกลง
                         </button>
 
-                        <a class="text-light" href="/marketing_information">
+                        <a class="text-light" href="/marketing_import">
                             <button type="button" class="btn btn-outline-danger btn-sm">
                                 <i class="fa fa-arrow-left" aria-hidden="true"></i>
                                 ย้อนกลับ

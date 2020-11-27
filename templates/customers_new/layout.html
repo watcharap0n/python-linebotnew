@@ -37,17 +37,19 @@
 
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{ url_for('static',filename='vendor/chart.js/Chart.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/chart.js/Chart.min.js') }}"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="{{ url_for('static',filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="{{ url_for('static',filename='js/sb-admin-2.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='js/sb-admin-2.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="http://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher-with-encryption.min.js"></script>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
 
@@ -60,7 +62,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 </head>
 
-<body id="page-top">
+<body class="fixed-nav sticky-footer bg-gray-200" id="page-top">
 <script>
     var firebaseConfig = {
         "apiKey": "AIzaSyDylMwsCrprPoN8JtDFGw4fkxw2ZZgdc7s",
@@ -78,74 +80,57 @@
 </script>
 <!-- Page Wrapper -->
 <div id="wrapper">
-    <ul
-            class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion"
-            id="accordionSidebar"
-    >
-        <a
-                class="sidebar-brand d-flex align-items-center justify-content-center"
-                href="/index_new_customer"
-        >
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">
-                MANGO AI <sup>consultant</sup>
-            </div>
-
-        </a>
-        <div class="sidebar-heading text-white">Interface</div>
-        <div class="container" style="margin-top: 10px">
-            <div class="text-xs text-white">
-                <p class="text"><strong>Username: {{g.user}}</strong></p>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top" id="mainNav">
+        <a class="navbar-brand" href="/marketing_information">Mango Anywhere</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+                <li class="nav-item" data-toggle="tooltip" data-placement="right"
+                    title="Dashboard">
+                    <i class="text-white fa fa-fw fa-user-circle" style="text-align: end"></i>
+                    <span class="nav-link-text text-white">{{ g.user }}</span>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="/index_new_customer">
+                        <i class="fa fa-fw fa-book"></i>
+                        <span class="nav-link-text">Intent</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="/marketing_import">
+                        <i class="fa fa-fw fa-user"></i>
+                        <span class="nav-link-text">Information</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="/graph">
+                        <i class="fa fa-fw fa-bar-chart"></i>
+                        <span class="nav-link-text">Graph</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="/logout">
+                        <i class="fa fa-fw fa-sign-out"></i>
+                        <span class="nav-link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <hr class="sidebar-divider bg-muted my-0"/>
-        <li class="nav-item">
-            <a class="nav-link" href="/index_new_customer">
-                <i class="far fa-comment-dots fa-2x"></i>
-                <span>Intents</span></a
-            >
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/marketing_import">
-                <i class="far fa-book"></i>
-                <span>Information</span></a
-            >
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/graph">
-                <i class="far fa-feather"></i>
-                <span>Statistic</span></a
-            >
-        </li>
-
-        <!-- Nav Item - Dashboard -->
-
-        <hr class="sidebar-divider bg-muted d-none d-md-block"/>
-
-
-
-        <div class="text-center d-none d-md-inline">
-            <a id="logout" href="/logout">
-                <button type="button" class="btn bg text-white">
-                    <i class="fa fa-sign-out" aria-hidden="true"></i>
-                    Logout
-                </button>
-            </a>
-        </div>
-    </ul>
+    </nav>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <!-- Main Content -->
-        <div id="content">{% block content %} {% endblock %}</div>
+        <div id="content" class="fixed-nav sticky-footer bg-gray-200">{% block content %} {% endblock %}</div>
 
     </div>
     <!-- End of Content Wrapper -->
 </div>
-
 
 
 <a class="scroll-to-top rounded" href="#page-top">
@@ -153,13 +138,8 @@
 </a>
 
 
-
-
 </body>
 <style>
-
-
-
 
 
 </style>

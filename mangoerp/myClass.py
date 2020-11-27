@@ -20,9 +20,16 @@ class ButtonEvent:
         self.tag_insert = tag_insert
         self.tagChart = TagChart()
 
+    def button_add(self, transaction, i, dict_key):
+        self.db.child(transaction).child(i).update(dict_key)
+
     def button_tag(self, transaction, dict_key):
         for i in self.loop:
             self.db.child(transaction).child(i).update({dict_key: self.tag_insert})
+
+    def button_clean_tag(self, transaction, dict_key):
+        for i in self.loop:
+            self.db.child(transaction).child(i).update({dict_key: ['']})
 
     def button_excel_import(self):
         toList = []
@@ -43,7 +50,6 @@ class ButtonEvent:
         datatoexcel = pd.ExcelWriter('static/excel/newCustomers.xlsx', engine='xlsxwriter')
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
-
 
     def button_delete(self, transaction):
         for i in self.loop:
@@ -464,6 +470,25 @@ class FirebaseNewCustomer:
             test.append(apiDemo)
             count += 1
         return test
+
+    def lenProduct(self, db, product):
+        lst = []
+        ref = self.db.child(db).get()
+        for i in ref.each():
+            lst.append(i.val()['Product'])
+        result = [x for x in lst if product in x]
+        return result
+
+    def post_marketing_update(self, id, channel, comment, company, tag,
+                              displayName, other, email, firstname, product, tel, token):
+        ref = self.db.child('LineLiff').child(id).get()
+        userId = ref.val()['event']['userId']
+        picture = ref.val()['event']['picture']
+        groupBy = {'tag': tag,
+                   'event': {'channel': channel, 'comment': comment, 'company': company, 'displayName': displayName,
+                             'email': email, 'firstname': firstname, 'other': other, 'product': product,
+                             'tel': tel, 'token': token, 'userId': userId, 'picture': picture}}
+        return groupBy
 
 
 class WebScraping:

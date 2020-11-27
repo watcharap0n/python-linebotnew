@@ -12,6 +12,8 @@
     <orderEntry type="library" name="sdk" level="application" />
     <orderEntry type="library" name="signature_pad" level="application" />
     <orderEntry type="library" name="axios" level="application" />
+    <orderEntry type="library" name="material-components-web" level="application" />
+    <orderEntry type="library" name="dataTables.material" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

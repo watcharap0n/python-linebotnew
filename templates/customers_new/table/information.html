@@ -3,128 +3,287 @@
 
 
 
+    <br><br>
     <div class="container-fluid" style="margin-top: 30px">
 
-        <h1 class="h3 mb-2 text-gray-800">Boardcast</h1>
+        <h1 class="h3 mb-2 text-gray-800">Mango Customer</h1>
 
         <div class="row">
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-primary o-hidden h-100">
                     <div class="card-body">
-                        <div class="col mr-2">
-                            <form class="user" method="POST" action="">
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Text:</label>
-                                        <input type="text" class="form-control" id="broadcast" name="msg" required>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <label for="broadcast"
-                                               class="text-xs font-weight-bold text-danger text-uppercase mb-1">Image
-                                            URL:</label>
-                                        <input type="text" class="form-control" id="broadcast_img" name="bcImg">
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <br>
-                                        <button type="submit" class="btn btn-outline-success">
-                                            <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                            Boardcast
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.CON }} </span>Construction</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-warning o-hidden h-100">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">จำนวนข้อความ
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800 mm">{{ data.msg }}</div>
-                            </div>
-                            <div class="">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
                         </div>
+                        <div class="mr-5"><span id="message-count">{{ data.REAL }} </span>Real Estate</div>
                     </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-success o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.PLAN }} </span>Project Planning</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="card text-white bg-danger o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </div>
+                        <div class="mr-5"><span id="order-count">{{ data.OTHER }} </span>OTHER</div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="#">
+                        <span class="float-left">View Details</span>
+                        <span class="float-right">
+                    <i class="fa fa-angle-right"></i>
+                  </span>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <ul class="nav nav-pills" role="tablist">
-                            <li class="nav-item">
-                                <a class="btn btn-outline-success active" data-toggle="pill" href="#information">
-                                    <i class="fa fa-users"></i>
-                                    ข้อมูลลูกค้า
-                                    <span class="badge badge-light">{{ data.amount }}</span>
-                                </a>
-                            </li>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fa fa-bar-chart"></i> Revenue Chart
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-8 my-auto">
+                                <canvas id="myBarChart" width="100" height="50"></canvas>
+                            </div>
+                            <div class="col-sm-4 text-center my-auto">
+                                <div class="h4 mb-0 text-primary">{{ data.amount }}</div>
+                                <div class="small text-muted">ข้อมูลลูกค้า</div>
+                                <hr>
+                                <div class="h4 mb-0 text-warning">{{ data.import }}</div>
+                                <div class="small text-muted">นำเข้า</div>
+                                <hr>
+                                <div class="h4 mb-0 text-success">{{ data.getDemo }}</div>
+                                <div class="small text-muted">นัดDemo</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Example Notifications Card-->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fa fa-bell-o"></i> ข้อความ ฟีด
+                    </div>
+                    <div class="list-group list-group-flush small">
+                        <div id="message-box">
+                            <a class="list-group-item list-group-item-action" href="#">
+                                <div class="media">
+                                    {% set value = data.information[-1] %}
+                                    {% set img = value.Picture %}
+                                    <img class="d-flex mr-3 rounded-circle" src="{{ img }}" alt="" height="60">
+                                    <div class="media-body">
+                                        <strong>
+                                            {{ value.Name }}
+                                        </strong> ได้มีการเลือกผลิตภัณฑ์
+                                        <strong>{{ value.Product }} {{ value.Email }}</strong>
+                                        <div class="text-muted smaller">ในวันที่ {{ value.Date }} {{ value.Time }}</div>
+                                    </div>
+                                </div>
+                                <div class="media" style="margin-top: 8px">
+                                    {% set r = randrange(1, data.amount) %}
+                                    {% set value = data.information[r] %}
+                                    {% set img = value.Picture %}
+                                    <img class="d-flex mr-3 rounded-circle" src="{{ img }}" alt="" height="60">
+                                    <div class="media-body">
+                                        <strong>
+                                            {{ value.Name }}
+                                        </strong> ได้มีการเลือกผลิตภัณฑ์
+                                        <strong>{{ value.Product }} {{ value.Email }}</strong>
+                                        <div class="text-muted smaller">ในวันที่ {{ value.Date }} {{ value.Time }}</div>
+                                    </div>
+                                </div>
+                                <div class="media" style="margin-top: 8px">
+                                    {% set r = randrange(1, data.amount) %}
+                                    {% set value = data.information[r] %}
+                                    {% set img = value.Picture %}
+                                    <img class="d-flex mr-3 rounded-circle" src="{{ img }}" alt="" height="60">
+                                    <div class="media-body">
+                                        <strong>
+                                            {{ value.Name }}
+                                        </strong> ได้มีการเลือกผลิตภัณฑ์
+                                        <strong>{{ value.Product }} {{ value.Email }}</strong>
+                                        <div class="text-muted smaller">ในวันที่ {{ value.Date }} {{ value.Time }}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {#                        <a class="list-group-item list-group-item-action" href="#">View all activity...</a>#}
+                    </div>
+                    <div class="card-footer small text-muted">อัพเดตล่าสุดแล้ว</div>
+                </div>
+            </div>
+        </div>
+        <form action="" method="POST">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <ul class="nav nav-pills" role="tablist">
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-success active" data-toggle="pill" href="#information">
+                                        <i class="fa fa-users"></i>
+                                        ข้อมูลลูกค้า
+                                        <span class="badge badge-light">{{ data.amount }}</span>
+                                    </a>
+                                </li>
 
-                            <li class="nav-item" style="margin-left: 10px">
-                                <a href="/marketing_import">
-                                    <button class="btn btn-outline-success" data-toggle="tooltip">
+                                <li class="nav-item" style="margin-left: 10px">
+                                    <a href="/marketing_import" class="btn btn-outline-success">
                                         <i class="fa fa-reply" aria-hidden="true"></i>
                                         นำเข้า
                                         <span class="badge badge-light">{{ data.import }}</span>
-                                    </button>
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
 
-                            <li class="nav-item" style="margin-left: 10px">
-                                <a href="/getDemo">
-                                    <button
-                                            class="btn btn-outline-success" data-toggle="tooltip"
-                                            title="New Customers">
+                                <li class="nav-item" style="margin-left: 10px">
+                                    <a href="/getDemo"
+                                       class="btn btn-outline-success">
                                         <i class="fa fa-globe" aria-hidden="true"></i>
                                         นัดDemo
                                         <span class="badge badge-light">{{ data.getDemo }}</span>
-                                    </button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="align-content-end">
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#addCustomer">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                    Add Customer
+                                </button>
+
+                                <a href="/excel_all/information" class="btn btn-sm btn-success">
+                                    <i class="fa fa-file-excel-o"></i>
+                                    Export Excel
                                 </a>
-                            </li>
-                        </ul>
-                    </div>
 
-                    <div class="col-sm-4" style="text-align: end">
-                        <div class="align-content-end">
-                            <a href="/excel_all/information" class="btn btn-sm btn-outline-success">
-                                <i class="fa fa-file-excel-o"></i>
-                                Export Excel
-                            </a>
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#myModal">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                    Remove All
+                                </button>
+                                <div class="modal fade" id="addCustomer">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Add Customer</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
 
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal"
-                                    data-target="#myModal">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                Remove All
-                            </button>
-                            <div class="modal fade" id="myModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Confirm Delete</h4>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <i class="fa fa-edit">
+                                                            เพิ่มข้อมูล
+                                                        </i>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="form-group">
+                                                        <label for="authorized">ทุนจดทะเบียน</label>
+                                                        <input type="text" class="form-control"
+                                                               placeholder="Enter Authorized"
+                                                               name="authorized"
+                                                               value="">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="tax">เลขผู้เสียภาษี</label>
+                                                        <input type="text" class="form-control"
+                                                               placeholder="Enter Tax"
+                                                               name="tax"
+                                                               value="">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="authorized">ตำแหน่ง</label>
+                                                        <input type="text" class="form-control"
+                                                               placeholder="Enter Position"
+                                                               name="position"
+                                                               value="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" name="button_event" value="button_add"
+                                                        class="btn btn-info btn-sm">
+                                                    <i class="fa fa-check-square-o"></i>
+                                                    Add
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                        data-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="modal-body">
-                                            Delete all transaction... <br>
-                                            Are you sure ?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a {% for d in data.information %}
-                                                href="/delete/{{ d.key }}"
-                                            {% endfor %} class="btn btn-danger btn">Remove All</a>
-                                            <button type="button" class="btn btn-danger btn" data-dismiss="modal">Close
-                                            </button>
+                                    </div>
+                                </div>
+                                {#                            </form>#}
+                                <div class="modal fade" id="myModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Confirm Delete</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Delete all transaction... <br>
+                                                Are you sure ?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a {% for d in data.information %}
+                                                    href="/delete/{{ d.key }}"
+                                                {% endfor %} class="btn btn-danger btn">Remove All</a>
+                                                <button type="button" class="btn btn-danger btn" data-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -132,8 +291,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <form action="" method="POST">
+
                 <div class="card-body">
                     <div class="tab-content">
                         <div id="information" class="tab-pane active">
@@ -161,6 +319,9 @@
                                                             <label for="{{ tag }}" class="getvalue"
                                                                    data-toggle="{{ tag }}"
                                                                    title="">
+                                                                {% if tag == '' %}
+                                                                    ล้างแท็ก
+                                                                {% endif %}
                                                                 {% if tag == 'CB010' %}
                                                                     รับเหมาสาธารณูปโภค
                                                                 {% endif %}
@@ -218,7 +379,7 @@
                                                 <div class="row">
 
                                                     <button type="submit" name="button_event"
-                                                            style="margin-left: 20px"
+                                                            style="margin-left: 15px"
                                                             value="button_tag"
                                                             class="btn btn-secondary btn-sm"
                                                     >
@@ -228,7 +389,7 @@
 
 
                                                     <button type="submit" name="button_event"
-                                                            style="margin-left: 10px"
+                                                            style="margin-left: 5px"
                                                             value="button_sorting"
                                                             class="btn btn-secondary btn-sm"
                                                     >
@@ -236,77 +397,218 @@
                                                         Sorting
                                                     </button>
 
+                                                    <button type="submit" name="button_event"
+                                                            style="margin-left: 5px"
+                                                            value="button_remove_tag"
+                                                            class="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i class="fa fa-eraser" aria-hidden="true"></i>
+                                                        Clear
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <button type="submit" name="button_event" value="button_edit"
-                                                    class="btn btn-sm">
-                                                <i class="fa fa-edit"></i>
-                                                แก้ไข
-                                            </button>
                                         </div>
+                                        <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
+                                            <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    data-toggle="dropdown">
+                                                <i class="fa fa-columns" aria-hidden="true"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <div class="form-check" id="columnshow">
+                                                    <li class="dropdown-header">Select Column</li>
+                                                    <li class="divider"></li>
+                                                    <div class="dropdown-item">
+                                                        <input type="checkbox" class="checkBB" name="_tag"
+                                                               id="_tag" data-column="2" checked>
+                                                        <label>
+                                                            แท็ก
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input type="checkbox" class="checkBB" name="_fname"
+                                                               id="fname" data-column="3" checked>
+                                                        <label>
+                                                            ชื่อ
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input type="checkbox" class="checkBB" name="_product"
+                                                               id="product" data-column="4" checked>
+                                                        <label>
+                                                            ผลิตภัณฑ์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input type="checkbox" class="checkBB" name="_other"
+                                                               id="other" data-column="5">
+                                                        <label>
+                                                            ผลิตภัณฑ์อื่น
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_company"
+                                                               id="company" data-column="6" checked>
+                                                        <label>
+                                                            บริษัท
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_tel"
+                                                               id="tel" data-column="7" checked>
+                                                        <label>
+                                                            เบอร์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_email"
+                                                               id="email" data-column="8" checked>
+                                                        <label>
+                                                            อีเมล
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_LIFF"
+                                                               id="LIFF" data-column="9" checked>
+                                                        <label>
+                                                            อีเมล(ไลน์)
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_message"
+                                                               id="LIFF" data-column="10">
+                                                        <label>
+                                                            ข้อความ
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_profile"
+                                                               id="profile" data-column="11">
+                                                        <label>
+                                                            ชื่อโปรไฟล์
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_date"
+                                                               id="date" data-column="12">
+                                                        <label>
+                                                            วัน/เวลา
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_channel"
+                                                               id="channel" data-column="13">
+                                                        <label>
+                                                            ช่องทาง
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_username"
+                                                               id="username" data-column="14">
+                                                        <label>
+                                                            นำเข้าโดย
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_insert"
+                                                               id="insert" data-column="15">
+                                                        <label>
+                                                            วันเวลานำเข้า
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_authoze">
+                                                        <label>
+                                                            ทุนจดทะเบียน
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_tax">
+                                                        <label>
+                                                            เลขที่เสียภาษี
+                                                        </label>
+                                                    </div>
+                                                    <div class="dropdown-item">
+                                                        <input class="checkBB" type="checkbox" name="_position">
+                                                        <label>
+                                                            ตำแหน่ง
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" name="button_event" value="button_edit"
+                                                class="btn btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                            แก้ไข
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
-
-                                </div>
-                                <div class="col-sm-4"></div>
+                            </div>
+                            <div class="col-sm-4">
 
                             </div>
-                        </div>
+                            <div class="col-sm-4"></div>
 
-                        <div class="table-responsive">
-                            <table class="display" id="informationTable">
-                                <thead>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table-hover stripe" style="width:100%" id="informationTable">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" name="select" id="select-all-information">
+                                </th>
+                                <th data-visible="false">Index</th>
+                                <th class="_tag">แท็ก</th>
+                                <th class="_fname">ชื่อ</th>
+                                <th class="_product">ผลิตภัณฑ์</th>
+                                <th class="_other">ผลิตภัณฑ์อื่น</th>
+                                <th class="_company">บริษัท</th>
+                                <th class="_tel">เบอร์</th>
+                                <th class="_email">อีเมล</th>
+                                <th class="_LIFF">อีเมล(ไลน์)</th>
+                                <th class="_message">ข้อความ</th>
+                                <th class="_profile">ชื่อโปรไฟล์</th>
+                                <th class="_date">วัน/เวลา</th>
+                                <th class="_channel">ช่องทาง</th>
+                                <th class="_username">นำเข้าโดย</th>
+                                <th class="_insert">วันเวลานำเข้า</th>
+                                <th class="_authoze">ทุนจดทะเบียน</th>
+                                <th class="_tax">เลขผู้เสียภาษี</th>
+                                <th class="_position">ตำแหน่ง</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for info in data.information[::-1] %}
                                 <tr>
-                                    <th>
-                                        <input type="checkbox" name="select" id="select-all-information">
-                                    </th>
-                                    <th data-visible="false">Index</th>
-                                    <th>แท็ก</th>
-                                    <th>ชื่อ</th>
-                                    <th>ผลิตภัณฑ์</th>
-                                    <th>ผลิตภัณฑ์อื่น</th>
-                                    <th>บริษัท</th>
-                                    <th>เบอร์</th>
-                                    <th>อีเมล</th>
-                                    <th>อีเมล(ไลน์)</th>
-                                    <th>ข้อความ</th>
-                                    <th>ชื่อโปรไฟล์</th>
-                                    <th>วัน/เวลา</th>
-                                    <th>ช่องทาง</th>
-                                    <th>นำเข้าโดย</th>
-                                    <th>วันเวลานำเข้า</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for info in data.information[::-1] %}
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input type="checkbox"
-                                                       class="form-check-input position-static"
-                                                       name="key_information"
-                                                       aria-label="..."
-                                                       id="{{ info.key }}"
-                                                       value="{{ info.key }}"
-                                                        {% if info.key in data.information.key %}
-                                                       checked {% endif %}>
-                                            </div>
-                                        </td>
-                                        <td>{{ info.index }}</td>
-                                        <td>
-                                            {% set notvalue = '' %}
-                                            {% if notvalue not in info.Tag %}
-                                                <button type="button" class="btn btn-success btn-xs"
-                                                        data-toggle="collapse"
-                                                        data-target="#liff">
-                                                    <i class="fas fa-tags"></i>
-                                                </button>
-                                            {% endif %}
-                                            <div id="liff" class="collapse fade">
-                                                {% for tag in info.Tag %}
-                                                    {% if tag %}
-                                                        <a href="tagInformation/{{ tag }}">
+                                    <td>
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                   class="form-check-input position-static"
+                                                   name="key_information"
+                                                   aria-label="..."
+                                                   id="{{ info.key }}"
+                                                   value="{{ info.key }}"
+                                                    {% if info.key in data.information.key %}
+                                                   checked {% endif %}>
+                                        </div>
+                                    </td>
+                                    <td>{{ info.index }}</td>
+                                    <td class="_tag">
+                                        {% set notvalue = '' %}
+                                        {% if notvalue not in info.Tag %}
+                                            <button type="button" class="btn btn-success btn-xs"
+                                                    data-toggle="collapse"
+                                                    data-target="#liff">
+                                                <i class="fas fa-tags"></i>
+                                            </button>
+                                        {% endif %}
+                                        <div id="liff" class="collapse fade">
+                                            {% for tag in info.Tag %}
+                                                {% if tag %}
+                                                    <a href="tagInformation/{{ tag }}">
                                                                 <span id="{{ tag }}"
                                                                       class="badge badge-secondary Filter_kane CC010">
                                                                         <i class="fas fa-tags"></i>
@@ -344,83 +646,92 @@
                                                                         แนวสูง
                                                                     {% endif %}
                                                                 </span>
-                                                        </a>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        </td>
-                                        <td>{{ info.Name }}</td>
-                                        <td>{{ info.Product }}</td>
-                                        <td>{{ info.Other }}</td>
-                                        <td>{{ info.Company }}</td>
-                                        <td>{{ info.Tel }}</td>
-                                        <td>{{ info.Email }}</td>
-                                        <td>{{ info.EmailLiff }}</td>
-                                        <td>{% set notvalue = 'None' %}
-                                            {% if notvalue not in info.Message %}
-                                                <button type="button" class="btn btn-primary btn-xs"
-                                                        data-toggle="collapse"
-                                                        data-target="#message">
-                                                    <i class="fa fa-commenting-o" aria-hidden="true"></i>
-                                                </button>
-                                            {% endif %}
-                                            <div id="message" class="collapse">
-                                                {% if notvalue not in info.Message %}
-                                                    {{ info.Message }}
+                                                    </a>
                                                 {% endif %}
-                                            </div>
-                                        </td>
-                                        <td>{{ info.Profile }}</td>
-                                        <td>{{ info.Date }} {{ info.Time }}</td>
-                                        <td>{{ info.Channel }}</td>
-                                        <td>{{ info.Username }}</td>
-                                        <td>{{ info.DateInsert }} {{ info.TimeInsert }}</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="_fname">{{ info.Name }}</td>
+                                    <td class="_product">{{ info.Product }}</td>
+                                    <td class="_other">{{ info.Other }}</td>
+                                    <td class="_company">{{ info.Company }}</td>
+                                    <td class="_tel">{{ info.Tel }}</td>
+                                    <td class="_email">{{ info.Email }}</td>
+                                    <td class="_LIFF">{{ info.EmailLiff }}</td>
+                                    <td class="_message">{% set notvalue = 'None' %}
+                                        {% if notvalue not in info.Message %}
+                                            <button type="button" class="btn btn-primary btn-xs"
+                                                    data-toggle="collapse"
+                                                    data-target="#message">
+                                                <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                                            </button>
+                                        {% endif %}
+                                        <div id="message" class="collapse">
+                                            {% if notvalue not in info.Message %}
+                                                {{ info.Message }}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="_profile">{{ info.Profile }}</td>
+                                    <td class="_date">{{ info.Date }} {{ info.Time }}</td>
+                                    <td class="_channel">{{ info.Channel }}</td>
+                                    <td class="_username">{{ info.Username }}</td>
+                                    <td class="_insert">{{ info.DateInsert }} {{ info.TimeInsert }}</td>
+                                    <td class="_authoze">{{ info.Authorized }}</td>
+                                    <td class="_tax">{{ info.Tax }}</td>
+                                    <td class="_position">{{ info.Position }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
 
 
-                        </div>
-                        <br>
-                        <div class="footer">
-                            <div class="row" style="margin-left: 15px">
-                                <div style="margin-right: 12px">
-                                    <button type="submit" name="button_event" value="button_excel"
-                                            class="btn btn-warning btn-sm">
-                                        <i class="fa fa-check-square-o"></i>
-                                        Excel Index
-                                    </button>
-                                </div>
-                                <div style="margin-right: 12px">
-                                    <button type="submit" name="button_event" value="button_delete"
-                                            class="btn btn-danger btn-sm">
-                                        <i class="fa fa-check-square-o"></i>
-                                        Delete Index
-                                    </button>
-                                </div>
+                    </div>
+                    <br>
+                    <div class="footer">
+                        <div class="row" style="margin-left: 15px">
+                            <div style="margin-right: 12px">
+                                <button type="submit" name="button_event" value="button_excel"
+                                        class="btn btn-warning btn-sm">
+                                    <i class="fa fa-check-square-o"></i>
+                                    Excel Index
+                                </button>
+                            </div>
+                            <div style="margin-right: 12px">
+                                <button type="submit" name="button_event" value="button_delete"
+                                        class="btn btn-danger btn-sm">
+                                    <i class="fa fa-check-square-o"></i>
+                                    Delete Index
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            </form>
-        </div>
-
+            </div>
+        </form>
     </div>
 
-
-
     <script>
+
+
         $(document).ready(function () {
             $('#informationTable').DataTable({
-                // "order": [[0, "desc"]]
-                "columnDefs": [
-                    {"orderable": false, "targets": 0},
-                ]
+                "order": [[0, false]],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }]
             });
         });
+        $(".checkBB:not(:checked)").each(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).hide();
+        });
 
+        $(".checkBB:checkbox").click(function () {
+            var column = "table ." + $(this).attr("name");
+            $(column).toggle();
+        });
         document.getElementById('select-all-information').onclick = function () {
             var checkboxes = document.getElementsByName('key_information');
             for (var checkbox of checkboxes) {
@@ -431,5 +742,62 @@
     </script>
 
 
+    <script>
+        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#292b2c';
+        var ctx = document.getElementById("myBarChart");
+        var construction = '{{ data.CON }}'
+        var real = '{{ data.REAL }}'
+        var plan = '{{ data.PLAN }}'
+        var other = '{{ data.OTHER }}'
+        var myLineChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Construction", "Real Estates", "Project Planning", "Other"],
+                datasets: [{
+                    label: "Revenue",
+                    backgroundColor: "rgba(2,117,216,1)",
+                    borderColor: "rgba(2,117,216,1)",
+                    data: [construction, real, plan, other],
+                }],
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'month'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 6
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                }
+            }
+        });
+
+        // Configure Pusher instance
+        // var pusher = new Pusher('a0e97466cb155b48d6b7', {
+        //     cluster: 'us2',
+        // });
+
+        // Subscribe to poll trigger
+        // var orderChannel = pusher.subscribe('order');
+        //
+        // // Listen to 'order placed' event
+        // var order = document.getElementById('order-count')
+        // orderChannel.bind('place', function(data) {
+        //   myLineChart.data.datasets.forEach((dataset) => {
+        //       dataset.data.fill(parseInt(data.units),-1);
+        //   });
+        //   myLineChart.update();
+        //   order.innerText = parseInt(order.innerText)+1
+        // });
+    </script>
 
 {% endblock %}

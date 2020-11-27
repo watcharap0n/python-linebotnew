@@ -2,360 +2,133 @@
 {% block content %}
 
 
-   <div class="container">
-    <div class="row">
-      <div class="col-sm-10">
-        <h1>Courses</h1>
-        <hr />
-        <br /><br />
-        <alert :message="message" v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.course-modal>
-          Add Course
-        </button>
-        <br /><br />
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Author</th>
-              <th scope="col">Paperback</th>
-              <th scope="col">Price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(course, index) in courses" :key="index">
-              <td>{{ course.title }}</td>
-              <td>{{ course.author }}</td>
-              <td>
-                <span v-if="course.paperback">Yes</span>
-                <span v-else>No</span>
-              </td>
-              <td>${{ course.price }}</td>
-              <td>
-                <div class="btn-group" role="group">
-                  <button
-                    type="button"
-                    class="btn pill btn-info btn-sm"
-                    v-b-modal.course-update-modal
-                    @click="editCourse(course)"
-                  >
-                    Update
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-danger btn-sm"
-                    @click="onDeleteCourse(course)"
-                  >
-                    Delete
-                  </button>
-
-                  <rave
-                    :isProduction="isProduction"
-                    :email="email"
-                    :amount="course.price"
-                    :reference="reference"
-                    :rave-key="raveKey"
-                    :callback="callback"
-                    :close="close"
-                    :currency="currency"
-                    :country="country"
-                    :custom_title="custom.title"
-                    :payment_method="paymentMethod"
-                  />
+    <div id="app">
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <div class="col-xl-8 col-md-10">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <i class="far fa-comment-dots fa-2x" style="margin-right: 5px"></i>
+                        </div>
+                        <div class="col mr-2">
+                            <div class="h2 mb-0 font-weight-bold text-gray-800">
+                                <span>[[message]]</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn bg-success text-white" data-toggle="modal"
+                                    data-target="#exampleModal">
+                                Create Intent
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <b-modal ref="addCourseModal" id="course-modal" title="Add a new course" hide-footer>
-          <b-form @submit="onSubmit" @reset="onReset" class="w-100">
-            <b-form-group id="form-title-group" label="Title:" label-for="form-title-input">
-              <b-form-input
-                id="form-title-input"
-                type="text"
-                v-model="addCourseForm.title"
-                required
-                placeholder="Enter title"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group id="form-author-group" label="Author:" label-for="form-author-input">
-              <b-form-input
-                id="form-author-input"
-                type="text"
-                v-model="addCourseForm.author"
-                required
-                placeholder="Enter author"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group id="form-price-group" label="Price:" label-for="form-price-input">
-              <b-form-input
-                id="form-price-input"
-                type="number"
-                step="0.01"
-                v-model="addCourseForm.price"
-                required
-                placeholder="Enter price"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group id="form-read-group">
-              <b-form-checkbox-group v-model="addCourseForm.paperback" id="form-checks">
-                <b-form-checkbox value="true">Paperback</b-form-checkbox>
-              </b-form-checkbox-group>
-            </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
-          </b-form>
-        </b-modal>
-        <b-modal ref="editCourseModal" id="course-update-modal" title="Update" hide-footer>
-          <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
-            <b-form-group
-              id="form-title-edit-group"
-              label="Title:"
-              label-for="form-title-edit-input"
-            >
-              <b-form-input
-                id="form-title-edit-input"
-                type="text"
-                v-model="editForm.title"
-                required
-                placeholder="Enter title"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group
-              id="form-author-edit-group"
-              label="Author:"
-              label-for="form-author-edit-input"
-            >
-              <b-form-input
-                id="form-author-edit-input"
-                type="text"
-                v-model="editForm.author"
-                required
-                placeholder="Enter author"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group
-              id="form-price-edit-group"
-              label="Purchase price:"
-              label-for="form-price-edit-input"
-            >
-              <b-form-input
-                id="form-price-edit-input"
-                type="number"
-                step="0.01"
-                v-model="editForm.price"
-                required
-                placeholder="Enter price"
-              >
-              </b-form-input>
-            </b-form-group>
-            <b-form-group id="form-read-edit-group">
-              <b-form-checkbox-group v-model="editForm.paperback" id="form-checks">
-                <b-form-checkbox value="true">Paperback</b-form-checkbox>
-              </b-form-checkbox-group>
-            </b-form-group>
-            <b-button-group>
-              <b-button type="submit" variant="primary">Update</b-button>
-              <b-button type="reset" variant="danger">Cancel</b-button>
-            </b-button-group>
-          </b-form>
-        </b-modal>
-      </div>
+            </div>
+        </nav>
     </div>
-  </div>
 
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Intent</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="text" class="form-control" style="margin-bottom: 0.5em" placeholder="Intent Name"
+                           v-model="intname"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-success" v-on:click="createintents()">
+                        Create
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="col-xl-8 col-md-10 py-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg bg-white border-1 small"
+                       placeholder="Search intents"
+                       aria-label="Search" aria-describedby="basic-addon2" v-model="textSearch"
+                       v-on:change="filteredList"/>
+                <i class="fas fa-search fa-lg" style="
+            position: absolute;
+            right: 15px;
+            top: 17px;
+            color: rgb(192, 192, 192);
+          "></i>
+            </div>
+        </div>
+    </div>
+
+    <ul class="list-group list-group-flush">
+        <div v-for="(item,index) in filteredList()">
+            <div class="row" style="padding-bottom: 0.5em">
+                <div class="col-xl-8 col-md-10">
+                    {% set len_intent = len(ref) %}
+                    {% for r in range(0, len_intent) %}
+                        <div class="card border-left-success shadow selectIntent">
+                            <li class="list-group-item" :click="editIntent(this)" style="height: 60px">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h5 mb-0">
+                                            {% if r == 0 %}
+                                                <a ref="item.id" :href="'new_intent/'+item.id"
+                                                   class="font-weight-bold text-gray-800">
+                                                <p style="color: red;"><span> {{ ref[r] }} </span></p>
+                                            {% endif %}
+                                            {% if r == 2 %}
+                                                <a ref="item.id" :href="'new_intent/'+item.id"
+                                                   class="font-weight-bold text-gray-800">
+                                                <p style="color: red;"><span> {{ ref[r] }} </span></p>
+                                            {% endif %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto selectIcon">
+                                        <a v-if="item.key != 0">
+                                            <i class="fas fa-trash-alt fa-2x text-gray-500"
+                                               v-on:click="deleteintent(item.id,item.key)"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </ul>
 
 
     <script>
-import axios from 'axios';
-import Alert from './Alert';
-import Rave from './BuyCourse.vue';
-
-const raveKey = "<INSERT YOUR RAVE PUBLISHABLE KEY HERE>";
-
-export default {
-  data() {
-    return {
-      isProduction: false,
-      raveKey: raveKey,
-      email: "ugwuraphael@gmail.com",
-      amount: "",
-      currency: "USD",
-      country: "US",
-      custom: {
-        title: "FullStack Courses"
-      },
-      paymentMethod: "",
-      courses: [],
-      addCourseForm: {
-        title: "",
-        author: "",
-        paperback: [],
-        price: ""
-      },
-      editForm: {
-        id: "",
-        title: "",
-        author: "",
-        paperback: [],
-        price: ""
-      },
-      message: "",
-      showMessage: false
-    };
-  },
-  components: {
-    alert: Alert,
-    rave: Rave
-  },
-  computed: {
-    reference() {
-      let text = "";
-      let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for (let i = 0; i < 10; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-      return text;
-    }
-  },
-  methods: {
-    callback: function(response) {
-      if (response.data.tx.status == "successful" && response.data.tx.chargeResponseCode === "00") {
-        if (response.data.tx.fraud_status === "ok") {
-          alert("Your payment was successful");
-        }
-      } else {
-        alert("Your payment could not be processed. Please try again later");
-      }
-    },
-    close: function() {
-      console.log("Payment closed");
-    },
-    getCourses() {
-      const path = "http://localhost:5000/courses";
-      axios
-        .get(path)
-        .then(res => {
-          this.courses = res.data.courses;
-        })
-        .catch(error => {
-          console.error(error);
+        var app = new Vue({
+            el: "#app",
+            data: {
+                message: "Intents Task Test",
+                dataset: [],
+                textSearch: "",
+                editintent: "",
+                intname: "",
+                inttype: "",
+                last_id: 0,
+            },
+            delimiters: ["[[", "]]"],
+            mounted() {
+            }
         });
-    },
-    addCourse(payload) {
-      const path = "http://localhost:5000/courses";
-      axios
-        .post(path, payload)
-        .then(() => {
-          this.getCourses();
-          this.message = "Course Added!";
-          this.showMessage = true;
-        })
-        .catch(error => {
-          console.log(error);
-          this.getCourses();
-        });
-    },
-    removeCourse(courseID) {
-      const path = `http://localhost:5000/courses/${courseID}`;
-      axios
-        .delete(path)
-        .then(() => {
-          this.getCourses();
-          this.message = "Course removed!";
-          this.showMessage = true;
-        })
-        .catch(error => {
-          console.error(error);
-          this.getCourses();
-        });
-    },
-    onDeleteCourse(course) {
-      this.removeCourse(course.id);
-    },
-    initForm() {
-      this.addCourseForm.title = "";
-      this.addCourseForm.author = "";
-      this.addCourseForm.paperback = [];
-      this.addCourseForm.price = "";
-      this.editForm.id = "";
-      this.editForm.title = "";
-      this.editForm.author = "";
-      this.editForm.paperback = [];
-      this.editForm.price = "";
-    },
-    editCourse(course) {
-      this.editForm = course;
-    },
-    onSubmitUpdate(e) {
-      e.preventDefault();
-      this.$refs.editCourseModal.hide();
-      let paperback = false;
-      if (this.editForm.paperback[0]) paperback = true;
-      const payload = {
-        title: this.editForm.title,
-        author: this.editForm.author,
-        paperback,
-        price: this.editForm.price
-      };
-      this.updateCourse(payload, this.editForm.id);
-    },
-    updateCourse(payload, courseID) {
-      const path = `http://localhost:5000/courses/${courseID}`;
-      axios
-        .put(path, payload)
-        .then(() => {
-          this.getCourses();
-          this.message = "Course updated!";
-          this.showMessage = true;
-        })
-        .catch(error => {
-          console.error(error);
-          this.getCourses();
-        });
-    },
-    onSubmit(e) {
-      e.preventDefault();
-      this.$refs.addCourseModal.hide();
-      let paperback = false;
-      if (this.addCourseForm.paperback[0]) paperback = true;
-      const payload = {
-        title: this.addCourseForm.title,
-        author: this.addCourseForm.author,
-        paperback,
-        price: this.addCourseForm.price
-      };
-      this.addCourse(payload);
-      this.initForm();
-    },
-    onReset(e) {
-      e.preventDefault();
-      this.$refs.addCourseModal.hide();
-      this.initForm();
-    },
-    onResetUpdate(e) {
-      e.preventDefault();
-      this.$refs.editCourseModal.hide();
-      this.initForm();
-      this.getCourses();
-    }
-  },
-  created() {
-    this.getCourses();
-  }
-};
-</script>
-
-    <style scoped>
-        .btn {
-            margin: 20px;
-        }
-    </style>
-
+    </script>
 
 {% endblock %}
