@@ -4,7 +4,7 @@ import dlib
 import numpy as np
 
 
-FACE_DESC, FACE_NAME = pickle.load(open('trainset.pk', 'rb'))
+FACE_DESC, FACE_NAME = pickle.load(open('log/trainset.pk', 'rb'))
 face_detector = cv2.CascadeClassifier('model_image/haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier("model_image/haarcascade_eye.xml")
 detector = dlib.get_frontal_face_detector() #dlib(bettle), openCV
