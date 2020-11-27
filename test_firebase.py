@@ -421,12 +421,12 @@ print(ref.each()[0])
 #         test.append(apiDemo)
 #     return test
 
-# t = ['CF010', 'CP010', 'CE010']
-# ref = db.child('LineLiff').get()
-# for i in ref.each():
-#     for a in t:
-#         if a in i.val()['tag']:
-#             break
+t = ['CF010', 'CP010', 'CE010']
+ref = db.child('LineLiff').get()
+for i in ref.each():
+    for a in t:
+        if a in i.val()['tag']:
+            break
 #
 # eCount = 1
 # lst = []
