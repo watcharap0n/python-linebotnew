@@ -2,5 +2,4 @@
 venv
 log
 model/__pycache__/
-static/images/face_people/
-static/recognition/
+
