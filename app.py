@@ -115,15 +115,20 @@ def make_session_permanent():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
+    response_json = {'status': 'success'}
     ref = db2.child('id').get()
-    lst = []
     for i in ref.each():
         channel = i.val()['channel']
         message = i.val()['comment']
         fname = i.val()['firstname']
-        group = {'channel': channel, 'message': message, 'fname': fname}
-        lst.append(group)
-    return render_template('customers_new/form/templates/customers_new/vue.html', ref=lst, range=range, len=len)
+        group = {'id': uuid.uuid4().hex, 'channel': channel, 'message': message, 'fname': fname}
+        response_json['id'] = group
+    return jsonify(response_json)
+
+
+@app.route('/api_test', methods=['GET', 'POST'])
+def api_test():
+    return render_template('test_api/api/table.html')
 
 
 @app.route('/api/mango/<string:userId>')

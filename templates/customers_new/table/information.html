@@ -78,8 +78,14 @@
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-bar-chart"></i> Revenue Chart
+              <button type="button" style="margin-left: 10px"
+                      v-on:click="buttonOnChart" class="btn btn-dark btn-sm">
+                <i v-bind:class="{'fa fa-eye-slash': showHideChart, 'fa fa-eye': !showHideChart}"
+                   aria-hidden="true"></i>
+                {#                [[nameChart()]]#}
+              </button>
             </div>
-            <div class="card-body">
+            <div class="card-body" :hidden="!showHideChart">
               <div class="row">
                 <div class="col-sm-8 my-auto">
                   <canvas id="myBarChart" width="100" height="50"></canvas>
@@ -100,12 +106,17 @@
           </div>
         </div>
         <div class="col-lg-4">
+
           <!-- Example Notifications Card-->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-bell-o"></i> ข้อความ ฟีด
+              <button type="button" style="margin-left: 10px"
+                      v-on:click="buttonOnFeed" class="btn btn-dark btn-sm">
+                <i v-bind:class="{'fa fa-eye-slash': showHideFeed, 'fa fa-eye': !showHideFeed}" aria-hidden="true"></i>
+              </button>
             </div>
-            <div class="list-group list-group-flush small">
+            <div class="list-group list-group-flush small" :hidden="!showHideFeed">
               <div id="message-box">
                 <a class="list-group-item list-group-item-action" href="#">
                   <div class="media">
@@ -193,8 +204,10 @@
 
               <div class="col-sm-4">
                 <div class="align-content-end">
-                  <button type="button" class="btn btn-info btn-sm" v-on:click="buttonOnShow">
-                    [[myButtonName()]]
+                  <button type="button"
+                          v-on:click="buttonOnTable" class="btn btn-dark btn-sm">
+                    <i v-bind:class="{'fa fa-eye-slash': showHide, 'fa fa-eye': !showHide}" aria-hidden="true"></i>
+                    {#                  [[nameTable()]]#}
                   </button>
 
                   <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
@@ -226,8 +239,8 @@
                           <div class="card">
                             <div class="card-header">
                               <i class="fa fa-edit">
-                                เพิ่มข้อมูล
                               </i>
+                              เพิ่มข้อมูล
                             </div>
                           </div>
                           <div class="card-body">
@@ -628,43 +641,43 @@
                         {% for tag in info.Tag %}
                           {% if tag %}
                             <a href="tagInformation/{{ tag }}">
-                                                                <span id="{{ tag }}"
-                                                                      class="badge badge-secondary Filter_kane CC010">
-                                                                        <i class="fas fa-tags"></i>
-                                                                  {% if tag == 'CB010' %}
-                                                                    รับเหมาสาธารณูปโภค
-                                                                  {% elif tag == 'CC010' %}
-                                                                    รับเหมาก่อสร้างระบบวางท่อ
-                                                                  {% elif tag == 'CG010' %}
-                                                                    งานระบบประกอบอาคาร
-                                                                  {% elif tag == 'CI010' %}
-                                                                    รับเหมาก่อสร้างพลังงานทดแทน
-                                                                  {% elif tag == 'CJ010' %}
-                                                                    รับเหมาก่อสร้างงานอาคาร
-                                                                  {% elif tag == 'CM010' %}
-                                                                    ออกแบบ ตกแต่ง
-                                                                  {% elif tag == 'CF010' %}
-                                                                    รับเหมาขุดเจาะ
-                                                                  {% elif tag == 'CP010' %}
-                                                                    งานอลูมิเนียม
-                                                                  {% elif tag == 'CE010' %}
-                                                                    ผลิตและติดตั้ง
-                                                                  {% elif tag == 'CH010' %}
-                                                                    งานบริการ
-                                                                  {% elif tag == 'CK010' %}
-                                                                    รับสร้างบ้าน
-                                                                  {% elif tag == 'CN010' %}
-                                                                    ไม่แน่ใจ
-                                                                  {% elif tag == 'CD010' %}
-                                                                    ขาย
-                                                                  {% elif tag == 'RC010' %}
-                                                                    อสังหาฯ
-                                                                  {% elif tag == 'RA010' %}
-                                                                    แนวราบ
-                                                                  {% elif tag == 'RB010' %}
-                                                                    แนวสูง
-                                                                  {% endif %}
-                                                                </span>
+                              <span id="{{ tag }}"
+                                    class="badge badge-secondary Filter_kane CC010">
+                                      <i class="fas fa-tags"></i>
+                                {% if tag == 'CB010' %}
+                                  รับเหมาสาธารณูปโภค
+                                {% elif tag == 'CC010' %}
+                                  รับเหมาก่อสร้างระบบวางท่อ
+                                {% elif tag == 'CG010' %}
+                                  งานระบบประกอบอาคาร
+                                {% elif tag == 'CI010' %}
+                                  รับเหมาก่อสร้างพลังงานทดแทน
+                                {% elif tag == 'CJ010' %}
+                                  รับเหมาก่อสร้างงานอาคาร
+                                {% elif tag == 'CM010' %}
+                                  ออกแบบ ตกแต่ง
+                                {% elif tag == 'CF010' %}
+                                  รับเหมาขุดเจาะ
+                                {% elif tag == 'CP010' %}
+                                  งานอลูมิเนียม
+                                {% elif tag == 'CE010' %}
+                                  ผลิตและติดตั้ง
+                                {% elif tag == 'CH010' %}
+                                  งานบริการ
+                                {% elif tag == 'CK010' %}
+                                  รับสร้างบ้าน
+                                {% elif tag == 'CN010' %}
+                                  ไม่แน่ใจ
+                                {% elif tag == 'CD010' %}
+                                  ขาย
+                                {% elif tag == 'RC010' %}
+                                  อสังหาฯ
+                                {% elif tag == 'RA010' %}
+                                  แนวราบ
+                                {% elif tag == 'RB010' %}
+                                  แนวสูง
+                                {% endif %}
+                              </span>
                             </a>
                           {% endif %}
                         {% endfor %}
@@ -769,17 +782,32 @@
                           error: {status: true, message: ''}
                       }
                   },
+
                   formValid: false,
-                  showHide: true
+                  showHide: true,
+                  showHideChart: true,
+                  showHideFeed: true
               };
           },
           delimiters: ["[[", "]]"],
           methods: {
-              buttonOnShow() {
-                  let show = this.showHide = !this.showHide
-                  console.log(show)
+              buttonOnFeed() {
+                  this.showHideFeed = !this.showHideFeed;
               },
-              myButtonName() {
+              nameFeed() {
+                  return this.showHideFeed ? 'Hide' : 'Show'
+              },
+              buttonOnChart() {
+                  this.showHideChart = !this.showHideChart;
+              },
+              nameChart() {
+                  return this.showHideChart ? 'Hide' : 'Show'
+              },
+              buttonOnTable() {
+                  let show = this.showHide = !this.showHide;
+                  console.log(show);
+              },
+              nameTable() {
                   return this.showHide ? 'Hide' : 'Show'
               },
               onChangeForm(event) {
