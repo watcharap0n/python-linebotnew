@@ -4,3 +4,8 @@ log
 model/__pycache__/
 node_modules
 package-lock.json
+.DS_Store
+.idea/flask edu.iml
+.idea/jsLibraryMappings.xml
+__pycache__/app.cpython-38.pyc
+log/log_LoginSession
