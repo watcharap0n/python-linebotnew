@@ -1,5 +1,6 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
     make_response, send_from_directory
+from flask_cors import CORS
 import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
 from pusher import Pusher
@@ -22,6 +23,7 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage, ImageSen
                             StickerSendMessage, CameraAction)
 
 app = Flask(__name__)
+CORS(app, resources={r'/*': {'origins': '*'}})
 bootstrap = Bootstrap(app)
 app.secret_key = 'watcharaponweeraborirakz'
 
@@ -412,7 +414,7 @@ def LIFF_marketing(site):
         dataPath_marketing('Event')
         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         toList.append(product)
-        return render_template('customers_new/event/event.html')
+        return render_template('customers_new/event/event.html', lst=toList)
 
 
 @app.route('/ajax_marketing', methods=['POST'])

@@ -35,14 +35,14 @@
                 liff.getProfile().then(profile => {
                     $.ajax({
                         type: 'POST',
-                        url: '/event/event',
+                        url: '/ajax_marketing',
                         data: {
                             'firstname': $('#first').val(),
                             'email': $('#email').val(),
                             'company': $('#compa').val(),
                             'tel': $('#tel').val(),
                             'product': $('#pro').val(),
-                            'channel': 'Event Impact',
+                            'channel': 'Event วสท',
                             'other': '',
                             'comment': $('#comment').val(),
                             'userId': profile.userId,
