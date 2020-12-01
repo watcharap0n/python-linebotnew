@@ -1,0 +1,18 @@
+Python Library
+
+- pip install flask
+- pip install flask_cors
+- pip install scikit_learn
+- pip install เข้าไปเลือกรุ่น https://pytorch.org
+- pip install flask_bootstrap
+- pip install pyrebase4
+- pip install firebase_admin
+- pip install pillow
+- pip install pusher
+- pip install attacut
+- pip install line_bot_sdk
+
+
+- pip install opencv-python
+- pip install dlib
+- pip install cmake
