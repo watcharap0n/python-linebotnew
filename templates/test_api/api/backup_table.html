@@ -1,0 +1,305 @@
+{% extends "customers_new/layout.html" %} {% block content %}
+  <br>
+  <br>
+  <br>
+  <div id="app" class="container">
+    <button style="margin-bottom: 10px" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+            data-target="#exampleModal" v-on:click="setModal">
+      open Add
+    </button>
+    <button style="margin-bottom: 10px" type="button"
+            class="btn btn-primary btn-sm btn-user"
+            v-on:click="setUserNew">
+      Data
+    </button>
+    <div v-if="!status">
+      <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <table v-else class="table table-sm table-hover">
+      <thead>
+      <tr>
+        <th scope="col">index</th>
+        <th scope="col">channel</th>
+        <th scope="col">message</th>
+        <th scope="col">edit/delete</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr v-for="user in firebase">
+        <th scope="row">[[user.index]]</th>
+        <td>[[user.channel]]</td>
+        <td>[[user.message]]</td>
+        <td>
+          <div class="btn-group" role="group">
+            <button
+                type="button"
+                class="btn btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#editData"
+                @click="editDataIndex(user)"
+                v-on:click="setModal">
+              Update
+            </button>
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                @click="onDeleteData(user)">
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog" ref="modal" @hide="">
+        <form @submit="onSubmit" @reset="onReset">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="channel" class="col-form-label">Channel:</label>
+                <input class="form-control"
+                       v-model="addFirebaseCustomer.channel" name="channel" id="channel"
+                       type="text">
+              </div>
+              <div class="form-group">
+                <label for="message" class="col-form-label">Message:</label>
+                <textarea class="form-control" v-model="addFirebaseCustomer.message" name="message"
+                          id="message"></textarea>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Send message</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="editData" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog">
+        <form @submit="onSubmitUpdate" ref="modal" @reset="onResetUpdate">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Edit Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="channel" class="col-form-label">Channel:</label>
+                <input class="form-control"
+                       v-model="editFirebase.channel"
+                       type="text">
+              </div>
+              <div class="form-group">
+                <label for="message" class="col-form-label">Message:</label>
+                <textarea class="form-control" v-model="editFirebase.message"></textarea>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Send message</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <script>
+
+      var app = new Vue({
+              el: "#app",
+              data() {
+                  return {
+                      firebase: null,
+                      addFirebaseCustomer: {
+                          channel: '',
+                          message: '',
+                      },
+                      showLog: '',
+                      editFirebase: {
+                          index: '',
+                          channel: '',
+                          message: '',
+                      },
+                      showMessage: false,
+                      status: true, // true หมุน false ไม่หมุน
+                      userStatus: false,
+                      modal: true,
+                      name: 'watcharapon'
+                  };
+              },
+              delimiters: ["[[", "]]"],
+              watch: {
+                  firebase: 'showData'
+              },
+              created() { //รอข้อมูล
+                  this.onCreateFirebase()
+              },
+              methods: {
+                  setModal() {
+                      this.$refs.modal.hidden = !this.modal
+                  },
+                  setUserNew() { //
+                      this.status = false;
+                      this.onCreateFirebase()
+                  },
+                  showData() { // condition
+                      this.status = false;
+                      if (this.firebase) {
+                          this.status = true
+                      }
+                  },
+                  onCreateFirebase() {
+                      this.status = false
+                      const path = 'http://127.0.0.1:5005/index';
+                      axios.get(path)
+                          .then((res) => {
+                              let response = this.firebase = res.data.firebase;
+                              console.log('res: ', response)
+                          })
+                          .catch((error) => {
+                              console.error(error);
+                          });
+                  },
+                  Firebase(payload) {
+                      const path = 'http://127.0.0.1:5005/index'
+                      axios.post(path, payload)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              console.log(error)
+                              this.onCreateFirebase()
+                          });
+                  },
+                  initForm() {
+                      this.addFirebaseCustomer.channel = '';
+                      this.addFirebaseCustomer.message = '';
+                      this.editFirebase.index = '';
+                      this.editFirebase.channel = '';
+                      this.editFirebase.message = '';
+                  },
+                  onSubmit(evt) {
+                      evt.preventDefault();
+                      this.$refs.modal.hidden = true
+                      const payload = {
+                          channel: this.addFirebaseCustomer.channel,
+                          message: this.addFirebaseCustomer.message
+                      };
+                      this.Firebase(payload);
+                      this.initForm();
+                      console.log(payload)
+                  },
+                  onReset(evt) {
+                      evt.preventDefault();
+                      this.$refs.modal.hidden = true;
+                      this.initForm();
+                  },
+                  editDataIndex(user) {
+                      let show = this.editFirebase = user;
+                      console.log(show)
+                  },
+                  onSubmitUpdate(evt) {
+                      evt.preventDefault();
+                      this.$refs.modal.hidden = true;
+                      const payload = {
+                          channel: this.editFirebase.channel,
+                          message: this.editFirebase.message,
+                      };
+                      this.updateData(payload, this.editFirebase.index);
+                  },
+                  updateData(payload, indexId) {
+                      const path = `http://127.0.0.1:5005/index/${indexId}`;
+                      axios.put(path, payload)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showLog = 'Data updated!';
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              // eslint-disable-next-line
+                              console.error(error);
+                              this.onCreateFirebase();
+                          });
+                  },
+                  onResetUpdate(evt) {
+                      evt.preventDefault();
+                      this.initForm();
+                      this.onCreateFirebase(); // why?
+                  },
+                  removeData(indexId) {
+                      const path = `http://127.0.0.1:5005/index/${indexId}`;
+                      axios.delete(path)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showLog = 'Data updated!';
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              // eslint-disable-next-line
+                              console.error(error);
+                              this.onCreateFirebase();
+                          });
+                  },
+                  onDeleteData(user) {
+                      let txt = this.removeData(user.index);
+                      console.log(txt)
+                  },
+                  dataComplete() { // commit
+                      this.$emit('dataOK', true)
+                  },
+              },
+          })
+      ;
+
+  </script>
+
+  {#created()  //รอข้อมูล {#}
+  {#    setTimeout(() => {#}
+  {#        this.userStatus = true#}
+  {#        const path = 'http://127.0.0.1:5005/index';#}
+  {#        axios.get(path)#}
+  {#            .then((res) => {#}
+  {#                let response = this.firebase = res.data.firebase;#}
+  {#                console.log('res: ', response)#}
+  {#            })#}
+  {#            .catch((error) => {#}
+  {#                console.error(error);#}
+  {#            })#}
+  {#    },2000)#}
+  {#},#}
+
+
+  <style>
+      #spinner {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          color: darkblue;
+      }
+  </style>
+
+{% endblock %}

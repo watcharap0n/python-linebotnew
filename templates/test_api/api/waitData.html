@@ -1,0 +1,115 @@
+{% extends "customers_new/layout.html" %} {% block content %}
+  <br>
+  <br>
+  <br>
+
+
+  <div id="app">
+    {#    <button class="btn btn-primary" v-on:click="setUserNew">Go somewhere</button>#}
+    <div v-if="!status">
+      <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="container" v-else>
+      <div class="row">
+        <div class="col-sm-6"
+             v-for="i in firebase"
+             :key="i.index">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">[[i.index]]</h5>
+              <p class="card-text">[[i.channel]]</p>
+              <p class="card-text">[[i.message]]</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <script>
+
+      var app = new Vue({
+          el: "#app",
+          data() {
+              return {
+                  firebase: null,
+                  status: null,
+                  userStatus: false,
+                  name: 'watcharapon'
+              };
+          },
+          delimiters: ["[[", "]]"],
+          watch: {
+              firebase: 'showData'
+          },
+          created() { //รอข้อมูล
+              this.status = false
+              const path = 'http://127.0.0.1:5005/index';
+              axios.get(path)
+                  .then((res) => {
+                      let response = this.firebase = res.data.firebase;
+                      console.log('res: ', response)
+                  })
+                  .catch((error) => {
+                      console.error(error);
+                  });
+          },
+          methods: {
+              setUserStatus(param) {
+                  this.userStatus = param; //ครั้งเดียว on one click
+              },
+              showData() {
+                  this.status = false;
+                  if (this.firebase) {
+                      this.status = true
+                  }
+              },
+              onCreateFirebase() {
+                  const path = 'http://127.0.0.1:5005/index';
+                  return axios.get(path)
+                      .then((res) => {
+                          let response = this.firebase = res.data.firebase;
+                          console.log('res: ', response)
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      })
+
+              },
+              dataComplete() {
+                  this.$emit('dataOK', true)
+              },
+          },
+      });
+
+  </script>
+
+  {#created()  //รอข้อมูล {#}
+  {#    setTimeout(() => {#}
+  {#        this.userStatus = true#}
+  {#        const path = 'http://127.0.0.1:5005/index';#}
+  {#        axios.get(path)#}
+  {#            .then((res) => {#}
+  {#                let response = this.firebase = res.data.firebase;#}
+  {#                console.log('res: ', response)#}
+  {#            })#}
+  {#            .catch((error) => {#}
+  {#                console.error(error);#}
+  {#            })#}
+  {#    },2000)#}
+  {#},#}
+
+
+  <style>
+      #spinner {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          color: darkblue;
+      }
+  </style>
+
+{% endblock %}

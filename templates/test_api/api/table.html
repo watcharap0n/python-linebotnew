@@ -1,0 +1,512 @@
+{% extends "customers_new/layout.html" %} {% block content %}
+  <br>
+  <br>
+  <br>
+  <div id="app">
+    <div class="container">
+      <button style="margin-bottom: 10px" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+              data-target="#exampleModal" v-on:click="setModal">
+        Add
+      </button>
+      <button style="margin-bottom: 10px" type="button"
+              class="btn btn-primary btn-sm btn-user"
+              v-on:click="setUserNew">
+        Data
+      </button>
+      <button data-toggle="modal"
+              data-target="#editData"
+              style="margin-bottom: 10px" type="button"
+              class="btn btn-primary btn-sm btn-user"
+              v-on:click="editButton"
+
+      >
+        Edit
+      </button>
+
+      <div v-if="!status">
+        <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
+      </div>
+
+      <table v-else class="table table-sm table-hover">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">tag</th>
+          <th scope="col">name</th>
+          <th scope="col">product</th>
+          <th scope="col">company</th>
+          <th scope="col">email</th>
+          <th scope="col">emailLINE</th>
+          <th scope="col">tel</th>
+          <th scope="col">edit/delete</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr v-for="user in transaction">
+          <td>
+            <div class="form-check">
+              <input
+                  v-model="key_id"
+                  v-bind:value="user"
+                  class="form-check-input"
+                  type="checkbox"
+              >
+            </div>
+          </td>
+          <td>
+            <div v-for="tag in user.tag">
+              <div v-if="tag">
+                <a href="information_test">
+                    <span id="tag" class="badge badge-secondary ">
+                            <i class="fas fa-tags"></i>
+                            [[tag]]
+                    </span>
+                </a>
+              </div>
+            </div>
+
+          </td>
+          <td>[[user.name]]</td>
+          <td>[[user.product]]</td>
+          <td>[[user.company]]</td>
+          <td>[[user.email]]</td>
+          <td>[[user.liff]]</td>
+          <td>[[user.tel]]</td>
+          <td>
+            <div class="btn-group" role="group">
+              <button
+                  type="button"
+                  class="btn btn-warning btn-sm"
+                  data-toggle="modal"
+                  data-target="#editData"
+                  @click="editDataIndex(user)"
+                  v-on:click="setModal">
+                Update
+              </button>
+              <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  @click="onDeleteData(user)">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <p>[[key_id]]</p>
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog">
+          <form @submit="onSubmit" ref="add_modal" @reset="onReset">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="name" class="col-form-label">Name:</label>
+                  <input class="form-control"
+                         v-model="addTransaction.name"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="product" class="col-form-label">Product:</label>
+                  <input class="form-control"
+                         v-model="addTransaction.product"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="company" class="col-form-label">Company:</label>
+                  <input class="form-control"
+
+                         v-model="addTransaction.company"
+                         type="text">
+                </div>
+
+
+              </div>
+              <div class="modal-footer">
+                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Send message</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="editData" tabindex="-1" aria-labelledby="exampleModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog">
+          <form @submit="onSubmitUpdate" ref="modal" @reset="onResetUpdate">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="name" class="col-form-label">Name:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.name"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="product" class="col-form-label">Product:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.product"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="company" class="col-form-label">Company:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.company"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="email" class="col-form-label">Email:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.email"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="liff" class="col-form-label">LIFF:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.liff"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="liff" class="col-form-label">Tel:</label>
+                  <input class="form-control"
+                         v-model="editTransaction.tel"
+                         type="text">
+                </div>
+
+                <div class="form-group">
+                  <label for="message" class="col-form-label">Message:</label>
+                  <textarea class="form-control" v-model="editTransaction.message"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="message" class="col-form-label">Tag:</label>
+                  <textarea class="form-control" v-model="editTransaction.tag"></textarea>
+                </div>
+
+                <div class="form-check form-check-inline" v-for="tag in tags">
+                  <label>
+                    <input v-model="editTransaction.tag"
+                           v-bind:value="tag"
+                           class="form-check-input"
+                           type="checkbox"
+                    >
+                  </label>
+                  <label class="form-check-label" for="tag"></label>
+                  [[tag]]
+                </div>
+
+
+              </div>
+              <div class="modal-footer">
+                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Send message</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+      var app = new Vue({
+              el: "#app",
+              data() {
+                  return {
+                      transaction: null,
+                      tags: null,
+                      key_id: [],
+                      addTransaction: {
+                          name: '',
+                          tag: [],
+                          product: '',
+                          email: '',
+                          liff: '',
+                          company: '',
+                          tel: '',
+                          profile: '',
+                          username: '',
+                          time: '',
+                          date: '',
+                          position: '',
+                          tax: '',
+                          authorized: '',
+                          date_insert: '',
+                          time_insert: '',
+                          channel: '',
+                          message: '',
+                      },
+                      showLog: '',
+                      editTransaction: {
+                          id: '',
+                          name: '',
+                          tag: [],
+                          product: '',
+                          email: '',
+                          liff: '',
+                          company: '',
+                          tel: '',
+                          profile: '',
+                          username: '',
+                          time: '',
+                          date: '',
+                          position: '',
+                          tax: '',
+                          authorized: '',
+                          date_insert: '',
+                          time_insert: '',
+                          channel: '',
+                          message: '',
+                      },
+                      showMessage: false,
+                      status: true, // true หมุน false ไม่หมุน
+                      userStatus: false,
+                      modal: true,
+                      add_modal: true,
+                      name: 'watcharapon'
+                  };
+              },
+              delimiters: ["[[", "]]"],
+              watch: {
+                  transaction: 'showData'
+              },
+              created() { //รอข้อมูล
+                  this.onCreateFirebase()
+                  this.onCreateTag()
+              },
+              methods: {
+                  addModal() {
+                      this.$refs.add_modal.hidden = !this.add_modal
+                  },
+                  setModal() {
+                      this.$refs.modal.hidden = !this.modal
+                  },
+                  setUserNew() { //
+                      this.status = false;
+                      this.onCreateFirebase()
+                  },
+                  showData() { // condition
+                      this.status = false;
+                      if (this.transaction) {
+                          this.status = true
+                      }
+                  },
+                  onCreateFirebase() {
+                      this.status = false
+                      const path = 'http://127.0.0.1:5005/return_info';
+                      axios.get(path)
+                          .then((res) => {
+                              let response = this.transaction = res.data.transaction;
+                              {#console.log('res: ', response)#}
+                          })
+                          .catch((error) => {
+                              console.error(error);
+                          });
+                  },
+                  onCreateTag() {
+                      const path = 'http://127.0.0.1:5005/return_info';
+                      axios.get(path)
+                          .then((res) => {
+                              let response = this.tags = res.data.tags;
+                              {#console.log('tag: ', response)#}
+                          })
+                          .catch((error) => {
+                              console.error(error);
+                          });
+                  },
+                  Firebase(payload) {
+                      const path = 'http://127.0.0.1:5005/return_info'
+                      axios.post(path, payload)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              console.log(error)
+                              this.onCreateFirebase()
+                          });
+                  },
+                  initForm() {
+                      this.addTransaction.name = '';
+                      this.addTransaction.tag = [];
+                      this.addTransaction.company = '';
+                      this.addTransaction.channel = '';
+                      this.addTransaction.message = '';
+                      this.addTransaction.product = '';
+                      this.addTransaction.tel = '';
+                      this.addTransaction.email = '';
+                      this.addTransaction.liff = '';
+                      this.addTransaction.date = '';
+                      this.addTransaction.time = '';
+                      this.addTransaction.username = '';
+                      this.addTransaction.position = '';
+                      this.addTransaction.tax = '';
+                      this.addTransaction.authorized = '';
+                      this.addTransaction.time_inserte = '';
+                      this.addTransaction.date_insert = '';
+                      this.editTransaction.id = '';
+                      this.editTransaction.name = '';
+                      this.editTransaction.tag = [];
+                      this.editTransaction.company = '';
+                      this.editTransaction.channel = '';
+                      this.editTransaction.message = '';
+                      this.editTransaction.product = '';
+                      this.editTransaction.tel = '';
+                      this.editTransaction.email = '';
+                      this.editTransaction.liff = '';
+                      this.editTransaction.date = '';
+                      this.editTransaction.time = '';
+                      this.editTransaction.username = '';
+                      this.editTransaction.position = '';
+                      this.editTransaction.tax = '';
+                      this.editTransaction.authorized = '';
+                      this.editTransaction.time_inserte = '';
+                      this.editTransaction.date_insert = '';
+                  },
+                  payloadInit(key) {
+                      return {
+                          Name: key.name,
+                          Tag: key.tag,
+                          Company: key.company,
+                          Channel: key.channel,
+                          Message: key.message,
+                          Product: key.product,
+                          Tel: key.tel,
+                          Email: key.email,
+                          EmailLiff: key.liff,
+                          Date: key.date,
+                          Time: key.time,
+                          Username: key.username,
+                          Position: key.position,
+                          Tax: key.tax,
+                          Authorized: key.authorized,
+                          Time_insert: key.time_insert,
+                          Date_insert: key.date_insert
+                      }
+                  },
+                  onSubmit(evt) {
+                      evt.preventDefault();
+                      this.$refs.add_modal.hidden = true
+                      const payload = this.payloadInit(this.addTransaction)
+                      this.Firebase(payload);
+                      this.initForm();
+                      console.log(payload)
+                  },
+                  onReset(evt) {
+                      evt.preventDefault();
+                      this.$refs.add_modal.hidden = true;
+                      this.initForm();
+                  },
+                  editDataIndex(user) {
+                      console.log(user);
+                      this.editTransaction = user;
+                  },
+                  editButton() {
+                      let user = this.key_id
+                      this.editTransaction = user
+                      console.log('user', user)
+                  },
+                  onSubmitUpdate(evt) {
+                      evt.preventDefault();
+                      this.$refs.modal.hidden = true;
+                      const payload = this.payloadInit(this.editTransaction)
+                      this.updateData(payload, this.editTransaction.id);
+                  },
+                  updateData(payload, id) {
+                      const path = `http://127.0.0.1:5005/return_info/${id}`;
+                      axios.put(path, payload)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showLog = 'Data updated!';
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              // eslint-disable-next-line
+                              console.error(error);
+                              this.onCreateFirebase();
+                          });
+                  },
+                  onResetUpdate(evt) {
+                      evt.preventDefault();
+                      this.initForm();
+                      this.onCreateFirebase(); // why?
+                  },
+                  removeData(id) {
+                      const path = `http://127.0.0.1:5005/return_info/${id}`;
+                      axios.delete(path)
+                          .then(() => {
+                              this.onCreateFirebase();
+                              this.showLog = 'Data updated!';
+                              this.showMessage = true;
+                          })
+                          .catch((error) => {
+                              // eslint-disable-next-line
+                              console.error(error);
+                              this.onCreateFirebase();
+                          });
+                  },
+                  onDeleteData(user) {
+                      let txt = this.removeData(user.id);
+                      console.log(txt)
+                  },
+                  dataComplete() { // commit
+                      this.$emit('dataOK', true)
+                  },
+              },
+          })
+      ;
+
+  </script>
+
+  {#created()  //รอข้อมูล {#}
+  {#    setTimeout(() => {#}
+  {#        this.userStatus = true#}
+  {#        const path = 'http://127.0.0.1:5005/id';#}
+  {#        axios.get(path)#}
+  {#            .then((res) => {#}
+  {#                let response = this.firebase = res.data.firebase;#}
+  {#                console.log('res: ', response)#}
+  {#            })#}
+  {#            .catch((error) => {#}
+  {#                console.error(error);#}
+  {#            })#}
+  {#    },2000)#}
+  {#},#}
+
+
+  <style>
+      #spinner {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          color: darkblue;
+      }
+  </style>
+
+{% endblock %}

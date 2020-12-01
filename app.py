@@ -9,7 +9,8 @@ from random import randrange
 from numpy import random
 from model_image import *
 from PIL import Image
-from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer, WebScraping, TagChart, pd
+from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer,\
+    WebScraping, TagChart, pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -293,13 +294,6 @@ def welcome():
     return render_template('main/welcome.html')
 
 
-@app.route('/bot_marketing')
-def bot_marketing():
-    if not g.user:
-        return redirect(url_for('welcome'))
-    return render_template('customers_old/form/index_intent.html')
-
-
 @app.route('/bot_training')
 def bot_training():
     if not g.user:
@@ -313,14 +307,6 @@ def index_newcustomer():
     if not g.user:
         return redirect(url_for('welcome'))
     return render_template('customers_new/form/index_intent.html')
-
-
-@app.route('/index_customer')
-def index_customer():
-    print(g.user)
-    if not g.user:
-        return redirect(url_for('welcome'))
-    return render_template('customers_old/form/index_intent.html')
 
 
 @app.route('/intent/<string:id>', methods=['GET', 'POST'])
@@ -1674,17 +1660,6 @@ def handle_message_new(event):
                     ]))
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
-                elif result[2] == [19]:
-                    day = datetime.today().day
-                    month = datetime.today().month
-                    second = datetime.today().second
-                    minute = datetime.today().minute
-                    hour = datetime.today().hour
-                    year = datetime.today().year
-                    x = 'วันนี้วันที่ {}/{}/{} เวลา {}:{}:{}'.format(day, month, year, hour, minute, second)
-                    line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=f'{x}'))
-                    inserted = get_datetime(x, line_bot_api2)
-                    db2.child('chatbot_transactions').push(inserted)
                 elif result[2] == [20]:
                     x = WebScraping.humility()
                     quick_reply(event=event, x=x, QuickReply=QuickReply(items=[
@@ -1759,6 +1734,11 @@ def handle_message_new(event):
                         QuickReplyButton(action=MessageAction(label='Sale', text='@sale'))
                     ]))
                     line_bot_api2.reply_message(event.reply_token, TextSendMessage(text=x))
+                    inserted = get_datetime(x, line_bot_api2)
+                    db2.child('chatbot_transactions').push(inserted)
+                elif result[2] == [30]:
+                    x = random.choice(result[1][int(result[2])])
+                    line_bot_api2.reply_message(event.reply_token, flex_newfeature())
                     inserted = get_datetime(x, line_bot_api2)
                     db2.child('chatbot_transactions').push(inserted)
                 elif areSure:
@@ -1925,8 +1905,6 @@ def handle_message_old(event):
                 line_bot_api3.reply_message(event.reply_token, TextSendMessage(text=f'Temperature {temp} C'))
     except LineBotApiError:
         abort(400)
-
-
 
 
 if __name__ == '__main__':
