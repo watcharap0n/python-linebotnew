@@ -242,7 +242,7 @@ def login(customer):
             'customer': user
         }
         return render_template('main/login.html', data=data)
-    if request.method == 'POST':
+    elif request.method == 'POST':
         error = 'Invalid credentials. Please try again.'
         session.pop('user_id', None)
         user = request.form['username']

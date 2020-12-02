@@ -1,0 +1,60 @@
+{% extends "customers_new/layout.html" %}
+{% block content %}
+  <br>
+  <br>
+  <div id="app" style="margin-top: 25px;">
+    <div class="container">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">name</th>
+          <th scope="col">product</th>
+          <th scope="col">company</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="data in transaction">
+          <td>[[data.id]]</td>
+          <td>[[data.name]]</td>
+          <td></td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <script>
+      var app = new Vue({
+          el: "#app",
+          data() {
+              return {
+                  transaction: null,
+                  tags: null
+              }
+          },
+          delimiters: ["[[", "]]"],
+          created() {
+              this.createDemo()
+          },
+          methods: {
+              createDemo() {
+                  const path = 'http://127.0.0.1:5005/demo_test';
+                  axios.get(path)
+                      .then((res) => {
+                          let response = this.transaction = res.data.transaction;
+                          console.log('transaction: ', response)
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+          },
+      });
+  </script>
+
+{% endblock %}
+
