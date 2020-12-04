@@ -63,6 +63,7 @@ class FirebaseAPI:
     def requestDemo(self):
         ref = db.child(self.transaction).get()
         lst = []
+        products = []
         for i in ref.each()[1:]:
             key = i.key()
             date = i.val()['Date']
@@ -73,16 +74,15 @@ class FirebaseAPI:
             email = event['email']
             name = event['fname']
             product = event['product']
+            products.append(product)
             message = event['message']
             tel = event['tel']
             group = {'id': key, 'name': name, 'product': product, 'company': company, 'email': email,
                      'message': message, 'tel': tel, 'date_time': f'{date} {time}', 'tag': tag}
             lst.append(group)
-        return lst
+        return lst, products
 
 
-
-@app.route('/')
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
@@ -131,6 +131,35 @@ def requestDemo():
     return render_template('test_api/test/request_demo.html')
 
 
+@app.route('/information')
+def page_info():
+    return render_template('test_api/test/information.html')
+
+
+@app.route('/')
+@app.route('/return_information')
+def return_information():
+    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+           'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+           'RC010', 'RA010', 'RB010']
+    if request.method == 'GET':
+        transaction = FirebaseAPI('RestCustomer').information()
+        status = {'transaction': transaction, 'status': 'success', 'tags': tag}
+        return jsonify(status)
+
+
+@app.route('/return_information/<id>', methods=['PUT', 'DELETE'])
+def return_information_update(id):
+    response_object = {'status': 'success'}
+    if request.method == 'PUT':
+        post_data = request.get_json()
+        print(id)
+        print(post_data)
+        response_object['message'] = 'Data updated!'
+    if request.method == 'DELETE':
+        print(id)
+    return jsonify(response_object)
+
 
 @app.route('/demo_test', methods=['GET', 'POST'])
 def demo():
@@ -138,11 +167,12 @@ def demo():
             'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
             'RC010', 'RA010', 'RB010']
     if request.method == 'GET':
-        transaction = FirebaseAPI('requestDemo').requestDemo()
+        transaction = FirebaseAPI('requestDemo').requestDemo()[0]
+        products = FirebaseAPI('requestDemo').requestDemo()[1]
+        construction = [x for x in products if 'Mango ERP (Real Estate)' in x]
+        print(construction)
         status = {'transaction': transaction, 'status': 'success', 'tags': tags}
         return jsonify(status)
-
-
 
 
 @app.route('/return_info', methods=['GET', 'POST'])

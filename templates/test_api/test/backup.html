@@ -28,43 +28,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="user in transaction">
-                    <td>
-                      <div class="form-check">
-                        <input type="checkbox"
-                               name="key_information"
-                               class="form-check-input position-static"
-                               v-bind:value="user.id">
-                      </div>
-                    </td>
-                    <td>[[user.name]]</td>
-                    <td>[[user.product]]</td>
-                    <td>[[user.company]]</td>
-                    <td>[[user.email]]</td>
-                    <td>[[user.tel]]</td>
-                    <td>
-                      <div class="btn-group" role="group">
-                        <button
-                            type="button"
-                            class="btn btn-warning btn-sm"
-                            data-toggle="modal"
-                            data-target="#editData"
-                            @click="editDataIndex(user)"
-                            v-on:click="hideModalUpdate"
-                        >
-                          Update
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-danger btn-sm"
-                            data-toggle="modal"
-                            data-target="#removeData"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+
                   </tbody>
                 </table>
               </div>
@@ -75,10 +39,9 @@
 
 
       <div class="modal fade" id="editData"
-           aria-hidden="true"
-      >
+           aria-hidden="true">
         <div class="modal-dialog">
-          <form @submit="onSubmitUpdate" ref="updateModal" @reset="onResetUpdate">
+          <form @submit="onSubmitUpdate" @reset="onResetUpdate">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Edit Message</h5>
@@ -324,7 +287,7 @@
               },
               onSubmitUpdate(evt) {
                   evt.preventDefault();
-                  this.$refs.updateModal.hidden = true;
+                  this.$refs.modal.hidden = true;
                   const payload = this.payloadInit(this.editTransaction)
                   this.updateData(payload, this.editTransaction.id);
               },
@@ -347,43 +310,77 @@
                   this.initForm();
                   this.createInformation();
               },
-              removeData(id) {
-                  const path = `http://127.0.0.1:5005/return_information/${id}`;
-                  axios.delete(path)
-                      .then(() => {
-                          this.createInformation();
-                          this.showLog = 'Data Delete!';
-                          this.showMessage = true;
-                      })
-                      .catch((error) => {
-                          // eslint-disable-next-line
-                          console.error(error);
-                          this.createInformation();
-                      });
-              },
-              onDeleteData(user) {
-                  let txt = this.removeData(user.id);
-                  console.log(txt)
-              },
-              hideModalUpdate() {
-                  this.$refs.updateModal.hidden = !this.updateModal
-                  console.log(this.updateModal)
-              },
-              dataComplete() { // commit
-                  this.$emit('dataOK', true)
-              },
+              logTest() {
+                  console.log('ok')
+              }
           },
           created() {
               this.createInformation();
               this.createTag();
           },
+          hideModalUpdate() {
+              this.$refs.updateModal.hidden = !this.updateModal
+          },
           mounted() {
-              document.getElementById('select-all-information').onclick = function () {
-                  var checkboxes = document.getElementsByName('key_information');
-                  for (var checkbox of checkboxes) {
-                      checkbox.checked = this.checked;
+              let table = this.dataTable = $('#informationTable').DataTable({
+                  "order": [[0, false]],
+                  "columnDefs": [{
+                      "orderable": false,
+                      "targets": 0
+                  }]
+              });
+              const path = 'http://127.0.0.1:5005/return_information';
+              axios.get(path).then((res) => {
+                  let response = this.transaction = res.data.transaction;
+                  response.forEach(user => {
+                      this.dataTable.row.add([
+                          `<div class="form-check">
+                              <input type="checkbox"
+                               name="key_information"
+                               class="form-check-input position-static"
+                               @click="logTest"
+                               v-bind:value="${user.id}"
+                              </div>`,
+                          user.name,
+                          user.product,
+                          user.company,
+                          user.email,
+                          user.tel,
+                          ` <div class="btn-group" role="group">
+                               <button
+                                  type="button"
+                                  class="btn btn-warning btn-sm"
+                                  data-toggle="modal"
+                                  data-target="#editData"
+
+                                  >
+                                Update
+                              </button>
+                              <button
+                                  type="button"
+                                  class="btn btn-danger btn-sm"
+                                  data-toggle="modal"
+                                  data-target="#removeData"
+                                  >
+                                Delete
+                              </button>
+                                </div> `
+                      ]).draw(false)
+                  });
+                  $('#informationTable tbody').on('click', 'button', function () {
+                      var data = table.row($(this).parents('tr')).data();
+                      console.log(data)
+                  });
+                  document.getElementById('select-all-information').onclick = function () {
+                      var checkboxes = document.getElementsByName('key_information');
+                      for (var checkbox of checkboxes) {
+                          checkbox.checked = this.checked;
+                      }
                   }
-              }
+              })
+                  .catch((error) => {
+                      console.error(error);
+                  });
           },
       })
 

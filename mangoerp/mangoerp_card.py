@@ -124,7 +124,7 @@ def product_buttons():
 
 def productR4():
     imagemap_message = ImagemapSendMessage(
-        base_url='https://sv1.picz.in.th/images/2020/11/12/bCWAPt.png',
+        base_url='https://sv1.picz.in.th/images/2020/12/02/j3VUfR.png',
         alt_text='imagemap',
         base_size=BaseSize(height=1600, width=1040),
         actions=[

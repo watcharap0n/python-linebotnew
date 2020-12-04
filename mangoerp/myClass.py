@@ -165,10 +165,11 @@ class TagChart:
         tel = event['tel']
         token = event['token']
         new = event['news']
+        position = event['position']
         group = {'Name': name, 'Company': company,
                  'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment, 'New': new,
                  'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
-                 'Picture': picture, 'Tag': tag,
+                 'Picture': picture, 'Tag': tag, 'Position': position,
                  'Channel': channel}
         return group
 

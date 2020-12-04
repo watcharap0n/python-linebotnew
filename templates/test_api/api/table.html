@@ -4,885 +4,233 @@
   <br>
   <div id="app">
 
-    <div class="container-fluid" style="margin-top: 30px">
-      <h1 class="h3 mb-2 text-gray-800">Mango Customer</h1>
-      <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-primary o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-              </div>
-              <div class="mr-5"><span id="message-count">   </span>Construction</div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                    <i class="fa fa-angle-right"></i>
-                  </span>
-            </a>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-warning o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-              </div>
-              <div class="mr-5"><span id="message-count">   </span>Real Estate</div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                    <i class="fa fa-angle-right"></i>
-                  </span>
-            </a>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-success o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-              </div>
-              <div class="mr-5"><span id="order-count">   </span>Project Planning</div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                    <i class="fa fa-angle-right"></i>
-                  </span>
-            </a>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-danger o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-              </div>
-              <div class="mr-5"><span id="order-count">  </span>OTHER</div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                    <i class="fa fa-angle-right"></i>
-                  </span>
-            </a>
-          </div>
-        </div>
-      </div>
 
+        <div class="container">
+          <button style="margin-bottom: 10px" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                  data-target="#exampleModal" v-on:click="setModal">
+            Add
+          </button>
+          <button style="margin-bottom: 10px" type="button"
+                  class="btn btn-primary btn-sm btn-user"
+                  v-on:click="setUserNew">
+            Data
+          </button>
+          <button data-toggle="modal"
+                  data-target="#editData"
+                  style="margin-bottom: 10px" type="button"
+                  class="btn btn-primary btn-sm btn-user"
+                  v-on:click="editButton"
 
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-bar-chart"></i> Revenue Chart
-              <button type="button" style="margin-left: 10px"
-                      v-on:click="buttonOnChart" class="btn btn-dark btn-sm">
-                <i v-bind:class="{'fa fa-eye-slash': toggleChart, 'fa fa-eye': !toggleChart}"
-                   aria-hidden="true"></i>
-                {#                [[nameChart()]]#}
-              </button>
-            </div>
-            <div class="card-body" :hidden="!toggleChart">
-              <div class="row">
-                <div class="col-sm-8 my-auto">
-                  <canvas id="myBarChart" width="100" height="50"></canvas>
+          >
+            Edit
+          </button>
+
+          <div v-if="!status">
+            <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
+          </div>
+
+          <table v-else class="table table-sm table-hover">
+            <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">tag</th>
+              <th scope="col">name</th>
+              <th scope="col">product</th>
+              <th scope="col">company</th>
+              <th scope="col">email</th>
+              <th scope="col">emailLINE</th>
+              <th scope="col">tel</th>
+              <th scope="col">edit/delete</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr v-for="user in transaction">
+              <td>
+                <div class="form-check">
+                  <input
+                      v-model="key_id"
+                      v-bind:value="user"
+                      class="form-check-input"
+                      type="checkbox"
+                  >
                 </div>
-                <div class="col-sm-4 text-center my-auto">
-                  <div class="h4 mb-0 text-primary"></div>
-                  <div class="small text-muted">ข้อมูลลูกค้า</div>
-                  <hr>
-                  <div class="h4 mb-0 text-warning"></div>
-                  <div class="small text-muted">นำเข้า</div>
-                  <hr>
-                  <div class="h4 mb-0 text-success"></div>
-                  <div class="small text-muted">นัดDemo</div>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-bell-o"></i> ข้อความ ฟีด
-              <button type="button" style="margin-left: 10px"
-                      v-on:click="buttonOnFeed" class="btn btn-dark btn-sm">
-                <i v-bind:class="{'fa fa-eye-slash': toggleFeed, 'fa fa-eye': !toggleFeed}"
-                   aria-hidden="true"></i>
-              </button>
-            </div>
-            <div class="list-group list-group-flush small" :hidden="!toggleFeed">
-              <div id="message-box">
-                <a class="list-group-item list-group-item-action" href="#">
-                  <div class="media">
-
-
-                    <img class="d-flex mr-3 rounded-circle" src="  " alt="" height="60">
-                    <div class="media-body">
-                      <strong>
-
-                      </strong> ได้มีการเลือกผลิตภัณฑ์
-                      <strong> </strong>
-                      <div class="text-muted smaller">
-                        ในวันที่
-                      </div>
-                    </div>
-                  </div>
-                  <div class="media" style="margin-top: 8px">
-
-                    <img class="d-flex mr-3 rounded-circle" src=" " alt="" height="60">
-                    <div class="media-body">
-                      <strong>
-
-                      </strong> ได้มีการเลือกผลิตภัณฑ์
-                      <strong> </strong>
-                      <div class="text-muted smaller">
-                        ในวันที่
-                      </div>
-                    </div>
-                  </div>
-                  <div class="media" style="margin-top: 8px">
-
-                    <img class="d-flex mr-3 rounded-circle" src="  " alt="" height="60">
-                    <div class="media-body">
-                      <strong>
-
-                      </strong> ได้มีการเลือกผลิตภัณฑ์
-                      <strong> </strong>
-                      <div class="text-muted smaller">
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              {#                        <a class="list-group-item list-group-item-action" href="#">View all activity...</a>#}
-            </div>
-            <div class="card-footer small text-muted">อัพเดตล่าสุดแล้ว</div>
-          </div>
-        </div>
-      </div>
-      <form action="" method="POST">
-        <div class="card shadow mb-4">
-          <div class="card-header py-3">
-            <div class="row">
-              <div class="col-sm-8">
-                <ul class="nav nav-pills" role="tablist">
-                  <li class="nav-item">
-                    <a class="btn btn-outline-success active" data-toggle="pill"
-                       href="#information">
-                      <i class="fa fa-users"></i>
-                      ข้อมูลลูกค้า
-                      <span class="badge badge-light"> </span>
-                    </a>
-                  </li>
-
-                  <li class="nav-item" style="margin-left: 10px">
-                    <a href="/marketing_import" class="btn btn-outline-success">
-                      <i class="fa fa-reply" aria-hidden="true"></i>
-                      นำเข้า
-                      <span class="badge badge-light">  </span>
-                    </a>
-                  </li>
-
-                  <li class="nav-item" style="margin-left: 10px">
-                    <a href="/getDemo"
-                       class="btn btn-outline-success">
-                      <i class="fa fa-globe" aria-hidden="true"></i>
-                      นัดDemo
-                      <span class="badge badge-light">  </span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="col-sm-4">
-                <div class="align-content-end">
-                  <button type="button"
-                          v-on:click="buttonOnTable" class="btn btn-dark btn-sm">
-                    <i v-bind:class="{'fa fa-eye-slash': toggleTable, 'fa fa-eye': !toggleTable}"
-                       aria-hidden="true"></i>
-                    {#                  [[nameTable()]]#}
-                  </button>
-
-                  <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                          data-target="#addCustomer">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                    Add Customer
-                  </button>
-
-                  <a href="/excel_all/information" class="btn btn-sm btn-success">
-                    <i class="fa fa-file-excel-o"></i>
-                    Export Excel
-                  </a>
-
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                          data-target="#myModal">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                    Remove All
-                  </button>
-                  <div class="modal fade" id="addCustomer">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h4 class="modal-title">Add Customer</h4>
-                          <button type="button" class="close" data-dismiss="modal">&times;
-                          </button>
-                        </div>
-                        <div class="modal-body">
-
-                          <div class="card">
-                            <div class="card-header">
-                              <i class="fa fa-edit">
-                              </i>
-                              เพิ่มข้อมูล
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <div class="form-group">
-                              <label for="authorized">ทุนจดทะเบียน</label>
-                              <input type="text"
-                                     :class="getInputClass('authorized')"
-                                     v-model="formElements.authorized.value"
-                                     @keyup="onChangeForm($event)"
-                                     placeholder="Enter Authorized"
-                                     name="authorized"
-                                     value="">
-                              [[getErrorMessage('tax')]]
-                            </div>
-                            <div class="form-group">
-                              <label for="tax">เลขผู้เสียภาษี</label>
-                              <input type="text"
-                                     :class="getInputClass('tax')"
-                                     v-model="formElements.tax.value"
-                                     @keyup="onChangeForm($event)"
-                                     placeholder="Enter Tax"
-                                     name="tax"
-                                     value="">
-                              [[getErrorMessage('tax')]]
-                            </div>
-                            <div class="form-group">
-                              <label for="position">ตำแหน่ง</label>
-                              <input type="text"
-                                     :class="getInputClass('position')"
-                                     v-model="formElements.position.value"
-                                     @keyup="onChangeForm($event)"
-                                     placeholder="Enter Position"
-                                     name="position"
-                                     value="">
-                              [[getErrorMessage('position')]]
-                            </div>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="submit" name="button_event" value="button_add"
-                                  class="btn btn-info btn-sm" :disabled="!formValid">
-                            <i class="fa fa-check-square-o"></i>
-                            Add
-                          </button>
-
-                          <button type="button" class="btn btn-danger btn-sm"
-                                  data-dismiss="modal">
-                            Close
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="modal fade" id="myModal">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h4 class="modal-title">Confirm Delete</h4>
-                          <button type="button" class="close" data-dismiss="modal">&times;
-                          </button>
-                        </div>
-                        <div class="modal-body">
-                          Delete all transaction... <br>
-                          Are you sure ?
-                        </div>
-                        <div class="modal-footer">
-                          <a href="/delete/" class="btn btn-danger btn">Remove All</a>
-                          <button type="button" class="btn btn-danger btn"
-                                  data-dismiss="modal">
-                            Close
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-body" :hidden="!toggleTable">
-            <div class="tab-content">
-              <div id="information" class="tab-pane active">
-                <div class="footer">
-                  <div class="row">
-                    <div class="col-sm-4">
-                      <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle"
-                                aria-haspopup="true" aria-expanded="false"
-                                data-toggle="dropdown">
-                          Tag Sort
-                        </button>
-                        <div class="dropdown-menu">
-                          <div class="form-check">
-                            <li class="dropdown-header">Select Tag</li>
-                            <li class="divider"></li>
-
-                            <div class="dropdown-item">
-                              <input class="tag_sort"
-                                     type="checkbox"
-                                     name="tags"
-                                     id="  "
-                                     value="  "
-                              >
-                              <label for="  " class="getvalue"
-                                     data-toggle="  "
-                                     title="">
-
-                              </label>
-                            </div>
-
-                          </div>
-                          <div class="dropdown-divider"></div>
-
-                          <div class="row">
-
-                            <button type="submit" name="button_event"
-                                    style="margin-left: 15px"
-                                    value="button_tag"
-                                    class="btn btn-secondary btn-sm"
-                            >
-                              <i class="fas fa-tags"></i>
-                              Apply
-                            </button>
-
-
-                            <button type="submit" name="button_event"
-                                    style="margin-left: 5px"
-                                    value="button_sorting"
-                                    class="btn btn-secondary btn-sm"
-                            >
-                              <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
-                              Sorting
-                            </button>
-
-                            <button type="submit" name="button_event"
-                                    style="margin-left: 5px"
-                                    value="button_remove_tag"
-                                    class="btn btn-secondary btn-sm"
-                            >
-                              <i class="fa fa-eraser" aria-hidden="true"></i>
-                              Clear
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle"
-                                aria-haspopup="true" aria-expanded="false"
-                                data-toggle="dropdown">
-                          <i class="fa fa-columns" aria-hidden="true"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                          <div class="form-check" id="columnshow">
-                            <li class="dropdown-header">Select Column</li>
-                            <li class="divider"></li>
-                            <div class="dropdown-item">
-                              <input type="checkbox" class="checkBB" name="_tag"
-                                     id="_tag" data-column="2" checked>
-                              <label>
-                                แท็ก
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input type="checkbox" class="checkBB" name="_fname"
-                                     id="fname" data-column="3" checked>
-                              <label>
-                                ชื่อ
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input type="checkbox" class="checkBB" name="_product"
-                                     id="product" data-column="4" checked>
-                              <label>
-                                ผลิตภัณฑ์
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input type="checkbox" class="checkBB" name="_other"
-                                     id="other" data-column="5">
-                              <label>
-                                ผลิตภัณฑ์อื่น
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_company"
-                                     id="company" data-column="6" checked>
-                              <label>
-                                บริษัท
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_tel"
-                                     id="tel" data-column="7" checked>
-                              <label>
-                                เบอร์
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_email"
-                                     id="email" data-column="8" checked>
-                              <label>
-                                อีเมล
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_LIFF"
-                                     id="LIFF" data-column="9" checked>
-                              <label>
-                                อีเมล(ไลน์)
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_message"
-                                     id="LIFF" data-column="10">
-                              <label>
-                                ข้อความ
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_profile"
-                                     id="profile" data-column="11">
-                              <label>
-                                ชื่อโปรไฟล์
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_date"
-                                     id="date" data-column="12">
-                              <label>
-                                วัน/เวลา
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_channel"
-                                     id="channel" data-column="13">
-                              <label>
-                                ช่องทาง
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_username"
-                                     id="username" data-column="14">
-                              <label>
-                                นำเข้าโดย
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_insert"
-                                     id="insert" data-column="15">
-                              <label>
-                                วันเวลานำเข้า
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_authoze">
-                              <label>
-                                ทุนจดทะเบียน
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_tax">
-                              <label>
-                                เลขที่เสียภาษี
-                              </label>
-                            </div>
-                            <div class="dropdown-item">
-                              <input class="checkBB" type="checkbox" name="_position">
-                              <label>
-                                ตำแหน่ง
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <button type="submit" name="button_event" value="button_edit"
-                              class="btn btn-sm">
-                        <i class="fa fa-edit"></i>
-                        แก้ไข
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-
-                </div>
-                <div class="col-sm-4"></div>
-
-              </div>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table-hover stripe" style="width:100%" id="informationTable">
-                <thead>
-                <tr>
-                  <th>
-                    <input type="checkbox" name="select" id="select-all-information">
-                  </th>
-                  <th class="_tag">แท็ก</th>
-                  <th class="_fname">ชื่อ</th>
-                  <th class="_product">ผลิตภัณฑ์</th>
-                  <th class="_other">ผลิตภัณฑ์อื่น</th>
-                  <th class="_company">บริษัท</th>
-                  <th class="_tel">เบอร์</th>
-                  <th class="_email">อีเมล</th>
-                  <th class="_LIFF">อีเมล(ไลน์)</th>
-                  <th class="_message">ข้อความ</th>
-                  <th class="_profile">ชื่อโปรไฟล์</th>
-                  <th class="_date">วัน/เวลา</th>
-                  <th class="_channel">ช่องทาง</th>
-                  <th class="_username">นำเข้าโดย</th>
-                  <th class="_insert">วันเวลานำเข้า</th>
-                  <th class="_authoze">ทุนจดทะเบียน</th>
-                  <th class="_tax">เลขผู้เสียภาษี</th>
-                  <th class="_position">ตำแหน่ง</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                <tr v-for="data in transaction">
-                  <td>
-                    <div class="form-check">
-                      <input type="checkbox"
-                             class="form-check-input position-static"
-                             name="key_information"
-                             :id="[[data.id]]"
-                             :value="[[data.id]]"
-                      >
-                    </div>
-                  </td>
-
-                  <td class="_tag">
-
-                    <div v-for="tag in data.tag">
-                      <div v-if="tag">
-                        <a href="information_test">
-                    <span id="tag" class="badge badge-secondary ">
-                            <i class="fas fa-tags"></i>
-                            [[tag]]
-                    </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div id="liff" class="collapse fade">
-
-                      <a href="tagInformation/ ">
-                        <span id=" "
-                              class="badge badge-secondary Filter_kane CC010">
+              </td>
+              <td>
+                <div v-for="tag in user.tag">
+                  <div v-if="tag">
+                    <a href="information_test">
+                        <span id="tag" class="badge badge-secondary ">
                                 <i class="fas fa-tags"></i>
-
+                                [[tag]]
                         </span>
-                      </a>
-                    </div>
-                  </td>
-                  <td class="_fname"></td>
-                  <td class="_product"></td>
-                  <td class="_other"></td>
-                  <td class="_company"></td>
-                  <td class="_tel"></td>
-                  <td class="_email"></td>
-                  <td class="_LIFF"></td>
-                  <td class="_message">
+                    </a>
+                  </div>
+                </div>
 
-                    <button type="button" class="btn btn-primary btn-xs"
-                            data-toggle="collapse"
-                            data-target="#message">
-                      <i class="fa fa-commenting-o" aria-hidden="true"></i>
+              </td>
+              <td>[[user.name]]</td>
+              <td>[[user.product]]</td>
+              <td>[[user.company]]</td>
+              <td>[[user.email]]</td>
+              <td>[[user.liff]]</td>
+              <td>[[user.tel]]</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button
+                      type="button"
+                      class="btn btn-warning btn-sm"
+                      data-toggle="modal"
+                      data-target="#editData"
+                      @click="editDataIndex(user)"
+                      v-on:click="setModal">
+                    Update
+                  </button>
+                  <button
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      @click="onDeleteData(user)">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <p>[[key_id]]</p>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+               aria-hidden="true">
+            <div class="modal-dialog">
+              <form @submit="onSubmit" ref="add_modal" @reset="onReset">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
                     </button>
-
-                    <div id="message" class="collapse">
-
-
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="name" class="col-form-label">Name:</label>
+                      <input class="form-control"
+                             v-model="addTransaction.name"
+                             type="text">
                     </div>
-                  </td>
-                  <td class="_profile"></td>
-                  <td class="_date"></td>
-                  <td class="_channel"></td>
-                  <td class="_username"></td>
-                  <td class="_insert"></td>
-                  <td class="_authoze"></td>
-                  <td class="_tax"></td>
-                  <td class="_position"></td>
-                </tr>
 
-                </tbody>
-              </table>
+                    <div class="form-group">
+                      <label for="product" class="col-form-label">Product:</label>
+                      <input class="form-control"
+                             v-model="addTransaction.product"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="company" class="col-form-label">Company:</label>
+                      <input class="form-control"
+
+                             v-model="addTransaction.company"
+                             type="text">
+                    </div>
 
 
+                  </div>
+                  <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send message</button>
+                  </div>
+                </div>
+              </form>
             </div>
-            <br>
-            <div class="footer">
-              <div class="row" style="margin-left: 15px">
-                <div style="margin-right: 12px">
-                  <button type="submit" name="button_event" value="button_excel"
-                          class="btn btn-warning btn-sm">
-                    <i class="fa fa-check-square-o"></i>
-                    Excel Index
-                  </button>
+          </div>
+
+
+          <div class="modal fade" id="editData" tabindex="-1" aria-labelledby="exampleModalLabel"
+               aria-hidden="true">
+            <div class="modal-dialog">
+              <form @submit="onSubmitUpdate" ref="modal" @reset="onResetUpdate">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="name" class="col-form-label">Name:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.name"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="product" class="col-form-label">Product:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.product"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="company" class="col-form-label">Company:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.company"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="email" class="col-form-label">Email:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.email"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="liff" class="col-form-label">LIFF:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.liff"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="liff" class="col-form-label">Tel:</label>
+                      <input class="form-control"
+                             v-model="editTransaction.tel"
+                             type="text">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="message" class="col-form-label">Message:</label>
+                      <textarea class="form-control" v-model="editTransaction.message"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="message" class="col-form-label">Tag:</label>
+                      <textarea class="form-control" v-model="editTransaction.tag"></textarea>
+                    </div>
+
+                    <div class="form-check form-check-inline" v-for="tag in tags">
+                      <label>
+                        <input v-model="editTransaction.tag"
+                               v-bind:value="tag"
+                               class="form-check-input"
+                               type="checkbox"
+                        >
+                      </label>
+                      <label class="form-check-label" for="tag"></label>
+                      [[tag]]
+                    </div>
+
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send message</button>
+                  </div>
                 </div>
-                <div style="margin-right: 12px">
-                  <button type="submit" name="button_event" value="button_delete"
-                          class="btn btn-danger btn-sm">
-                    <i class="fa fa-check-square-o"></i>
-                    Delete Index
-                  </button>
-                </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
-      </form>
-    </div>
-
-
-    {#    <div class="container">#}
-    {#      <button style="margin-bottom: 10px" type="button" class="btn btn-primary btn-sm" data-toggle="modal"#}
-    {#              data-target="#exampleModal" v-on:click="setModal">#}
-    {#        Add#}
-    {#      </button>#}
-    {#      <button style="margin-bottom: 10px" type="button"#}
-    {#              class="btn btn-primary btn-sm btn-user"#}
-    {#              v-on:click="setUserNew">#}
-    {#        Data#}
-    {#      </button>#}
-    {#      <button data-toggle="modal"#}
-    {#              data-target="#editData"#}
-    {#              style="margin-bottom: 10px" type="button"#}
-    {#              class="btn btn-primary btn-sm btn-user"#}
-    {#              v-on:click="editButton"#}
-    {##}
-    {#      >#}
-    {#        Edit#}
-    {#      </button>#}
-    {##}
-    {#      <div v-if="!status">#}
-    {#        <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>#}
-    {#      </div>#}
-    {##}
-    {#      <table v-else class="table table-sm table-hover">#}
-    {#        <thead>#}
-    {#        <tr>#}
-    {#          <th scope="col">id</th>#}
-    {#          <th scope="col">tag</th>#}
-    {#          <th scope="col">name</th>#}
-    {#          <th scope="col">product</th>#}
-    {#          <th scope="col">company</th>#}
-    {#          <th scope="col">email</th>#}
-    {#          <th scope="col">emailLINE</th>#}
-    {#          <th scope="col">tel</th>#}
-    {#          <th scope="col">edit/delete</th>#}
-    {#        </tr>#}
-    {#        </thead>#}
-    {##}
-    {#        <tbody>#}
-    {##}
-    {#        <tr v-for="user in transaction">#}
-    {#          <td>#}
-    {#            <div class="form-check">#}
-    {#              <input#}
-    {#                  v-model="key_id"#}
-    {#                  v-bind:value="user"#}
-    {#                  class="form-check-input"#}
-    {#                  type="checkbox"#}
-    {#              >#}
-    {#            </div>#}
-    {#          </td>#}
-    {#          <td>#}
-    {#            <div v-for="tag in user.tag">#}
-    {#              <div v-if="tag">#}
-    {#                <a href="information_test">#}
-    {#                    <span id="tag" class="badge badge-secondary ">#}
-    {#                            <i class="fas fa-tags"></i>#}
-    {#                            [[tag]]#}
-    {#                    </span>#}
-    {#                </a>#}
-    {#              </div>#}
-    {#            </div>#}
-    {##}
-    {#          </td>#}
-    {#          <td>[[user.name]]</td>#}
-    {#          <td>[[user.product]]</td>#}
-    {#          <td>[[user.company]]</td>#}
-    {#          <td>[[user.email]]</td>#}
-    {#          <td>[[user.liff]]</td>#}
-    {#          <td>[[user.tel]]</td>#}
-    {#          <td>#}
-    {#            <div class="btn-group" role="group">#}
-    {#              <button#}
-    {#                  type="button"#}
-    {#                  class="btn btn-warning btn-sm"#}
-    {#                  data-toggle="modal"#}
-    {#                  data-target="#editData"#}
-    {#                  @click="editDataIndex(user)"#}
-    {#                  v-on:click="setModal">#}
-    {#                Update#}
-    {#              </button>#}
-    {#              <button#}
-    {#                  type="button"#}
-    {#                  class="btn btn-danger btn-sm"#}
-    {#                  @click="onDeleteData(user)">#}
-    {#                Delete#}
-    {#              </button>#}
-    {#            </div>#}
-    {#          </td>#}
-    {#        </tr>#}
-    {#        </tbody>#}
-    {#      </table>#}
-    {#      <p>[[key_id]]</p>#}
-    {#      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"#}
-    {#           aria-hidden="true">#}
-    {#        <div class="modal-dialog">#}
-    {#          <form @submit="onSubmit" ref="add_modal" @reset="onReset">#}
-    {#            <div class="modal-content">#}
-    {#              <div class="modal-header">#}
-    {#                <h5 class="modal-title" id="exampleModalLabel">New message</h5>#}
-    {#                <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-    {#                  <span aria-hidden="true">&times;</span>#}
-    {#                </button>#}
-    {#              </div>#}
-    {#              <div class="modal-body">#}
-    {#                <div class="form-group">#}
-    {#                  <label for="name" class="col-form-label">Name:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="addTransaction.name"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="product" class="col-form-label">Product:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="addTransaction.product"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="company" class="col-form-label">Company:</label>#}
-    {#                  <input class="form-control"#}
-    {##}
-    {#                         v-model="addTransaction.company"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {##}
-    {#              </div>#}
-    {#              <div class="modal-footer">#}
-    {#                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
-    {#                <button type="submit" class="btn btn-primary">Send message</button>#}
-    {#              </div>#}
-    {#            </div>#}
-    {#          </form>#}
-    {#        </div>#}
-    {#      </div>#}
-    {##}
-    {##}
-    {#      <div class="modal fade" id="editData" tabindex="-1" aria-labelledby="exampleModalLabel"#}
-    {#           aria-hidden="true">#}
-    {#        <div class="modal-dialog">#}
-    {#          <form @submit="onSubmitUpdate" ref="modal" @reset="onResetUpdate">#}
-    {#            <div class="modal-content">#}
-    {#              <div class="modal-header">#}
-    {#                <h5 class="modal-title" id="exampleModalLabel">Edit Message</h5>#}
-    {#                <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-    {#                  <span aria-hidden="true">&times;</span>#}
-    {#                </button>#}
-    {#              </div>#}
-    {#              <div class="modal-body">#}
-    {#                <div class="form-group">#}
-    {#                  <label for="name" class="col-form-label">Name:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.name"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="product" class="col-form-label">Product:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.product"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="company" class="col-form-label">Company:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.company"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="email" class="col-form-label">Email:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.email"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="liff" class="col-form-label">LIFF:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.liff"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="liff" class="col-form-label">Tel:</label>#}
-    {#                  <input class="form-control"#}
-    {#                         v-model="editTransaction.tel"#}
-    {#                         type="text">#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="message" class="col-form-label">Message:</label>#}
-    {#                  <textarea class="form-control" v-model="editTransaction.message"></textarea>#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-group">#}
-    {#                  <label for="message" class="col-form-label">Tag:</label>#}
-    {#                  <textarea class="form-control" v-model="editTransaction.tag"></textarea>#}
-    {#                </div>#}
-    {##}
-    {#                <div class="form-check form-check-inline" v-for="tag in tags">#}
-    {#                  <label>#}
-    {#                    <input v-model="editTransaction.tag"#}
-    {#                           v-bind:value="tag"#}
-    {#                           class="form-check-input"#}
-    {#                           type="checkbox"#}
-    {#                    >#}
-    {#                  </label>#}
-    {#                  <label class="form-check-label" for="tag"></label>#}
-    {#                  [[tag]]#}
-    {#                </div>#}
-    {##}
-    {##}
-    {#              </div>#}
-    {#              <div class="modal-footer">#}
-    {#                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
-    {#                <button type="submit" class="btn btn-primary">Send message</button>#}
-    {#              </div>#}
-    {#            </div>#}
-    {#          </form>#}
-    {#        </div>#}
-    {#      </div>#}
-    {#    </div>#}
   </div>
 
 
