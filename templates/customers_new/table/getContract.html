@@ -104,14 +104,14 @@
                 <li class="nav-item" style="margin-left: 10px">
                   <a href="/getDemo">
                     <button
-                        class="btn btn-outline-success active"
-                        data-toggle="pill" href="#getDemo">
+                        class="btn btn-outline-success">
                       <i class="fa fa-globe" aria-hidden="true"></i>
                       นัดDemo
                       <span class="badge badge-light">{{ data.amount_getDemo }}</span>
                     </button>
                   </a>
                 </li>
+
                 <li class="nav-item" style="margin-left: 10px">
                   <a href="/getContract">
                     <button
@@ -122,7 +122,6 @@
                     </button>
                   </a>
                 </li>
-
               </ul>
             </div>
 
@@ -150,7 +149,7 @@
                         Are you sure ?
                       </div>
                       <div class="modal-footer">
-                        <a {% for d in data.getDemo %}
+                        <a {% for d in data.getContract %}
                           href="/delete/{{ d.key }}"
                         {% endfor %} class="btn btn-danger btn">Remove All</a>
                         <button type="button" class="btn btn-danger btn" data-dismiss="modal">Close
@@ -271,7 +270,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for demo in data.getDemo[::-1] %}
+                    {% for demo in data.getContract[::-1] %}
                       <tr>
                         <td>
                           <div class="form-group">
@@ -279,7 +278,7 @@
                                    name="key_getDemo"
                                    id="{{ demo.key }}"
                                    value="{{ demo.key }}"
-                                {% if demo.key in data.getDemo.key %}
+                                {% if demo.key in data.getContract.key %}
                                    checked {% endif %}>
                           </div>
                         </td>
@@ -301,7 +300,7 @@
                           <div id="liff" class="collapse">
                             {% for tag in demo.tag %}
                               {% if tag %}
-                                <a href="tagliff/{{ tag }}">
+
                                 <span id="{{ tag }}"
                                       class="badge badge-secondary">
                                         <i class="fas fa-tags"></i>
@@ -339,13 +338,18 @@
                                     แนวสูง
                                   {% endif %}
                                 </span>
-                                </a>
+
                               {% endif %}
                             {% endfor %}
                           </div>
                         </td>
                         <td>{{ demo.Name }}</td>
-                        <td>{{ demo.Product }}</td>
+                        <td>
+                          {% if '-- Products --' in demo.Product %}
+                          {% else %}
+                          {{ demo.Product }}
+                          {% endif %}
+                        </td>
                         <td>{{ demo.Company }}</td>
                         <td>{{ demo.tel }}</td>
                         <td>{{ demo.Email }}</td>
@@ -362,7 +366,7 @@
                             {{ demo.Message }}
                           </div>
                         </td>
-                        <td>{{ demo.Date }} {{ demo.Time }}</td>
+                        <td>{{ demo.date_time }}</td>
                         <td>{{ demo.Channel }}</td>
 
                       </tr>

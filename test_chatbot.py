@@ -37,43 +37,50 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 
 # construction = [x for x in products if 'Mango ERP (Real Estate)' in x]
 # print(construction)
-ref = db.child('requestDemo').get()
+
+
+# count = 1
+# demolist = []
+# contractlist = []
+# companys = []
+# group = {}
+# for demo in ref.each()[1:]:
+#     key = demo.key()
+#     company = demo.val()['event']['company']
+#     companys.append(company)
+#     email = demo.val()['event']['email']
+#     fname = demo.val()['event']['fname']
+#     product = demo.val()['event']['product']
+#     message = demo.val()['event']['message']
+#     tel = demo.val()['event']['tel']
+#     date = demo.val()['Date']
+#     time = demo.val()['Time']
+#     tag = demo.val()['tag']
+#     apiDemo = {'Index': count, 'key': key, 'Name': fname, 'Company': company, 'Email': email,
+#                'Product': product, 'Message': message, 'tel': tel, 'tag': tag, 'Time': time,
+#                'Date': date, 'Channel': 'web mango'}
+#     demolist.append(apiDemo)
+
+lst = []
 contracts = db.child('requestContract').get()
-count = 1
-demolist = []
-contractlist = []
-companys = []
-group = {}
-for demo in ref.each()[1:]:
-    key = demo.key()
-    company = demo.val()['event']['company']
-    companys.append(company)
-    email = demo.val()['event']['email']
-    fname = demo.val()['event']['fname']
-    product = demo.val()['event']['product']
-    message = demo.val()['event']['message']
-    tel = demo.val()['event']['tel']
-    date = demo.val()['Date']
-    time = demo.val()['Time']
-    tag = demo.val()['tag']
-    apiDemo = {'Index': count, 'key': key, 'Name': fname, 'Company': company, 'Email': email,
-               'Product': product, 'Message': message, 'tel': tel, 'tag': tag, 'Time': time,
-               'Date': date, 'Channel': 'web mango'}
-    demolist.append(apiDemo)
-
-
-
-# for contract in contracts.each()[1:]:
-#     event = contract.val()['event']
-#     contact_email = event['contact_email']
-#     contact_email_div = event['contact_email_div']
-#     contact_message = event['contact_message']
-#     contact_name = event['contact_name']
-#     contact_name_company = event['contact_name_company']
-#     contact_subject = event['contact_subject']
-#     contact_tel = event['contact_tel']
-#     apiContract = {'key': }
-
+for contract in contracts.each()[1:]:
+    key = contract.key()
+    event = contract.val()['event']
+    contact_email = event['contact_email']
+    contact_email_div = event['contact_email_div']
+    contact_message = event['contact_message']
+    contact_name = event['contact_name']
+    contact_name_company = event['contact_name_company']
+    contact_subject = event['contact_subject']
+    contact_tel = event['contact_tel']
+    date = contract.val()['Date']
+    time = contract.val()['Time']
+    tag = contract.val()['tag']
+    apiContract = {'key': key, 'email': contact_email, 'email_div': contact_email_div,
+                   'message': contact_message, 'name': contact_name, 'company': contact_name_company,
+                   'product': contact_subject, 'tel': contact_tel, 'date_time': f'{date} {time}'}
+    lst.append(apiContract)
+print(lst)
 
 
 

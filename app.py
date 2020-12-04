@@ -9,7 +9,7 @@ from random import randrange
 from numpy import random
 from model_image import *
 from PIL import Image
-from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer,\
+from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer, \
     WebScraping, TagChart, pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
@@ -514,13 +514,16 @@ def marketing_import():
         marketing_import = fire.liffCustomer()
         information = fire.restCustomer()
         getDemo = fire.demoCustomer()
+        getContract = fire.contractCustomer()
         amount = len(marketing_import)
         information = len(information)
         getDemo = len(getDemo)
+        len_Contract = len(getContract)
         data = {
             'tag': tags,
             'amount': amount,
             'getDemo': getDemo,
+            'amount_getContract': len_Contract,
             'information': information,
             'imports': marketing_import,
         }
@@ -562,9 +565,11 @@ def marketing_information():
     if request.method == 'GET':
         fire = FirebaseNewCustomer(db=db2)
         marketing_information = fire.restCustomer()
+        getContract = fire.contractCustomer()
         marketing_import = fire.liffCustomer()
         getDemo = len(fire.demoCustomer())
         amount = len(marketing_information)
+        len_getContract = len(getContract)
         marketing_import = len(marketing_import)
         REAL = fire.lenProduct('RestCustomer', 'RealEstate')
         CON = fire.lenProduct('RestCustomer', 'Construction')
@@ -573,6 +578,7 @@ def marketing_information():
         data = {
             'getDemo': getDemo,
             'information': marketing_information,
+            'amount_getContract': len_getContract,
             'import': marketing_import,
             'amount': amount,
             'tag': tags,
@@ -628,14 +634,17 @@ def getDemo():
                 'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
                 'RC010', 'RA010', 'RB010']
         fire = FirebaseNewCustomer(db=db2)
+        getContract = fire.contractCustomer()
         getDemo = fire.demoCustomer()
         information = fire.restCustomer()
         _import = fire.liffCustomer()
         len_getDemo = len(getDemo)
+        len_getContract = len(getContract)
         len_information = len(information)
         len_import = len(_import)
         data = {
             'getDemo': getDemo,
+            'amount_getContract': len_getContract,
             'amount_getDemo': len_getDemo,
             'amount_information': len_information,
             'amount_import': len_import,
@@ -661,6 +670,51 @@ def getDemo():
         elif button == 'button_delete':
             button_event.button_delete('requestDemo')
         return redirect(url_for('getDemo'))
+
+
+@app.route('/getContract', methods=['GET', 'POST'])
+def getContract():
+    if request.method == 'GET':
+        tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+                'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+                'RC010', 'RA010', 'RB010']
+        fire = FirebaseNewCustomer(db=db2)
+        getContract = fire.contractCustomer()
+        getDemo = fire.demoCustomer()
+        information = fire.restCustomer()
+        _import = fire.liffCustomer()
+        len_getDemo = len(getDemo)
+        len_information = len(information)
+        len_import = len(_import)
+        len_getContract = len(getContract)
+        data = {
+            'getContract': getContract,
+            'amount_getContract': len_getContract,
+            'amount_getDemo': len_getDemo,
+            'amount_information': len_information,
+            'amount_import': len_import,
+            'tag': tags,
+        }
+        return render_template('customers_new/table/getContract.html', data=data)
+    elif request.method == 'POST':
+        button = request.form['button_event']
+        tags = request.form.getlist('tags')
+        key_getContract = request.form.getlist('key_getDemo')
+        button_event = ButtonEvent(loop=key_getContract, db=db2, tag_insert=tags)
+        if button == 'button_tag':
+            button_event.button_tag('requestContract', 'tag')
+        elif button == 'button_insert':
+            to = TimeDate()
+            date = f'{to.day}-{to.month}-{to.year}'
+            time = f'{to.hour}:{to.minute}:{to.second}'
+            displayName = session['user_id']['displayName']
+            button_event.button_insert_getContract(displayName, date, time, db2)
+        elif button == 'button_excel':
+            button_event.button_excel_getContract()
+            return send_from_directory('static/excel', 'Customers.xlsx')
+        elif button == 'button_delete':
+            button_event.button_delete('requestContract')
+        return redirect(url_for('getContract'))
 
 
 @app.route('/marketing_import_update/<string:id>', methods=['GET', 'POST'])

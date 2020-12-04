@@ -77,10 +77,26 @@ class ButtonEvent:
             self.db.child('RestCustomer').push(group)
             self.db.child('requestDemo').child(i).remove()
 
+    def button_insert_getContract(self, displayName, date, time, db):
+        for i in self.loop:
+            group = self.tagChart.chart_contract(i, displayName, date, time, db)
+            self.db.child('RestCustomer').push(group)
+            self.db.child('requestContract').child(i).remove()
+
     def button_excel_getDemo(self):
         lst = []
         for i in self.loop:
             list_chart = self.tagChart.demo_excel(i, self.db)
+            lst.append(list_chart)
+        data = pd.DataFrame(lst)
+        datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
+        data.to_excel(datatoexcel, sheet_name='Sheet1')
+        datatoexcel.save()
+
+    def button_excel_getContract(self):
+        lst = []
+        for i in self.loop:
+            list_chart = self.tagChart.contract_excel(i, self.db)
             lst.append(list_chart)
         data = pd.DataFrame(lst)
         datatoexcel = pd.ExcelWriter('static/excel/Customers.xlsx', engine='xlsxwriter')
@@ -269,6 +285,23 @@ class TagChart:
         return group
 
     @staticmethod
+    def contract_excel(e, db2):
+        contract = db2.child('requestContract').child(e).get()
+        event = contract.val()['event']
+        contact_email = event['contact_email']
+        contact_message = event['contact_message']
+        contact_name = event['contact_name']
+        contact_name_company = event['contact_name_company']
+        contact_subject = event['contact_subject']
+        contact_tel = event['contact_tel']
+        cdate = contract.val()['Date']
+        ctime = contract.val()['Time']
+        tag = contract.val()['tag']
+        group = {'Name': contact_name, 'Product': contact_subject, 'Company': contact_name_company, 'Tel': contact_tel, 'Email': contact_email,
+                 'Message': contact_message, 'Date': cdate, 'Time': ctime, 'Tag': tag, 'Channel': 'ติดต่อเรา'}
+        return group
+
+    @staticmethod
     def insert_to_information(e, username, date, time, db2):
         py = db2.child('LineLiff').child(e).get()
         day = py.val()['day']
@@ -312,6 +345,26 @@ class TagChart:
         group = {'Name': name, 'Product': product, 'Other': '', 'Company': company,
                  'Tel': tel, 'Email': email, 'EmailLiff': '', 'Message': message,
                  'Profile': '', 'Date': cDate, 'Time': cTime, 'Picture': '',
+                 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
+                 'Channel': 'web mango'}
+        return group
+
+    @staticmethod
+    def chart_contract(key, username, date, time, db2):
+        contract = db2.child('requestContract').child(key).get()
+        event = contract.val()['event']
+        contact_email = event['contact_email']
+        contact_message = event['contact_message']
+        contact_name = event['contact_name']
+        contact_name_company = event['contact_name_company']
+        contact_subject = event['contact_subject']
+        contact_tel = event['contact_tel']
+        cdate = contract.val()['Date']
+        ctime = contract.val()['Time']
+        tag = contract.val()['tag']
+        group = {'Name': contact_name, 'Product': contact_subject, 'Other': '', 'Company': contact_name_company,
+                 'Tel': contact_tel, 'Email': contact_email, 'EmailLiff': '', 'Message': contact_message,
+                 'Profile': '', 'Date': cdate, 'Time': ctime, 'Picture': '',
                  'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
                  'Channel': 'web mango'}
         return group
@@ -471,6 +524,31 @@ class FirebaseNewCustomer:
             test.append(apiDemo)
             count += 1
         return test
+
+    def contractCustomer(self):
+        lst = []
+        contracts = self.db.child('requestContract').get()
+        count = 1
+        for contract in contracts.each()[1:]:
+            key = contract.key()
+            event = contract.val()['event']
+            contact_email = event['contact_email']
+            contact_email_div = event['contact_email_div']
+            contact_message = event['contact_message']
+            contact_name = event['contact_name']
+            contact_name_company = event['contact_name_company']
+            contact_subject = event['contact_subject']
+            contact_tel = event['contact_tel']
+            date = contract.val()['Date']
+            time = contract.val()['Time']
+            tag = contract.val()['tag']
+            apiContract = {'Index': count, 'key': key, 'tag': tag, 'Email': contact_email,
+                           'email_div': contact_email_div, 'Message': contact_message, 'Name': contact_name,
+                           'Company': contact_name_company, 'Product': contact_subject, 'tel': contact_tel,
+                           'date_time': f'{date} {time}', 'Channel': 'Contract'}
+            count += 1
+            lst.append(apiContract)
+        return lst
 
     def lenProduct(self, db, product):
         lst = []
