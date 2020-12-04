@@ -3,7 +3,6 @@
 
     <br>
     <div class="container-fluid" style="margin-top: 30px">
-
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <div class="row">
@@ -157,6 +156,7 @@
                                         <th>ชื่อ</th>
                                         <th>ผลิตภัณฑ์</th>
                                         <th>ผลิตภัณฑ์อื่น</th>
+                                      <th>ตำแหน่ง</th>
                                         <th>บริษัท</th>
                                         <th>เบอร์</th>
                                         <th>อีเมล</th>
@@ -239,6 +239,7 @@
                                             <td>{{ import.event.firstname }}</td>
                                             <td>{{ import.event.product }}</td>
                                             <td>{{ import.event.other }}</td>
+                                            <td>{{ import.event.position }}</td>
                                             <td>{{ import.event.company }}</td>
                                             <td>{{ import.event.tel }}</td>
                                             <td>{{ import.event.email }}</td>
@@ -258,7 +259,7 @@
                                                     {% endif %}
                                                 </div>
                                             </td>
-                                        <td>{{ import.event.news }}</td>
+                                            <td>{{ import.event.news }}</td>
                                             <td>{{ import.event.displayName }}</td>
                                             <td>{{ import.day }}/{{ import.month }}/{{ import.year }}
                                                 {{ import.hour }}:{{ import.min }}:{{ import.sec }}</td>

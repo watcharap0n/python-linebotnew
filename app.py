@@ -660,7 +660,7 @@ def getDemo():
             return send_from_directory('static/excel', 'Customers.xlsx')
         elif button == 'button_delete':
             button_event.button_delete('requestDemo')
-            return redirect(url_for('getDemo'))
+        return redirect(url_for('getDemo'))
 
 
 @app.route('/marketing_import_update/<string:id>', methods=['GET', 'POST'])
