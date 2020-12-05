@@ -11,27 +11,51 @@
             <div v-if="!spinTable">
               <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
             </div>
-            <div class="col">
+            <div class="col" v-else>
+              <div style="text-align: end">
+                <label>
+                  <span>Selected Page</span>
+                  <select v-model="pageSize" class="custom-select-sm">
+                    <option value="10" selected>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </label>
+              </div>
               <div class="table-responsive">
                 <table class="table table-hover stripe" style="width:100%" id="informationTable">
                   <thead>
-                  <tr>
+                  <tr class="bg-success text-white">
                     <th>
-                      <input type="checkbox" name="select" id="select-all-information">
+                      <input type="checkbox" name="select"
+                             id="select-all-information"
+                             v-model="selectAll"
+                      >
                     </th>
-                    <th>name</th>
-                    <th>product</th>
-                    <th>company</th>
-                    <th>email</th>
-                    <th>tel</th>
+                    <th @click="sortCol('name')">Name <i
+                        v-bind:class="{'fa fa-user-o': sortIcon, 'fa fa-user': !sortIcon}"
+                        aria-hidden="true"></i></th>
+                    <th @click="sortCol('product')">Product <i
+                        v-bind:class="{'fa fa-user-o': sortIcon, 'fa fa-user': !sortIcon}"
+                        aria-hidden="true"></i></th>
+                    <th @click="sortCol('company')">Company <i
+                        v-bind:class="{'fa fa-user-o': sortIcon, 'fa fa-user': !sortIcon}"
+                        aria-hidden="true"></i></th>
+                    <th @click="sortCol('email')">Email <i
+                        v-bind:class="{'fa fa-user-o': sortIcon, 'fa fa-user': !sortIcon}"
+                        aria-hidden="true"></i></th>
+                    <th @click="sortCol('tel')">Tel <i
+                        v-bind:class="{'fa fa-user-o': sortIcon, 'fa fa-user': !sortIcon}"
+                        aria-hidden="true"></i></th>
                     <th>action</th>
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="user in transaction">
+                  <tr v-for="user in sortedUsers">
                     <td>
                       <div class="form-check">
                         <input type="checkbox"
+                               v-model="selected"
                                name="key_information"
                                class="form-check-input position-static"
                                v-bind:value="user.id">
@@ -70,13 +94,29 @@
               </div>
             </div>
           </div>
+          <div class="card-footer">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <li class="page-item">
+                  <a class="page-link" @click="prevPage" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item"><a class="page-link">[[currentPage]]</a></li>
+                <li class="page-item">
+                  <a class="page-link" @click="nextPage" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
 
 
       <div class="modal fade" id="editData"
-           aria-hidden="true"
-      >
+           aria-hidden="true">
         <div class="modal-dialog">
           <form @submit="onSubmitUpdate" ref="updateModal" @reset="onResetUpdate">
             <div class="modal-content">
@@ -167,18 +207,30 @@
   </div>
 
 
-
+  <script src="https://cdn.jsdelivr.net/npm/vue-tables-2@2.1.61/compiled/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-tables-2@2.1.61/dist/vue-tables.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-tables-2@2.1.61/dist/vue-tables-2.min.js"></script>
   <script>
-      const app = new Vue({
+      Vue.use(VueTables.ClientTable);
+
+      var app = new Vue({
           el: '#app',
           data() {
               return {
-                  transaction: null,
+                  transaction: [],
                   tags: null,
                   spinTable: true,
                   dataTable: null,
                   checkedBox: true,
                   updateModal: true,
+                  sortIcon: true,
+                  pageSize: 10,
+                  currentPage: 1,
+                  currentSort: 'name',
+                  currentSortDir: 'asc',
+                  selected: [],
+                  selectOnOne: [],
+                  showLog: '',
                   addTransaction: {
                       name: '',
                       tag: [],
@@ -199,7 +251,6 @@
                       channel: '',
                       message: '',
                   },
-                  showLog: '',
                   editTransaction: {
                       id: '',
                       name: '',
@@ -228,6 +279,20 @@
               transaction: 'showData'
           },
           methods: {
+              sortCol(col) {
+                  this.sortIcon = !this.sortIcon;
+                  if (col === this.currentSort) {
+                      this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+                  }
+                  this.currentSort = col
+                  console.log(this.sortIcon)
+              },
+              nextPage: function () {
+                  if ((this.currentPage * this.pageSize) < this.transaction.length) this.currentPage++;
+              },
+              prevPage: function () {
+                  if (this.currentPage > 1) this.currentPage--;
+              },
               showData() { // condition
                   if (this.transaction) {
                       this.spinTable = true
@@ -235,7 +300,7 @@
               },
               LoadDataInfo() { //
                   this.spinTable = false;
-                  this.createInformation()
+                  this.sortedUsers()
               },
               createInformation() {
                   this.spinTable = false
@@ -373,17 +438,41 @@
                   this.$emit('dataOK', true)
               },
           },
+          computed: {
+              sortedUsers: function () {
+                  return this.transaction.sort((a, b) => {
+                      let modifier = 1;
+                      if (this.currentSortDir === 'desc') modifier = -1;
+                      if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                      if (a[this.currentSort] > b[this.currentSort]) return modifier;
+                      return 0;
+                  }).filter((row, index) => {
+                      let start = (this.currentPage - 1) * this.pageSize;
+                      let end = this.currentPage * this.pageSize;
+                      if (index >= start && index < end) return true;
+                  });
+              },
+              selectAll: {
+                  get: function () {
+                      return this.transaction ? this.selected.length === this.transaction.length : false;
+                  },
+                  set: function (value) {
+                      var selected = [];
+                      if (value) {
+                          this.transaction.forEach(function (user) {
+                              selected.push(user.id);
+                          });
+                      }
+                      this.selected = selected;
+                  }
+              }
+          },
           created() {
               this.createInformation();
               this.createTag();
           },
           mounted() {
-              document.getElementById('select-all-information').onclick = function () {
-                  var checkboxes = document.getElementsByName('key_information');
-                  for (var checkbox of checkboxes) {
-                      checkbox.checked = this.checked;
-                  }
-              }
+
           },
       })
 

@@ -2,10 +2,11 @@ import firebase_admin
 import pyrebase
 import json, webbrowser
 from linebot import LineBotApi, WebhookHandler
+from mangoerp.myClass import *
 import pandas as pd
 from linebot.models import TextSendMessage, ImageSendMessage
 from attacut import tokenize
-from flask import Flask, request, abort, jsonify, render_template
+from flask import Flask, request, abort, jsonify, render_template, send_from_directory, redirect, url_for
 from linebot import LineBotApi
 from firebase_admin import credentials, auth
 
@@ -25,12 +26,12 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 
 
 class FirebaseAPI:
-    def __init__(self, transaction):
-        self.transaction = transaction
+    def __init__(self, db):
+        self.db = db
 
-    def information(self):
+    def information(self, transaction):
         lst = []
-        ref = db.child(self.transaction).get()
+        ref = db.child(transaction).get()
         for i in ref.each()[1:]:
             key = i.key()
             name = i.val()['Name']
@@ -38,6 +39,7 @@ class FirebaseAPI:
             profile = i.val()['Profile']
             channel = i.val()['Channel']
             company = i.val()['Company']
+            other = i.val()['Other']
             email = i.val()['Email']
             liff = i.val()['EmailLiff']
             position = i.val()['Position']
@@ -52,16 +54,17 @@ class FirebaseAPI:
             username = i.val()['Username']
             product = i.val()['Product']
             group = {
-                'id': key, 'name': name, 'tag': tag, 'product': product, 'email': email,
-                'liff': liff, 'company': company, 'tel': tel, 'channel': channel, 'message': message,
-                'profile': profile, 'username': username, 'time': time, 'date': date, 'position': position,
-                'tax': tax, 'authorized': authorized, 'date_insert': date_insert, 'time_insert': time_insert
+                'id': key, 'Name': name, 'Tag': tag, 'Product': product, 'Email': email, 'Other': other,
+                'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
+                'Profile': profile, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
+                'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,
+                'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
             }
             lst.append(group)
         return lst
 
-    def requestDemo(self):
-        ref = db.child(self.transaction).get()
+    def requestDemo(self, transaction):
+        ref = db.child(transaction).get()
         lst = []
         products = []
         for i in ref.each()[1:]:
@@ -131,21 +134,51 @@ def requestDemo():
     return render_template('test_api/test/request_demo.html')
 
 
+@app.route('/')
 @app.route('/information')
 def page_info():
-    return render_template('test_api/test/information.html')
+    return render_template('test_api/test/testTable.html')
 
 
-@app.route('/')
-@app.route('/return_information')
+@app.route('/return_information', methods=['GET', 'POST'])
 def return_information():
     tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
            'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
            'RC010', 'RA010', 'RB010']
     if request.method == 'GET':
-        transaction = FirebaseAPI('RestCustomer').information()
-        status = {'transaction': transaction, 'status': 'success', 'tags': tag}
+        transaction = FirebaseAPI(db)
+        marketing_infomation = transaction.information('RestCustomer')
+        len_transaction = len(marketing_infomation)
+        status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
+                  'amount_info': len_transaction}
         return jsonify(status)
+    elif request.method == 'POST':
+        post_data = request.get_json()
+        db.child('RestCustomer').push(post_data)
+        print(post_data)
+        return jsonify(post_data)
+
+
+@app.route('/excel_information', methods=['POST'])
+def excel_information():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        button_event = ButtonEvent(loop=post_data, db=db, tag_insert=None)
+        print(post_data)
+        button_event.button_excel_information()
+        return send_from_directory('static/excel', 'Customers.xlsx')
+
+
+@app.route('/sort_information', methods=['POST'])
+def sort_information():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        tags = post_data['tags']
+        key = post_data['key']
+        for i in key:
+            db.child('RestCustomer').child(i).update({'Tag': tags})
+        print(post_data)
+        return jsonify(post_data)
 
 
 @app.route('/return_information/<id>', methods=['PUT', 'DELETE'])
@@ -155,9 +188,11 @@ def return_information_update(id):
         post_data = request.get_json()
         print(id)
         print(post_data)
+        db.child('RestCustomer').child(id).update(post_data)
         response_object['message'] = 'Data updated!'
     if request.method == 'DELETE':
         print(id)
+        db.child('RestCustomer').child(id).remove()
     return jsonify(response_object)
 
 
@@ -167,8 +202,8 @@ def demo():
             'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
             'RC010', 'RA010', 'RB010']
     if request.method == 'GET':
-        transaction = FirebaseAPI('requestDemo').requestDemo()[0]
-        products = FirebaseAPI('requestDemo').requestDemo()[1]
+        transaction = FirebaseAPI(db).requestDemo('requestDemo')[0]
+        products = FirebaseAPI(db).requestDemo('requestDemo')[1]
         construction = [x for x in products if 'Mango ERP (Real Estate)' in x]
         print(construction)
         status = {'transaction': transaction, 'status': 'success', 'tags': tags}
@@ -181,7 +216,7 @@ def info():
            'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
            'RC010', 'RA010', 'RB010']
     if request.method == 'GET':
-        transaction = FirebaseAPI('RestCustomer').information()
+        transaction = FirebaseAPI(db).information('requestDemo')
         status = {'transaction': transaction, 'status': 'success', 'tags': tag}
         print(status)
         return jsonify(status)

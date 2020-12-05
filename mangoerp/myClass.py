@@ -448,6 +448,67 @@ class TagChart:
         return data
 
 
+class FirebaseAPI:
+    def __init__(self, db):
+        self.db = db
+
+    def information(self, transaction):
+        lst = []
+        ref = self.db.child(transaction).get()
+        for i in ref.each()[1:]:
+            key = i.key()
+            name = i.val()['Name']
+            tag = i.val()['Tag']
+            profile = i.val()['Profile']
+            channel = i.val()['Channel']
+            company = i.val()['Company']
+            other = i.val()['Other']
+            email = i.val()['Email']
+            liff = i.val()['EmailLiff']
+            position = i.val()['Position']
+            tax = i.val()['Tax']
+            tel = i.val()['Tel']
+            time = i.val()['Time']
+            date = i.val()['Date']
+            message = i.val()['Message']
+            authorized = i.val()['Authorized']
+            date_insert = i.val()['DateInsert']
+            time_insert = i.val()['TimeInsert']
+            username = i.val()['Username']
+            product = i.val()['Product']
+            group = {
+                'id': key, 'Name': name, 'Tag': tag, 'Product': product, 'Email': email, 'Other': other,
+                'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
+                'Profile': profile, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
+                'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,
+                'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
+            }
+            lst.append(group)
+        return lst
+
+    def requestDemo(self, transaction):
+        ref = self.db.child(transaction).get()
+        lst = []
+        products = []
+        for i in ref.each()[1:]:
+            key = i.key()
+            date = i.val()['Date']
+            time = i.val()['Time']
+            tag = i.val()['tag']
+            event = i.val()['event']
+            company = event['company']
+            email = event['email']
+            name = event['fname']
+            product = event['product']
+            products.append(product)
+            message = event['message']
+            tel = event['tel']
+            group = {'id': key, 'name': name, 'product': product, 'company': company, 'email': email,
+                     'message': message, 'tel': tel, 'date_time': f'{date} {time}', 'tag': tag}
+            lst.append(group)
+        return lst, products
+
+
 class FirebaseCustomer:
     def __init__(self, db):
         self.db = db

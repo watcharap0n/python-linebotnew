@@ -10,7 +10,7 @@ from numpy import random
 from model_image import *
 from PIL import Image
 from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer, \
-    WebScraping, TagChart, pd
+    WebScraping, TagChart, pd, FirebaseAPI
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
@@ -555,6 +555,72 @@ def marketing_import():
         return redirect(url_for('marketing_import'))
 
 
+@app.route('/information_v2')
+def page_info():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    return render_template('customers_new/table/informationV2.html')
+
+
+@app.route('/json_information', methods=['GET', 'POST'])
+def return_information():
+    tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
+           'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
+           'RC010', 'RA010', 'RB010']
+    if request.method == 'GET':
+        transaction = FirebaseAPI(db=db2)
+        fire = FirebaseNewCustomer(db=db2)
+        marketing_infomation = transaction.information('RestCustomer')
+        len_transaction = len(marketing_infomation)
+        len_import = len(fire.liffCustomer())
+        len_demo = len(fire.demoCustomer())
+        status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
+                  'amount_info': len_transaction, 'amount_import': len_import, 'amount_demo': len_demo}
+        return jsonify(status)
+    elif request.method == 'POST':
+        post_data = request.get_json()
+        db2.child('RestCustomer').push(post_data)
+        print(post_data)
+        return jsonify(post_data)
+
+
+@app.route('/json_information/<id>', methods=['PUT', 'DELETE'])
+def return_information_update(id):
+    response_object = {'status': 'success'}
+    if request.method == 'PUT':
+        post_data = request.get_json()
+        print(id)
+        print(post_data)
+        db2.child('RestCustomer').child(id).update(post_data)
+        response_object['message'] = 'Data updated!'
+    if request.method == 'DELETE':
+        print(id)
+        db2.child('RestCustomer').child(id).remove()
+    return jsonify(response_object)
+
+
+@app.route('/excel_information', methods=['POST'])
+def excel_information():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        button_event = ButtonEvent(loop=post_data, db=db2, tag_insert=None)
+        print(post_data)
+        button_event.button_excel_information()
+        return send_from_directory('static/excel', 'Customers.xlsx')
+
+
+@app.route('/tag_information', methods=['POST'])
+def sort_information():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        tags = post_data['tags']
+        key = post_data['key']
+        for i in key:
+            db2.child('RestCustomer').child(i).update({'Tag': tags})
+        print(post_data)
+        return jsonify(post_data)
+
+
 @app.route('/marketing_information', methods=['GET', 'POST'])
 def marketing_information():
     tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
@@ -805,6 +871,10 @@ def marketing_information_update(id):
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         return redirect(url_for('marketing_information'))
+
+
+
+
 
 
 @app.route('/excel_all/<string:excel>', methods=['GET', 'POST'])
