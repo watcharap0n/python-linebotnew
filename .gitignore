@@ -4,6 +4,7 @@ log
 model/__pycache__/
 node_modules
 package-lock.json
+.idea
 .DS_Store
 .idea/flask edu.iml
 .idea/jsLibraryMappings.xml

@@ -22,7 +22,6 @@
           >
 
             <template v-slot:item.Tag="{ item }">
-
               <div v-for="tag in item.Tag">
                 <div v-if="tag">
                   <div>
@@ -114,7 +113,7 @@
                     small
                     color="success"
                     @click="sortIndex(selected)"
-                ><i class="far fa-tags"></i>Index Sorting
+                ><i class="fas fa-user-tag"></i>Index Sorting
                 </v-btn>
                 {#                <v-switch#}
                 {#                    v-model="singleSelect"#}
