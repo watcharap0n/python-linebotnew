@@ -3,11 +3,37 @@
 
   <br><br><br>
   <div id="app">
-    <div v-if="!spinTable">
-      <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
-    </div>
-    <div v-else>
-      <div class="container-fluid">
+    <div>
+      <div class="col-lg-8">
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fa fa-bar-chart"></i> Revenue Chart
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-8 my-auto">
+                <canvas ref="myChart" width="100" height="50"></canvas>
+              </div>
+              <div class="col-sm-4 text-center my-auto">
+                <div class="h4 mb-0 text-primary">[[amountInfo]]</div>
+                <div class="small text-muted">ข้อมูลลูกค้า</div>
+                <hr>
+                <div class="h4 mb-0 text-warning">[[amountImport]]</div>
+                <div class="small text-muted">นำเข้า</div>
+                <hr>
+                <div class="h4 mb-0 text-success">[[amountDemo]]</div>
+                <div class="small text-muted">นัดDemo</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
+      </div>
+
+      <div v-if="!spinTable">
+        <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
+      </div>
+      <div class="container-fluid" v-else>
         <v-app id="inspire">
 
           <v-data-table
@@ -74,13 +100,13 @@
 
                   <v-tab>
                     <a href="/getDemo">
-                    <v-badge
-                        class="text-white"
-                        :content="amountDemo"
-                        color="blue"
-                    >
-                      นัดDemo
-                    </v-badge>
+                      <v-badge
+                          class="text-white"
+                          :content="amountDemo"
+                          color="blue"
+                      >
+                        นัดDemo
+                      </v-badge>
                     </a>
                   </v-tab>
                 </v-tabs>
@@ -347,7 +373,9 @@
               dialog: false,
               dialogDelete: false,
               spinTable: true,
+              spinChart: true,
               search: '',
+              name: 'kane',
               headers: [
                   {
                       text: 'Tag',
@@ -371,6 +399,7 @@
               ],
               transaction: [],
               tags: [],
+              testAmount: [12, 34, 55],
               amountInfo: '',
               amountDemo: '',
               amountImport: '',
@@ -418,14 +447,16 @@
                   Channel: '',
                   Message: '',
               },
+              dataSetData: [],
+              reqInfo: '',
+              reqImport: '',
+              reqDemo: '',
           }),
-
           computed: {
               formTitle() {
                   return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
               },
           },
-
           watch: {
               dialog(val) {
                   val || this.close()
@@ -433,13 +464,78 @@
               dialogDelete(val) {
                   val || this.closeDelete()
               },
-              transaction: 'showData'
+              transaction: 'showData',
           },
-
           created() {
               this.createInformation()
           },
+          mounted: async function () {
+              {#this.chartJs()#}
+              this.dataSetData = await this.getListData();
+              console.log("mounted Chart", this.dataSetData);
+              this.getDataSet();
+              this.buildChart(this.dataSetData);
+          },
           methods: {
+              getDataSet: function () {
+                  console.log("get data sets");
+                  console.log(this.dataSetData);
+                  this.dataSetData.forEach(data => {
+                      console.log('data', data)
+                  })
+                      this.reqInfo = this.dataSetData.map(function (chartData) {
+                          console.log('chartData', chartData);
+                          return chartData.reqInfo;
+                      });
+                      this.reqImport = this.dataSetData.map(function (chartData) {
+                           console.log('chartData', chartData);
+                          return chartData.reqImport;
+                     });
+                     this.reqDemo = this.dataSetData.map(function (chartData) {
+                         console.log('chartData', chartData);
+                          return chartData.reqDemo;
+                      });
+              },
+              getListData: async function () {
+                  const {data} = await axios.get(
+                      "/json_information"
+                  );
+                  console.log('getListData', data.reqAmount)
+                  return data.reqAmount;
+              },
+              buildChart: function () {
+                  console.log(this.reqInfo)
+                  new Chart(this.$refs.myChart, {
+                      type: "bar",
+                      data: {
+                          labels: ['Red', 'Blue', 'Yellow'],
+                          datasets: [{
+                              label: 'Product',
+                              data: [this.reqInfo, this.reqImport, this.reqDemo],
+                              backgroundColor: [
+                                  'rgba(255, 99, 132, 0.2)',
+                                  'rgba(54, 162, 235, 0.2)',
+                                  'rgba(255, 206, 86, 0.2)',
+                              ],
+                              borderColor: [
+                                  'rgba(255, 99, 132, 1)',
+                                  'rgba(54, 162, 235, 1)',
+                                  'rgba(255, 206, 86, 1)',
+                              ],
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          scales: {
+                              yAxes: [{
+                                  ticks: {
+                                      beginAtZero: true
+                                  }
+                              }]
+                          }
+                      }
+                  });
+              },
               createInformation() {
                   this.spinTable = false
                   const path = '/json_information';
@@ -452,9 +548,6 @@
                           let amountDemo = this.amountDemo = res.data.amount_demo
                           console.log('tags', tags)
                           console.log('transaction: ', response)
-                          console.log(amountInfo)
-                          console.log(amountImport)
-                          console.log(amountDemo)
                       })
                       .catch((error) => {
                           console.error(error);
@@ -486,6 +579,11 @@
               showData() { // condition
                   if (this.transaction) {
                       this.spinTable = true
+                  }
+              },
+              showChart() {
+                  if (this.amountInfo) {
+                      this.spinChart = true
                   }
               },
               LoadDataInfo() { //
@@ -611,6 +709,10 @@
       })
 
   </script>
+
+
+
+
   <style>
       #spinner {
           position: fixed;
