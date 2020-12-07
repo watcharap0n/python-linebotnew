@@ -448,9 +448,10 @@
                   Message: '',
               },
               dataSetData: [],
-              reqInfo: '',
-              reqImport: '',
-              reqDemo: '',
+              amountCon: '',
+              amountReal: '',
+              amountPlan: '',
+              amountOther: '',
           }),
           computed: {
               formTitle() {
@@ -483,44 +484,52 @@
                   this.dataSetData.forEach(data => {
                       console.log('data', data)
                   })
-                      this.reqInfo = this.dataSetData.map(function (chartData) {
-                          console.log('chartData', chartData);
-                          return chartData.reqInfo;
-                      });
-                      this.reqImport = this.dataSetData.map(function (chartData) {
-                           console.log('chartData', chartData);
-                          return chartData.reqImport;
-                     });
-                     this.reqDemo = this.dataSetData.map(function (chartData) {
-                         console.log('chartData', chartData);
-                          return chartData.reqDemo;
-                      });
+                  this.amountCon = this.dataSetData.map(function (chartData) {
+                      console.log('chartData', chartData);
+                      return chartData.con;
+                  });
+                  this.amountReal = this.dataSetData.map(function (chartData) {
+                      console.log('chartData', chartData);
+                      return chartData.real;
+                  });
+                  this.amountPlan = this.dataSetData.map(function (chartData) {
+                      console.log('chartData', chartData);
+                      return chartData.planing;
+                  });
+                  this.amountOther = this.dataSetData.map(function (chartData) {
+                      console.log('chartData', chartData);
+                      return chartData.other;
+                  });
               },
               getListData: async function () {
                   const {data} = await axios.get(
                       "/json_information"
                   );
-                  console.log('getListData', data.reqAmount)
-                  return data.reqAmount;
+                  console.log('getListData', data.amountProduct)
+                  return data.amountProduct;
               },
               buildChart: function () {
                   console.log(this.reqInfo)
+                  Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+                  Chart.defaults.global.defaultFontColor = '#292b2c';
                   new Chart(this.$refs.myChart, {
                       type: "bar",
                       data: {
-                          labels: ['Red', 'Blue', 'Yellow'],
+                          labels: ['Construction', 'RealEstate', 'Planning', 'Other'],
                           datasets: [{
                               label: 'Product',
-                              data: [this.reqInfo, this.reqImport, this.reqDemo],
+                              data: [this.amountCon, this.amountReal, this.amountPlan, this.amountOther],
                               backgroundColor: [
-                                  'rgba(255, 99, 132, 0.2)',
-                                  'rgba(54, 162, 235, 0.2)',
-                                  'rgba(255, 206, 86, 0.2)',
+                                  'rgba(254,39,47,1)',
+                                  'rgba(251,220,47,1)',
+                                  'rgba(2,117,216,1)',
+                                  'rgba(139,242,47,1)',
                               ],
                               borderColor: [
-                                  'rgba(255, 99, 132, 1)',
-                                  'rgba(54, 162, 235, 1)',
-                                  'rgba(255, 206, 86, 1)',
+                                  'rgba(254,39,47,1)',
+                                  'rgba(251,220,47,1)',
+                                  'rgba(2,117,216,1)',
+                                  'rgba(139,242,47, 1)',
                               ],
                               borderWidth: 1
                           }]

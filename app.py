@@ -574,9 +574,13 @@ def return_information():
         len_transaction = len(marketing_infomation)
         len_import = len(fire.liffCustomer())
         len_demo = len(fire.demoCustomer())
+        REAL = fire.lenProduct('RestCustomer', 'RealEstate')
+        CON = fire.lenProduct('RestCustomer', 'Construction')
+        PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
+        OTHER = fire.lenProduct('RestCustomer', 'Other')
         status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
-                  'reqAmount': [{'reqInfo': str(len_transaction), 'reqImport': str(len_import), 'reqDemo':  str(len_demo)}]}
+                  'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing':  len(PLAN), 'other': len(OTHER)}]}
         return jsonify(status)
     elif request.method == 'POST':
         post_data = request.get_json()
