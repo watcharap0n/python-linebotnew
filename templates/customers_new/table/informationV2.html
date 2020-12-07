@@ -12,6 +12,9 @@
           <div class="card-body">
             <div class="row">
               <div class="col-sm-8 my-auto">
+                <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
+                  <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
+                </div>
                 <canvas ref="myChart" width="100" height="50"></canvas>
               </div>
               <div class="col-sm-4 text-center my-auto">
@@ -29,7 +32,6 @@
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
       </div>
-
       <div v-if="!spinTable">
         <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>
       </div>
@@ -46,7 +48,6 @@
               sort-by="calories"
               class="elevation-1"
           >
-
             <template v-slot:item.Tag="{ item }">
               <div v-for="tag in item.Tag">
                 <div v-if="tag">
@@ -466,12 +467,12 @@
                   val || this.closeDelete()
               },
               transaction: 'showData',
+              dataSetData: 'showChart'
           },
           created() {
               this.createInformation()
           },
           mounted: async function () {
-              {#this.chartJs()#}
               this.dataSetData = await this.getListData();
               console.log("mounted Chart", this.dataSetData);
               this.getDataSet();
@@ -482,57 +483,53 @@
                   console.log("get data sets");
                   console.log(this.dataSetData);
                   this.dataSetData.forEach(data => {
-                      console.log('data', data)
                   })
                   this.amountCon = this.dataSetData.map(function (chartData) {
-                      console.log('chartData', chartData);
                       return chartData.con;
                   });
                   this.amountReal = this.dataSetData.map(function (chartData) {
-                      console.log('chartData', chartData);
                       return chartData.real;
                   });
                   this.amountPlan = this.dataSetData.map(function (chartData) {
-                      console.log('chartData', chartData);
                       return chartData.planing;
                   });
                   this.amountOther = this.dataSetData.map(function (chartData) {
-                      console.log('chartData', chartData);
                       return chartData.other;
                   });
               },
               getListData: async function () {
+                  this.spinChart = false
                   const {data} = await axios.get(
                       "/json_information"
                   );
-                  console.log('getListData', data.amountProduct)
                   return data.amountProduct;
               },
-              buildChart: function () {
-                  console.log(this.reqInfo)
+              buildChart() {
                   Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
                   Chart.defaults.global.defaultFontColor = '#292b2c';
                   new Chart(this.$refs.myChart, {
                       type: "bar",
                       data: {
                           labels: ['Construction', 'RealEstate', 'Planning', 'Other'],
-                          datasets: [{
-                              label: 'Product',
-                              data: [this.amountCon, this.amountReal, this.amountPlan, this.amountOther],
-                              backgroundColor: [
-                                  'rgba(254,39,47,1)',
-                                  'rgba(251,220,47,1)',
-                                  'rgba(2,117,216,1)',
-                                  'rgba(139,242,47,1)',
-                              ],
-                              borderColor: [
-                                  'rgba(254,39,47,1)',
-                                  'rgba(251,220,47,1)',
-                                  'rgba(2,117,216,1)',
-                                  'rgba(139,242,47, 1)',
-                              ],
-                              borderWidth: 1
-                          }]
+                          datasets: [
+                              {
+                                  label: 'Product',
+                                  data: [this.amountCon, this.amountReal, this.amountPlan, this.amountOther],
+                                  backgroundColor: [
+                                      'rgba(254,39,47,1)',
+                                      'rgba(251,220,47,1)',
+                                      'rgba(2,117,216,1)',
+                                      'rgba(139,242,47,1)',
+                                  ],
+                                  borderColor: [
+                                      'rgba(254,39,47,1)',
+                                      'rgba(251,220,47,1)',
+                                      'rgba(2,117,216,1)',
+                                      'rgba(139,242,47, 1)',
+                                  ],
+                                  borderWidth: 1
+                              }
+                          ]
                       },
                       options: {
                           scales: {
@@ -591,7 +588,7 @@
                   }
               },
               showChart() {
-                  if (this.amountInfo) {
+                  if (this.dataSetData) {
                       this.spinChart = true
                   }
               },
@@ -716,7 +713,6 @@
           },
           delimiters: ["[[", "]]"],
       })
-
   </script>
 
 
@@ -727,6 +723,9 @@
           position: fixed;
           top: 50%;
           left: 50%;
+          color: darkblue;
+      }
+       #spinChar {
           color: darkblue;
       }
 
