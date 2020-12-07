@@ -576,7 +576,7 @@ def return_information():
         len_demo = len(fire.demoCustomer())
         status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
-                  'amountProduct': [{'reqInfo': str(len_transaction), 'reqImport': str(len_import), 'reqDemo':  str(len_demo)}]}
+                  'reqAmount': [{'reqInfo': str(len_transaction), 'reqImport': str(len_import), 'reqDemo':  str(len_demo)}]}
         return jsonify(status)
     elif request.method == 'POST':
         post_data = request.get_json()
