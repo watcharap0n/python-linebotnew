@@ -557,7 +557,7 @@ def marketing_import():
 
 @app.route('/vuetify')
 def vuetifyTest():
-    return render_template('customers_new/table/informationV2.html')
+    return render_template('customers_new/table/vuetify_test.html')
 
 
 @app.route('/information_v2')
@@ -600,9 +600,27 @@ def return_information_update(id):
     if request.method == 'PUT':
         post_data = request.get_json()
         print(id)
-        print(post_data)
-        db2.child('RestCustomer').child(id).update(post_data)
-        response_object['message'] = 'Data updated!'
+        d = dict(post_data)
+        if d['tag']:
+            group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
+                     'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
+                     'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
+                     'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
+                     'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
+                     'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
+                     'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': d['tag']}
+            db2.child('RestCustomer').child(id).update(group)
+            response_object['message'] = 'Data updated!'
+        else:
+            group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
+                     'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
+                     'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
+                     'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
+                     'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
+                     'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
+                     'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': ['']}
+            db2.child('RestCustomer').child(id).update(group)
+            response_object['message'] = 'Data updated!'
     if request.method == 'DELETE':
         print(id)
         db2.child('RestCustomer').child(id).remove()
@@ -881,10 +899,6 @@ def marketing_information_update(id):
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         return redirect(url_for('marketing_information'))
-
-
-
-
 
 
 @app.route('/excel_all/<string:excel>', methods=['GET', 'POST'])

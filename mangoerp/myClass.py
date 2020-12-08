@@ -478,7 +478,7 @@ class FirebaseAPI:
             username = i.val()['Username']
             product = i.val()['Product']
             group = {
-                'id': key, 'Name': name, 'Tag': tag, 'Product': product, 'Email': email, 'Other': other,
+                'id': key, 'Name': name, 'tag': tag, 'Product': product, 'Email': email, 'Other': other,
                 'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
                 'Profile': profile, 'Picture': picture, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
                 'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,

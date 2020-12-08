@@ -48,8 +48,8 @@
               sort-by="calories"
               class="elevation-1"
           >
-            <template v-slot:item.Tag="{ item }">
-              <div v-for="tag in item.Tag">
+            <template v-slot:item.tag="{ item }">
+              <div v-for="tag in item.tag">
                 <div v-if="tag">
                   <v-chip
                       class="ma-2"
@@ -319,7 +319,7 @@
                               md="4"
                           >
                             <v-autocomplete
-                                v-model="editedItem.Tag"
+                                v-model="editedItem.tag"
                                 :items="tags"
                                 outlined
                                 dense
