@@ -557,7 +557,7 @@ def marketing_import():
 
 @app.route('/vuetify')
 def vuetifyTest():
-    return render_template('customers_new/table/vuetify_test.html')
+    return render_template('customers_new/table/informationV2.html')
 
 
 @app.route('/information_v2')
