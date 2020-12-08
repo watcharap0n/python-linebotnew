@@ -555,6 +555,11 @@ def marketing_import():
         return redirect(url_for('marketing_import'))
 
 
+@app.route('/vuetify')
+def vuetifyTest():
+    return render_template('customers_new/table/vuetify_test.html')
+
+
 @app.route('/information_v2')
 def page_info():
     if not g.user:
