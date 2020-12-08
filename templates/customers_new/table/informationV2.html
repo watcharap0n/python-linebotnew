@@ -51,20 +51,24 @@
             <template v-slot:item.Tag="{ item }">
               <div v-for="tag in item.Tag">
                 <div v-if="tag">
-                  <div>
-                    <v-chip
-                        class="ma-2"
-                        color="pink"
-                        label
-                        small
-                        text-color="white"
-                    >
-                      <v-icon>
-                        mdi-label
-                      </v-icon>
-                      [[tag]]
-                    </v-chip>
-                  </div>
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-chip
+                          class="ma-2"
+                          color="pink"
+                          v-bind="attrs"
+                          v-on="on"
+                          label
+                          small
+                          text-color="white"
+                      >
+                        <v-icon>
+                          mdi-label
+                        </v-icon>
+                      </v-chip>
+                    </template>
+                    <span>[[tag]]</span>
+                  </v-tooltip>
                 </div>
                 <div v-else>
 
@@ -122,26 +126,39 @@
                     vertical
                 ></v-divider>
 
-                <button type="submit">
-                  <v-btn
-                      elevation="3"
-                      medium
-                      small
-                      color="success"
-                      @click="excelIndex(selected)"
-                  ><i class="far fa-file-excel"></i>Index Excel
-                  </v-btn>
-                </button>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        elevation="3"
+                        medium
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                        color="success"
+                        @click="excelIndex(selected)"
+                    ><i class="far fa-file-excel"></i>
+                    </v-btn>
+                  </template>
+                  <span>Index Excel</span>
+                </v-tooltip>
 
-                <v-btn
-                    style="margin-left: 10px"
-                    elevation="3"
-                    medium
-                    small
-                    color="success"
-                    @click="sortIndex(selected)"
-                ><i class="fas fa-user-tag"></i>Index Sorting
-                </v-btn>
+
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        style="margin-left: 10px"
+                        elevation="3"
+                        medium
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                        color="success"
+                        @click="sortIndex(selected)"
+                    ><i class="fas fa-user-tag"></i>
+                    </v-btn>
+                  </template>
+                  <span>Index Sorting</span>
+                </v-tooltip>
                 {#                <v-switch#}
                 {#                    v-model="singleSelect"#}
                 {#                    label="Single select"#}
@@ -725,7 +742,8 @@
           left: 50%;
           color: darkblue;
       }
-       #spinChar {
+
+      #spinChar {
           color: darkblue;
       }
 

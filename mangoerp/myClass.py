@@ -465,6 +465,7 @@ class FirebaseAPI:
             other = i.val()['Other']
             email = i.val()['Email']
             liff = i.val()['EmailLiff']
+            picture = i.val()['Picture']
             position = i.val()['Position']
             tax = i.val()['Tax']
             tel = i.val()['Tel']
@@ -479,12 +480,12 @@ class FirebaseAPI:
             group = {
                 'id': key, 'Name': name, 'Tag': tag, 'Product': product, 'Email': email, 'Other': other,
                 'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
-                'Profile': profile, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
+                'Profile': profile, 'Picture': picture, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
                 'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,
                 'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
             }
             lst.append(group)
-        return lst
+        return lst[::-1]
 
     def requestDemo(self, transaction):
         ref = self.db.child(transaction).get()
