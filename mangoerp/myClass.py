@@ -297,7 +297,8 @@ class TagChart:
         cdate = contract.val()['Date']
         ctime = contract.val()['Time']
         tag = contract.val()['tag']
-        group = {'Name': contact_name, 'Product': contact_subject, 'Company': contact_name_company, 'Tel': contact_tel, 'Email': contact_email,
+        group = {'Name': contact_name, 'Product': contact_subject, 'Company': contact_name_company, 'Tel': contact_tel,
+                 'Email': contact_email,
                  'Message': contact_message, 'Date': cdate, 'Time': ctime, 'Tag': tag, 'Channel': 'ติดต่อเรา'}
         return group
 
@@ -452,6 +453,17 @@ class FirebaseAPI:
     def __init__(self, db):
         self.db = db
 
+    def groupToInsert(self, d, value):
+        group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
+                 'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
+                 'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
+                 'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
+                 'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
+                 'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
+                 'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': value}
+        return group
+
+
     def information(self, transaction):
         lst = []
         ref = self.db.child(transaction).get()
@@ -480,7 +492,8 @@ class FirebaseAPI:
             group = {
                 'id': key, 'Name': name, 'tag': tag, 'Product': product, 'Email': email, 'Other': other,
                 'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
-                'Profile': profile, 'Picture': picture, 'Username': username, 'Time': time, 'Date': date, 'DateInsert': date_insert,
+                'Profile': profile, 'Picture': picture, 'Username': username, 'Time': time, 'Date': date,
+                'DateInsert': date_insert,
                 'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,
                 'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
             }

@@ -601,24 +601,13 @@ def return_information_update(id):
         post_data = request.get_json()
         print(id)
         d = dict(post_data)
+        fire = FirebaseAPI(None)
         if d['tag']:
-            group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
-                     'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
-                     'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
-                     'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
-                     'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
-                     'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
-                     'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': d['tag']}
+            group = fire.groupToInsert(d, d['tag'])
             db2.child('RestCustomer').child(id).update(group)
             response_object['message'] = 'Data updated!'
         else:
-            group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
-                     'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
-                     'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
-                     'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
-                     'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
-                     'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
-                     'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': ['']}
+            group = fire.groupToInsert(d, [''])
             db2.child('RestCustomer').child(id).update(group)
             response_object['message'] = 'Data updated!'
     if request.method == 'DELETE':
