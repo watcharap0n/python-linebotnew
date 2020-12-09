@@ -56,6 +56,8 @@
                       color="pink"
                       label
                       small
+                      close
+                      @click:close="chipRemove(item.tag, item.id)"
                       text-color="white"
                   >
                     <v-icon>
@@ -415,11 +417,7 @@
               search: '',
               name: 'kane',
               headers: [
-                  {
-                      text: 'Tag',
-                      align: 'start',
-                      value: 'tag',
-                  },
+                  {text: 'Tag', value: 'tag'},
                   {text: 'Name', value: 'Name'},
                   {text: 'Product', value: 'Product'},
                   {text: 'Other', value: 'Other'},
@@ -596,6 +594,10 @@
                           console.error(error);
                       });
               },
+              chipRemove(remove, id){
+                  let chip = remove.splice(remove.indexOf(remove), 1)
+                  this.updateChip(chip, id)
+              },
               excelIndex(selected) {
                   key = []
                   selected.forEach((data) => {
@@ -707,6 +709,18 @@
                           this.createInformation();
                       });
               },
+
+              updateChip(chip, id) {
+                const path = `/json_chip/${id}`;
+                axios.put(path, chip)
+                  .then(() => {
+                      console.log('success')
+                  })
+                  .catch((error) => {
+                      console.error(error);
+                  })
+              },
+
               updateData(payload, id) {
                   const path = `/json_information/${id}`;
                   axios.put(path, payload)

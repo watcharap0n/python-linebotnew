@@ -13,14 +13,19 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     db = firebase.database()
 
 
-
-d = {'Authorized': '123', 'Channel': 'LINE', 'Company': 'หจก.ยูงทองการโยธา', 'Date': '27-11-2020', 'DateInsert': '27-11-2020', 'Email': 'blacfatman101@gmail.com', 'EmailLiff': 'blacfatman101@gmail.com ', 'Message': 'None', 'Name': 'อมรเทพ', 'Other': '', 'Picture': 'https://profile.line-scdn.net/0hcExnuSbmPGpFFxW7u7ZDPXlSMgcyOToiPXZ7CmASN1w_Iy5vcCEmWGlFZFtpJH87fCIgDGQQYA9t', 'Position': 'วิศวกร', 'Product': 'แบ่งชำระ เบา เบา', 'Profile': 'Amornthep Riyaphan', 'Tax': 'test1', 'Tel': '0822970797', 'Time': '3:8:11', 'TimeInsert': '9:1:49', 'Username': 'tongta', 'datetime': '27-11-2020 3:8:11', 'datetime_insert': '27-11-2020 9:1:49', 'id': '-MN6TcOeSDhCZNuq9byO', 'tag': ['CJ010']}
-
-print(d['Authorized'])
-
-group = {'Authorized': d['Authorized'], 'Channel': d['Channel'], 'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'], 'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'], 'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'], 'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'], 'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'], 'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': d['tag']}
-
-
+def popChip(transaction, id, tag, value):
+    ref = db.child(transaction).child(id).get().val()[tag]
+    x = value
+    txt = ''
+    y = txt.join(x)
+    count = 0
+    for i in ref:
+        toCount = ref[count]
+        if y == toCount:
+            ref.pop(count)
+        count += 1
+    final = db.child(transaction).child(id).update({'Tag': ref})
+    return print(final)
 # ref = db.child('requestDemo').get()
 # lst = []
 # products = []
@@ -88,7 +93,6 @@ group = {'Authorized': d['Authorized'], 'Channel': d['Channel'], 'Company': d['C
 #                    'product': contact_subject, 'tel': contact_tel, 'date_time': f'{date} {time}'}
 #     lst.append(apiContract)
 # print(lst)
-
 
 
 # print(test)

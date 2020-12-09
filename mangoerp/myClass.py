@@ -453,6 +453,20 @@ class FirebaseAPI:
     def __init__(self, db):
         self.db = db
 
+    def popChip(self, transaction, id, tag, value):
+        ref = self.db.child(transaction).child(id).get().val()[tag]
+        x = value
+        txt = ''
+        y = txt.join(x)
+        count = 0
+        for i in ref:
+            toCount = ref[count]
+            if y == toCount:
+                ref.pop(count)
+            count += 1
+        final = self.db.child(transaction).child(id).update({'Tag': ref})
+        return print(final)
+
     def groupToInsert(self, d, value):
         group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
                  'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
@@ -462,7 +476,6 @@ class FirebaseAPI:
                  'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
                  'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': value}
         return group
-
 
     def information(self, transaction):
         lst = []

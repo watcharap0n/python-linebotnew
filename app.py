@@ -611,8 +611,19 @@ def return_information_update(id):
             db2.child('RestCustomer').child(id).update(group)
             response_object['message'] = 'Data updated!'
     if request.method == 'DELETE':
-        print(id)
         db2.child('RestCustomer').child(id).remove()
+    return jsonify(response_object)
+
+
+@app.route('/json_chip/<id>', methods=['PUT'])
+def return_Chip(id):
+    response_object = {'status': 'success'}
+    if request.method == 'PUT':
+        post_data = request.get_json()
+        fire = FirebaseAPI(db2)
+        print(post_data)
+        print(id)
+        fire.popChip('RestCustomer', id, 'Tag', post_data)
     return jsonify(response_object)
 
 
