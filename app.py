@@ -555,7 +555,7 @@ def marketing_import():
         return redirect(url_for('marketing_import'))
 
 
-@app.route('/vuetify')
+@app.route('/vuetify', methods=['GET', 'POST'])
 def vuetifyTest():
     return render_template('customers_new/table/vuetify_test.html')
 
@@ -627,14 +627,50 @@ def return_Chip(id):
     return jsonify(response_object)
 
 
-@app.route('/excel_information', methods=['POST'])
+@app.route('/excel_information', methods=['GET', 'POST'])
 def excel_information():
     if request.method == 'POST':
         post_data = request.get_json()
-        button_event = ButtonEvent(loop=post_data, db=db2, tag_insert=None)
-        print(post_data)
-        button_event.button_excel_information()
+        print('post_data', post_data)
+        for ax_key in post_data:
+            print(ax_key)
+            time.sleep(1)
+            i = db2.child('RestCustomer').child(ax_key).get()
+            print(i)
+        xls = {'Name': 'name', 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel', 'Email': 'email',
+                     'EmailLiff': 'pEmail', 'Message': 'message', 'Profile': 'profile', 'Date': 'cDate', 'Time': 'cTime',
+                     'Picture': 'picture', 'Username': 'username', 'DateInsert': 'date', 'TimeInsert': 'time', 'Tag': 'tag',
+                     'Channel': 'channel'}
+        data = pd.DataFrame(xls)
+        datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
+        data.to_excel(datatoexcel, sheet_name='Sheet1')
+        datatoexcel.save()
         return send_from_directory('static/excel', 'Customers.xlsx')
+            # profile = i.val()['Profile']
+            # cTime = i.val()['Time']
+            # cDate = i.val()['Date']
+            # company = i.val()['Company']
+            # email = i.val()['Email']
+            # pEmail = i.val()['EmailLiff']
+            # message = i.val()['Message']
+            # picture = i.val()['Picture']
+            # product = i.val()['Product']
+            # other = i.val()['Other']
+            # tel = i.val()['Tel']
+            # tag = i.val()['Tag']
+            # name = i.val()['Name']
+            # channel = i.val()['Channel']
+            # username = i.val()['Username']
+            # date = i.val()['DateInsert']
+            # time = i.val()['TimeInsert']
+            # group = {'Name': name, 'Product': product, 'Other': other, 'Company': company, 'Tel': tel, 'Email': email,
+            #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
+            #          'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
+            #          'Channel': channel}
+            # print(group)
+        # button_event = ButtonEvent(loop=post_data, db=db2, tag_insert=None)
+        # button_event.button_excel_information()
+        # return send_from_directory('static/excel', 'Customers.xlsx')
 
 
 @app.route('/tag_information', methods=['POST'])

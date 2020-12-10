@@ -2,30 +2,70 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
 from numpy import random
+import firebase_admin # authen Firebase
+from firebase_admin import credentials, auth # authen Firebase
 import pyrebase
 import json
+from flask import Flask, request, abort, render_template, jsonify
 
-with open('model/config/database_new/firebase.json', encoding='utf8') as json_file:
+
+cred = credentials.Certificate("model/config/database_test/authen_firebase.json")
+firebase_auth = firebase_admin.initialize_app(cred)
+
+
+with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
     data = json.load(json_file)
     config = data['firebase']
     firebase = pyrebase.initialize_app(config)
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
+app = Flask(__name__)
 
-def popChip(transaction, id, tag, value):
-    ref = db.child(transaction).child(id).get().val()[tag]
-    x = value
-    txt = ''
-    y = txt.join(x)
-    count = 0
-    for i in ref:
-        toCount = ref[count]
-        if y == toCount:
-            ref.pop(count)
-        count += 1
-    final = db.child(transaction).child(id).update({'Tag': ref})
-    return print(final)
+
+@app.route('/signup', methods=['POST'])
+def register():
+    email = request.form['email']
+    pwd = request.form['password']
+    # userId = request.form['username']
+    try:
+        auth.create_user(email=email, password=pwd)
+        return jsonify({'signup': 'success'})
+    except:
+        return jsonify({'signup': 'error'})
+
+
+@app.route('/lg', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        print(request.form.to_dict())
+        user = pb.auth().s
+        print(user)
+        return jsonify({'login': 'success'})
+
+
+
+
+
+
+if __name__ == '__main__':
+    app.run(port=5005, debug=True)
+
+# def popChip(transaction, id, tag, value):
+#     ref = db.child(transaction).child(id).get().val()[tag]
+#     x = value
+#     txt = ''
+#     y = txt.join(x)
+#     count = 0
+#     for i in ref:
+#         toCount = ref[count]
+#         if y == toCount:
+#             ref.pop(count)
+#         count += 1
+#     final = db.child(transaction).child(id).update({'Tag': ref})
+#     return print(final)
 # ref = db.child('requestDemo').get()
 # lst = []
 # products = []
