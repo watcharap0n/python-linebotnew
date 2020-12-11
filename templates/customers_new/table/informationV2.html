@@ -36,7 +36,6 @@
       {#        <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>#}
       {#      </div>#}
       <div class="container-fluid">
-
         <v-app id="inspire">
           <v-data-table
               v-model="selected"
@@ -46,8 +45,7 @@
               :headers="headers"
               :items="transaction"
               sort-by="calories"
-              class="elevation-1"
-          >
+              class="elevation-1">
             <template v-slot:item.tag="{ item }">
               <div v-for="tag in item.tag">
                 <div v-if="tag">
@@ -75,13 +73,11 @@
               <v-toolbar>
                 <v-tabs
                     dark
-                    background-color="success"
-                >
+                    background-color="success">
                   <v-tab>
                     <v-badge
                         color="blue"
-                        :content="amountInfo"
-                    >
+                        :content="amountInfo">
                       ข้อมูลลูกค้า
                     </v-badge>
                   </v-tab>
@@ -121,9 +117,9 @@
                 >
                   MANGO ANYWHERE
                   <template v-slot:loader>
-                    <span class="custom-loader">
-                      <v-icon light>mdi-cached</v-icon>
-                    </span>
+                        <span class="custom-loader">
+                          <v-icon light>mdi-cached</v-icon>
+                        </span>
                   </template>
                 </v-btn>
                 <v-divider
@@ -131,30 +127,31 @@
                     inset
                     vertical
                 ></v-divider>
-
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        elevation="3"
-                        medium
-                        small
-                        :loading="!spinTable"
-                        :disabled="!spinTable"
-                        v-bind="attrs"
-                        v-on="on"
-                        color="success"
-                        @click="excelIndex(selected)"
-                    ><i class="far fa-file-excel"></i>
-                    </v-btn>
-                  </template>
-                  <span>Index Excel</span>
-                  <template v-slot:loader>
-                    <span class="custom-loader">
-                      <v-icon light>mdi-cached</v-icon>
-                    </span>
-                  </template>
-                </v-tooltip>
-
+                <v-form method="POST">
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          elevation="3"
+                          medium
+                          small
+                          :loading="!spinTable"
+                          :disabled="!spinTable"
+                          v-bind="attrs"
+                          v-on="on"
+                          color="success"
+                          type="submit"
+                          @click="excelIndex(selected)"
+                      ><i class="far fa-file-excel"></i>
+                      </v-btn>
+                    </template>
+                    <span>Index Excel</span>
+                    <template v-slot:loader>
+                        <span class="custom-loader">
+                          <v-icon light>mdi-cached</v-icon>
+                        </span>
+                    </template>
+                  </v-tooltip>
+                </v-form>
 
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
@@ -173,10 +170,10 @@
                     </v-btn>
                   </template>
                   <span>Index Sorting</span>
-                   <template v-slot:loader>
-                    <span class="custom-loader">
-                      <v-icon light>mdi-cached</v-icon>
-                    </span>
+                  <template v-slot:loader>
+                      <span class="custom-loader">
+                        <v-icon light>mdi-cached</v-icon>
+                      </span>
                   </template>
                 </v-tooltip>
                 {#                <v-switch#}
@@ -241,17 +238,22 @@
                             <v-text-field
                                 v-model="editedItem.Name"
                                 label="Name"
+                                outlined
                             ></v-text-field>
+
                           </v-col>
                           <v-col
                               cols="12"
                               sm="6"
                               md="4"
                           >
-                            <v-text-field
+                            <v-select
                                 v-model="editedItem.Product"
-                                label="Product"
-                            ></v-text-field>
+                                :items="productMango"
+                                 label="Product"
+                                outlined
+                                dense
+                            ></v-select>
                           </v-col>
                           <v-col
                               cols="12"
@@ -261,6 +263,8 @@
                             <v-text-field
                                 v-model="editedItem.Other"
                                 label="Other"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -271,6 +275,8 @@
                             <v-text-field
                                 v-model="editedItem.Company"
                                 label="Company"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -281,6 +287,8 @@
                             <v-text-field
                                 v-model="editedItem.Tel"
                                 label="Tel"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -291,6 +299,8 @@
                             <v-text-field
                                 v-model="editedItem.Email"
                                 label="Email"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -301,6 +311,8 @@
                             <v-text-field
                                 v-model="editedItem.Message"
                                 label="Message"
+                                outlined
+                                dens
                             ></v-text-field>
 
                           </v-col>
@@ -312,6 +324,7 @@
                             <v-text-field
                                 v-model="editedItem.Channel"
                                 label="Channel"
+                                outlined
                             ></v-text-field>
                           </v-col>
 
@@ -357,7 +370,8 @@
                 </v-dialog>
                 <v-dialog v-model="dialogDelete" max-width="500px">
                   <v-card>
-                    <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
+                    <v-card-title class="headline">Are you sure you want to delete this item?
+                    </v-card-title>
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
@@ -406,7 +420,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              value: [423, 446, 675, 510, 590, 610, 760],
+              productMango: ['Construction', 'RealEstate', 'Project Planning', 'Other'],
               singleSelect: false,
               selected: [],
               loading: false,
@@ -594,11 +608,12 @@
                           console.error(error);
                       });
               },
-              chipRemove(remove, id){
+              chipRemove(remove, id) {
                   let chip = remove.splice(remove.indexOf(remove), 1)
                   this.updateChip(chip, id)
               },
               excelIndex(selected) {
+                  console.log(selected)
                   key = []
                   selected.forEach((data) => {
                       key.push(data.id)
@@ -685,14 +700,11 @@
                   const path = `/excel_information`;
                   axios.post(path, id)
                       .then(() => {
-                          this.createInformation();
-                          this.showLog = 'Excel!';
-                          this.showMessage = true;
+                          console.log('success')
                       })
                       .catch((error) => {
                           // eslint-disable-next-line
                           console.error(error);
-                          this.createInformation();
                       });
               },
               SortPush(group) {
@@ -711,14 +723,14 @@
               },
 
               updateChip(chip, id) {
-                const path = `/json_chip/${id}`;
-                axios.put(path, chip)
-                  .then(() => {
-                      console.log('success')
-                  })
-                  .catch((error) => {
-                      console.error(error);
-                  })
+                  const path = `/json_chip/${id}`;
+                  axios.put(path, chip)
+                      .then(() => {
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      })
               },
 
               updateData(payload, id) {
@@ -766,6 +778,8 @@
           delimiters: ["[[", "]]"],
       })
   </script>
+
+
 
 
   <style>
