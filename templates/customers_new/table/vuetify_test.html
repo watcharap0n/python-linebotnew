@@ -127,7 +127,7 @@
                     inset
                     vertical
                 ></v-divider>
-                <form method="POST">
+                <v-form method="POST">
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
@@ -151,22 +151,7 @@
                         </span>
                     </template>
                   </v-tooltip>
-                </form>
-
-                <form method="POST" action="/excel_information">
-                  <v-btn class="mx-2"
-                         fab
-                         dark
-                         color="teal"
-                         type="submit"
-                         small
-                         @click="excelIndex(selected)"
-                  >
-                    <v-icon dark>
-                      mdi-format-list-bulleted-square
-                    </v-icon>
-                  </v-btn>
-                </form>
+                </v-form>
 
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
@@ -253,17 +238,22 @@
                             <v-text-field
                                 v-model="editedItem.Name"
                                 label="Name"
+                                outlined
                             ></v-text-field>
+
                           </v-col>
                           <v-col
                               cols="12"
                               sm="6"
                               md="4"
                           >
-                            <v-text-field
+                            <v-select
                                 v-model="editedItem.Product"
-                                label="Product"
-                            ></v-text-field>
+                                :items="productMango"
+                                 label="Product"
+                                outlined
+                                dense
+                            ></v-select>
                           </v-col>
                           <v-col
                               cols="12"
@@ -273,6 +263,8 @@
                             <v-text-field
                                 v-model="editedItem.Other"
                                 label="Other"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -283,6 +275,8 @@
                             <v-text-field
                                 v-model="editedItem.Company"
                                 label="Company"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -293,6 +287,8 @@
                             <v-text-field
                                 v-model="editedItem.Tel"
                                 label="Tel"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -303,6 +299,8 @@
                             <v-text-field
                                 v-model="editedItem.Email"
                                 label="Email"
+                                outlined
+                                dense
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -313,6 +311,8 @@
                             <v-text-field
                                 v-model="editedItem.Message"
                                 label="Message"
+                                outlined
+                                dens
                             ></v-text-field>
 
                           </v-col>
@@ -324,6 +324,7 @@
                             <v-text-field
                                 v-model="editedItem.Channel"
                                 label="Channel"
+                                outlined
                             ></v-text-field>
                           </v-col>
 
@@ -419,7 +420,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              value: [423, 446, 675, 510, 590, 610, 760],
+              productMango: ['Construction', 'RealEstate', 'Project Planning', 'Other'],
               singleSelect: false,
               selected: [],
               loading: false,

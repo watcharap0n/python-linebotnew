@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
-
 class TimeDate:
     day = datetime.today().day
     month = datetime.today().month
@@ -353,7 +352,7 @@ class TagChart:
                  'Tel': tel, 'Email': email, 'EmailLiff': '', 'Message': message,
                  'Profile': '', 'Date': cDate, 'Time': cTime, 'Picture': '',
                  'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': 'web mango'}
+                 'Channel': 'web mango', 'Tax': '', 'Authorized': '', 'Position': ''}
         return group
 
     @staticmethod
