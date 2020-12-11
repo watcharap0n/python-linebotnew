@@ -585,7 +585,7 @@ def return_information():
         OTHER = fire.lenProduct('RestCustomer', 'Other')
         status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
-                  'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing':  len(PLAN), 'other': len(OTHER)}]}
+                  'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}
         return jsonify(status)
     elif request.method == 'POST':
         post_data = request.get_json()
@@ -632,16 +632,16 @@ def excel_information():
     if request.method == 'POST':
         post_data = request.get_json()
         print('post_data', post_data)
-        xls = [{'Name': post_data, 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel', 'Email': 'email',
-                     'EmailLiff': 'pEmail', 'Message': 'message', 'Profile': 'profile', 'Date': 'cDate', 'Time': 'cTime',
-                     'Picture': 'picture', 'Username': 'username', 'DateInsert': 'date', 'TimeInsert': 'time', 'Tag': 'tag',
-                     'Channel': 'channel'}]
+        xls = [{'Name': post_data, 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel',
+                'Email': 'email',
+                'EmailLiff': 'pEmail', 'Message': 'message', 'Profile': 'profile', 'Date': 'cDate', 'Time': 'cTime',
+                'Picture': 'picture', 'Username': 'username', 'DateInsert': 'date', 'TimeInsert': 'time', 'Tag': 'tag',
+                'Channel': 'channel'}]
         data = pd.DataFrame(xls)
         datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
         return send_from_directory('static/excel', 'testVue.xlsx')
-
 
 
 @app.route('/tag_information', methods=['POST'])
@@ -654,7 +654,6 @@ def sort_information():
             db2.child('RestCustomer').child(i).update({'Tag': tags})
         print(post_data)
         return jsonify(post_data)
-
 
 
 @app.route('/marketing_information', methods=['GET', 'POST'])
