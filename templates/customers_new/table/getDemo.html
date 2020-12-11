@@ -276,7 +276,7 @@
                         <td>
                           <div class="form-group">
                             <input type="checkbox"
-                                   name="key_getDemo"
+                                   name="key_getDemos"
                                    id="{{ demo.key }}"
                                    value="{{ demo.key }}"
                                 {% if demo.key in data.getDemo.key %}
@@ -438,7 +438,7 @@
       });
 
       document.getElementById('select-all-demo').onclick = function () {
-          var checkboxes = document.getElementsByName('key_getDemo');
+          var checkboxes = document.getElementsByName('key_getDemos');
           for (var checkbox of checkboxes) {
               checkbox.checked = this.checked;
           }
