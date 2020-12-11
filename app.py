@@ -656,6 +656,7 @@ def sort_information():
         return jsonify(post_data)
 
 
+
 @app.route('/marketing_information', methods=['GET', 'POST'])
 def marketing_information():
     tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
