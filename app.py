@@ -632,20 +632,15 @@ def excel_information():
     if request.method == 'POST':
         post_data = request.get_json()
         print('post_data', post_data)
-        for ax_key in post_data:
-            print(ax_key)
-            time.sleep(1)
-            i = db2.child('RestCustomer').child(ax_key).get()
-            print(i)
-        xls = {'Name': 'name', 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel', 'Email': 'email',
+        xls = [{'Name': post_data, 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel', 'Email': 'email',
                      'EmailLiff': 'pEmail', 'Message': 'message', 'Profile': 'profile', 'Date': 'cDate', 'Time': 'cTime',
                      'Picture': 'picture', 'Username': 'username', 'DateInsert': 'date', 'TimeInsert': 'time', 'Tag': 'tag',
-                     'Channel': 'channel'}
+                     'Channel': 'channel'}]
         data = pd.DataFrame(xls)
         datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
-        return send_from_directory('static/excel', 'Customers.xlsx')
+        return send_from_directory('static/excel', 'testVue.xlsx')
 
 
 

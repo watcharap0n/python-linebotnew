@@ -2,16 +2,15 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
 from numpy import random
-import firebase_admin # authen Firebase
-from firebase_admin import credentials, auth # authen Firebase
+import firebase_admin  # authen Firebase
+from firebase_admin import credentials, auth  # authen Firebase,
 import pyrebase
 import json
-from flask import Flask, request, abort, render_template, jsonify
-
+from flask import Flask, request, abort, render_template, jsonify, session, g
+import pandas as pd
 
 cred = credentials.Certificate("model/config/database_test/authen_firebase.json")
 firebase_auth = firebase_admin.initialize_app(cred)
-
 
 with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
     data = json.load(json_file)
@@ -23,13 +22,23 @@ with open('model/config/database_test/firebase.json', encoding='utf8') as json_f
 app = Flask(__name__)
 
 
+@app.before_request
+def before_request():
+    try:
+        if 'user_id' in session:
+            user = session['user_id']
+            g.user = user
+    except:
+        print("error login")
+
+
 @app.route('/signup', methods=['POST'])
 def register():
     email = request.form['email']
     pwd = request.form['password']
-    # userId = request.form['username']
+    displayName = request.form['username']
     try:
-        auth.create_user(email=email, password=pwd)
+        auth.create_user(email=email, password=pwd, displayName=displayName)
         return jsonify({'signup': 'success'})
     except:
         return jsonify({'signup': 'error'})
@@ -41,17 +50,31 @@ def login():
         email = request.form['email']
         password = request.form['password']
         print(request.form.to_dict())
-        user = pb.auth().s
+        session.pop('user_id', None)
+        user = pb.auth().sign_in_with_email_and_password(email=email, password=password)
         print(user)
+        session['user_id'] = user
         return jsonify({'login': 'success'})
 
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    if request.method == 'GET':
+        session.clear()
+        print(session)
+        return jsonify({'logout': dict(session)})
 
 
+@app.route('/index')
+def index():
+    if not g.user:
+        return jsonify({'session': 'Not User'})
+    print(g.user)
+    return jsonify({'session': g.user['displayName']})
 
 
 if __name__ == '__main__':
-    app.run(port=5005, debug=True)
+    app.run(port=5555, debug=True)
 
 # def popChip(transaction, id, tag, value):
 #     ref = db.child(transaction).child(id).get().val()[tag]
