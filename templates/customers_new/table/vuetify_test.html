@@ -45,6 +45,8 @@
               :headers="headers"
               :items="transaction"
               sort-by="calories"
+              :loading="!spinTable"
+              loading-text="Loading... Please wait"
               class="elevation-1">
             <template v-slot:item.tag="{ item }">
               <div v-for="tag in item.tag">
@@ -250,7 +252,7 @@
                             <v-select
                                 v-model="editedItem.Product"
                                 :items="productMango"
-                                 label="Product"
+                                label="Product"
                                 outlined
                                 dense
                             ></v-select>
