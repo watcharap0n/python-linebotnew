@@ -646,31 +646,7 @@ def excel_information():
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
         return send_from_directory('static/excel', 'Customers.xlsx')
-            # profile = i.val()['Profile']
-            # cTime = i.val()['Time']
-            # cDate = i.val()['Date']
-            # company = i.val()['Company']
-            # email = i.val()['Email']
-            # pEmail = i.val()['EmailLiff']
-            # message = i.val()['Message']
-            # picture = i.val()['Picture']
-            # product = i.val()['Product']
-            # other = i.val()['Other']
-            # tel = i.val()['Tel']
-            # tag = i.val()['Tag']
-            # name = i.val()['Name']
-            # channel = i.val()['Channel']
-            # username = i.val()['Username']
-            # date = i.val()['DateInsert']
-            # time = i.val()['TimeInsert']
-            # group = {'Name': name, 'Product': product, 'Other': other, 'Company': company, 'Tel': tel, 'Email': email,
-            #          'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
-            #          'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-            #          'Channel': channel}
-            # print(group)
-        # button_event = ButtonEvent(loop=post_data, db=db2, tag_insert=None)
-        # button_event.button_excel_information()
-        # return send_from_directory('static/excel', 'Customers.xlsx')
+
 
 
 @app.route('/tag_information', methods=['POST'])

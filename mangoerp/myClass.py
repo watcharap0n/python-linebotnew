@@ -126,10 +126,13 @@ class TagChart:
         username = i.val()['Username']
         date = i.val()['DateInsert']
         time = i.val()['TimeInsert']
+        authorized = i.val()['Authorized']
+        position = i.val()['Position']
+        tax = i.val()['Tax']
         group = {'Name': name, 'Product': product, 'Other': other, 'Company': company, 'Tel': tel, 'Email': email,
                  'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
                  'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': channel}
+                 'Channel': channel, 'Tax': tax, 'Authorized': authorized, 'Position': position}
         return group
 
     @staticmethod
@@ -242,11 +245,13 @@ class TagChart:
             username = i.val()['Username']
             ImportDate = i.val()['DateInsert']
             ImportTime = i.val()['TimeInsert']
+            authorized = i.val()['Authorized']
+            position = i.val()['Position']
+            tax = i.val()['Tax']
             group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
                      'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
                      'Picture': picture, 'Username': username, 'Tag': tag,
-                     'ImportDate/Time': f'{ImportDate} {ImportTime}',
-                     }
+                     'ImportDate/Time': f'{ImportDate} {ImportTime}', 'Tax': tax, 'Authorized': authorized, 'Position': position}
             toList.append(group)
         return toList
 
@@ -329,7 +334,7 @@ class TagChart:
                  'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
                  'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
                  'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': channel}
+                 'Channel': channel, 'Tax': '', 'Authorized': '', 'Position': ''}
         return group
 
     @staticmethod
