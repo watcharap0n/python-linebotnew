@@ -769,7 +769,7 @@ def getDemo():
             button_event.button_excel_getDemo()
             return send_from_directory('static/excel', 'Customers.xlsx')
         elif button == 'button_delete':
-            remove = button_event.button_delete('requestDemo')
+            button_event.button_delete('requestDemo')
         return redirect(url_for('getDemo'))
 
 
