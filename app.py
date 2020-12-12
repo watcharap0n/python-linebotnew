@@ -755,7 +755,7 @@ def getDemo():
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
-        key_getDemo = request.form.getlist('key_getDemo')
+        key_getDemo = request.form.getlist('key_getDemos')
         button_event = ButtonEvent(loop=key_getDemo, db=db2, tag_insert=tags)
         if button == 'button_tag':
             button_event.button_tag('requestDemo', 'tag')
@@ -769,7 +769,7 @@ def getDemo():
             button_event.button_excel_getDemo()
             return send_from_directory('static/excel', 'Customers.xlsx')
         elif button == 'button_delete':
-            button_event.button_delete('requestDemo')
+            remove = button_event.button_delete('requestDemo')
         return redirect(url_for('getDemo'))
 
 
