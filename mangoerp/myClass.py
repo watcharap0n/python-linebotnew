@@ -469,7 +469,10 @@ class FirebaseAPI:
             if y == toCount:
                 ref.pop(count)
             count += 1
-        final = self.db.child(transaction).child(id).update({'Tag': ref})
+        if ref:
+            final = self.db.child(transaction).child(id).update({'Tag': ref})
+        else:
+            final = self.db.child(transaction).child(id).update({'Tag': ''})
         return print(final)
 
     def groupToInsert(self, d, value):
