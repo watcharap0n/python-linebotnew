@@ -48,6 +48,8 @@
               :loading="!spinTable"
               loading-text="Loading... Please wait"
               class="elevation-1">
+
+
             <template v-slot:item.tag="{ item }">
               <div v-for="tag in item.tag">
                 <div v-if="tag">
@@ -427,6 +429,7 @@
           data: () => ({
               productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard'],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
+              showSelect: [],
               singleSelect: false,
               selected: [],
               loading: false,
@@ -614,6 +617,9 @@
                       .catch((error) => {
                           console.error(error);
                       });
+              },
+              getCheck(value) {
+                  console.log(value)
               },
               chipRemove(remove, id) {
                   let chip = remove.splice(remove.indexOf(remove), 1)
