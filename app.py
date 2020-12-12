@@ -159,7 +159,7 @@ def apiDemoReq():
             event_email = request.get_json()
             event_email = dict(event_email)
             apiDict = {'event': event_email, 'Date': f'{to.day}-{to.month}-{to.year}',
-                       'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ['']}
+                       'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ''}
             db2.child('requestDemo').push(apiDict)
             db2.child('feature_selection').push(apiDict)
             response = app.response_class(
@@ -179,7 +179,7 @@ def apiContractReq():
             event_contract = request.get_json()
             event_contract = dict(event_contract)
             apiDict = {'event': event_contract, 'Date': f'{to.day}-{to.month}-{to.year}',
-                       'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ['']}
+                       'Time': f'{to.hour}:{to.minute}:{to.second}', 'tag': ''}
             db2.child('requestContract').push(apiDict)
             db2.child('feature_selectionByContract').push(apiDict)
             response = app.response_class(
@@ -352,7 +352,7 @@ def ajax_training():
     if request.method == 'POST':
         event = request.form.to_dict()
         to = TimeDate()
-        toDict = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month,
+        toDict = {'channel': 'LINE', 'tag': '', 'day': to.day, 'month': to.month,
                   'year': to.year, 'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
         db3.child('trainCustomer').push(toDict)
         return make_response(event)
@@ -408,7 +408,7 @@ def ajax_marketing():
     if request.method == 'POST':
         event = request.form.to_dict()
         to = TimeDate()
-        insertDatabase = {'channel': 'LINE', 'tag': [''], 'day': to.day, 'month': to.month, 'year': to.year,
+        insertDatabase = {'channel': 'LINE', 'tag': '', 'day': to.day, 'month': to.month, 'year': to.year,
                           'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
         db2.child('LineLiff').push(insertDatabase)
         pusher.trigger(u'customer', u'add', {
@@ -607,7 +607,7 @@ def return_information_update(id):
             db2.child('RestCustomer').child(id).update(group)
             response_object['message'] = 'Data updated!'
         else:
-            group = fire.groupToInsert(d, [''])
+            group = fire.groupToInsert(d, '')
             db2.child('RestCustomer').child(id).update(group)
             response_object['message'] = 'Data updated!'
     if request.method == 'DELETE':
@@ -800,7 +800,7 @@ def getContract():
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
-        key_getContract = request.form.getlist('key_getDemo')
+        key_getContract = request.form.getlist('key_getContract')
         button_event = ButtonEvent(loop=key_getContract, db=db2, tag_insert=tags)
         if button == 'button_tag':
             button_event.button_tag('requestContract', 'tag')
@@ -853,7 +853,7 @@ def marketing_import_update(id):
                                                  product, tel, emailLIFF)
             db2.child('LineLiff').child(id).update(groupBy)
         else:
-            groupBy = fire.post_marketing_update(id, channel, message, company, [''], displayName, other, email, name,
+            groupBy = fire.post_marketing_update(id, channel, message, company, '', displayName, other, email, name,
                                                  product, tel, emailLIFF)
             db2.child('LineLiff').child(id).update(groupBy)
         return redirect(url_for('marketing_import'))
@@ -902,7 +902,7 @@ def marketing_information_update(id):
         else:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
                        'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
-                       'Profile': displayName, 'Channel': channel, 'Tag': [''], 'Authorized': authorized, 'Tax': tax,
+                       'Profile': displayName, 'Channel': channel, 'Tag': '', 'Authorized': authorized, 'Tax': tax,
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         return redirect(url_for('marketing_information'))

@@ -48,8 +48,19 @@
               :loading="!spinTable"
               loading-text="Loading... Please wait"
               class="elevation-1">
+
+
             <template v-slot:item.tag="{ item }">
-              <div v-for="tag in item.tag">
+              <div v-if='item.tag'>
+                  <v-btn @click="onShowTag"
+                         x-small
+                  >
+                  <v-icon>
+                      mdi-label
+                    </v-icon>
+                </v-btn>
+              </div>
+              <div v-for="tag in item.tag" v-if="showTag === true">
                 <div v-if="tag">
                   <v-chip
                       class="ma-2"
@@ -63,11 +74,15 @@
                     <v-icon>
                       mdi-label
                     </v-icon>
-                    [[tag]]
+                    <div>
+                      [[tag]]
+                    </div>
                   </v-chip>
                 </div>
                 <div v-else>
                 </div>
+              </div>
+              <div v-else>
               </div>
             </template>
 
@@ -262,12 +277,13 @@
                               sm="6"
                               md="4"
                           >
-                            <v-text-field
+                            <v-select
                                 v-model="editedItem.Other"
-                                label="Other"
+                                :items="productOther"
+                                label="Product"
                                 outlined
                                 dense
-                            ></v-text-field>
+                            ></v-select>
                           </v-col>
                           <v-col
                               cols="12"
@@ -390,11 +406,13 @@
                   small
                   class="mr-2"
                   @click="editItem(item)"
+                  color="green"
               >
                 mdi-pencil
               </v-icon>
               <v-icon
                   small
+                  color="red"
                   @click="deleteItem(item)"
               >
                 mdi-delete
@@ -422,7 +440,9 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              productMango: ['Construction', 'RealEstate', 'Project Planning', 'Other'],
+              productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard'],
+              productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
+              showSelect: [],
               singleSelect: false,
               selected: [],
               loading: false,
@@ -430,24 +450,26 @@
               dialogDelete: false,
               spinTable: true,
               spinChart: true,
+              showTag: false,
               search: '',
               name: 'kane',
               headers: [
-                  {text: 'Tag', value: 'tag'},
-                  {text: 'Name', value: 'Name'},
-                  {text: 'Product', value: 'Product'},
-                  {text: 'Other', value: 'Other'},
-                  {text: 'Company', value: 'Company'},
-                  {text: 'Tel', value: 'Tel'},
-                  {text: 'Email', value: 'Email'},
-                  {text: 'EmailLIFF', value: 'EmailLiff'},
-                  {text: 'Message', value: 'Message'},
-                  {text: 'Profile', value: 'Profile'},
-                  {text: 'Date/Time', value: 'datetime'},
-                  {text: 'Channel', value: 'Channel'},
-                  {text: 'UserImport', value: 'Username'},
-                  {text: 'ImportDT', value: 'datetime_insert'},
-                  {text: 'Actions', value: 'actions', sortable: false},
+                  {text: 'Edit/Delete', value: 'actions', sortable: false},
+                  {text: 'แท็ก', value: 'tag'},
+                  {text: 'ชื่อ', value: 'Name'},
+                  {text: 'ผลิตภัณฑ์', value: 'Product'},
+                  {text: 'อื่นๆ', value: 'Other'},
+                  {text: 'บริษัท', value: 'Company'},
+                  {text: 'เบอร์', value: 'Tel'},
+                  {text: 'อีเมล', value: 'Email'},
+                  {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
+                  {text: 'ข้อความ', value: 'Message'},
+                  {text: 'โปรไฟล์', value: 'Profile'},
+                  {text: 'วันเวลา', value: 'datetime'},
+                  {text: 'ช่องทาง', value: 'Channel'},
+                  {text: 'คนนำเข้า', value: 'Username'},
+                  {text: 'วันเวลานำ', value: 'datetime_insert'},
+
               ],
               transaction: [],
               tags: [],
@@ -609,6 +631,9 @@
                       .catch((error) => {
                           console.error(error);
                       });
+              },
+              onShowTag() {
+                  this.showTag = !this.showTag
               },
               chipRemove(remove, id) {
                   let chip = remove.splice(remove.indexOf(remove), 1)

@@ -12,7 +12,7 @@ import pandas as pd
 cred = credentials.Certificate("model/config/database_test/authen_firebase.json")
 firebase_auth = firebase_admin.initialize_app(cred)
 
-with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
+with open('model/config/database_new/firebase.json', encoding='utf8') as json_file:
     data = json.load(json_file)
     config = data['firebase']
     firebase = pyrebase.initialize_app(config)
@@ -22,59 +22,69 @@ with open('model/config/database_test/firebase.json', encoding='utf8') as json_f
 app = Flask(__name__)
 
 
-@app.before_request
-def before_request():
-    try:
-        if 'user_id' in session:
-            user = session['user_id']
-            g.user = user
-    except:
-        print("error login")
+ref = db.child('requestContract').get()
+for i in ref.each()[1:]:
+    if '' in i.val()['tag']:
+        print(i.val()['tag'])
+        # print(i.key())
+        db.child('requestContract').child(i.key()).update({'tag': ''})
 
 
-@app.route('/signup', methods=['POST'])
-def register():
-    email = request.form['email']
-    pwd = request.form['password']
-    displayName = request.form['username']
-    try:
-        auth.create_user(email=email, password=pwd, displayName=displayName)
-        return jsonify({'signup': 'success'})
-    except:
-        return jsonify({'signup': 'error'})
 
-
-@app.route('/lg', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        print(request.form.to_dict())
-        session.pop('user_id', None)
-        user = pb.auth().sign_in_with_email_and_password(email=email, password=password)
-        print(user)
-        session['user_id'] = user
-        return jsonify({'login': 'success'})
-
-
-@app.route('/logout', methods=['GET', 'POST'])
-def logout():
-    if request.method == 'GET':
-        session.clear()
-        print(session)
-        return jsonify({'logout': dict(session)})
-
-
-@app.route('/index')
-def index():
-    if not g.user:
-        return jsonify({'session': 'Not User'})
-    print(g.user)
-    return jsonify({'session': g.user['displayName']})
-
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+#
+# @app.before_request
+# def before_request():
+#     try:
+#         if 'user_id' in session:
+#             user = session['user_id']
+#             g.user = user
+#     except:
+#         print("error login")
+#
+#
+# @app.route('/signup', methods=['POST'])
+# def register():
+#     email = request.form['email']
+#     pwd = request.form['password']
+#     displayName = request.form['username']
+#     try:
+#         auth.create_user(email=email, password=pwd, displayName=displayName)
+#         return jsonify({'signup': 'success'})
+#     except:
+#         return jsonify({'signup': 'error'})
+#
+#
+# @app.route('/lg', methods=['POST'])
+# def login():
+#     if request.method == 'POST':
+#         email = request.form['email']
+#         password = request.form['password']
+#         print(request.form.to_dict())
+#         session.pop('user_id', None)
+#         user = pb.auth().sign_in_with_email_and_password(email=email, password=password)
+#         print(user)
+#         session['user_id'] = user
+#         return jsonify({'login': 'success'})
+#
+#
+# @app.route('/logout', methods=['GET', 'POST'])
+# def logout():
+#     if request.method == 'GET':
+#         session.clear()
+#         print(session)
+#         return jsonify({'logout': dict(session)})
+#
+#
+# @app.route('/index')
+# def index():
+#     if not g.user:
+#         return jsonify({'session': 'Not User'})
+#     print(g.user)
+#     return jsonify({'session': g.user['displayName']})
+#
+#
+# if __name__ == '__main__':
+#     app.run(port=5555, debug=True)
 
 # def popChip(transaction, id, tag, value):
 #     ref = db.child(transaction).child(id).get().val()[tag]

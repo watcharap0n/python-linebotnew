@@ -28,7 +28,7 @@ class ButtonEvent:
 
     def button_clean_tag(self, transaction, dict_key):
         for i in self.loop:
-            self.db.child(transaction).child(i).update({dict_key: ['']})
+            self.db.child(transaction).child(i).update({dict_key: ''})
 
     def button_excel_import(self):
         toList = []
