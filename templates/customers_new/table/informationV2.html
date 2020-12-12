@@ -807,15 +807,13 @@
               },
 
               updateData(payload, id) {
-                  const path = `/json_information/${id}`;
-                  axios.put(path, payload)
+                  const path = `/update_information/${id}`;
+                  axios.post(path, payload)
                       .then(() => {
-                          this.createInformation();
                           this.showLog = 'Data updated!';
                           this.showMessage = true;
                       })
                       .catch((error) => {
-                          // eslint-disable-next-line
                           console.error(error);
                           this.createInformation();
                       });
@@ -825,7 +823,6 @@
                   axios.post(path)
                       .then(() => {
                           console.log(path)
-
                       })
                       .catch((error) => {
                           // eslint-disable-next-line

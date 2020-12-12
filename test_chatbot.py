@@ -199,3 +199,27 @@ app = Flask(__name__)
 # for i in ref.each():
 #     key = i.key()
 #     db.child('trainCustomer').child(key).update()
+
+
+# @app.route('/json_information/<id>', methods=['PUT', 'DELETE'])
+# def return_information_update(id):
+#     response_object = {'status': 'success'}
+#     if request.method == 'PUT':
+#         post_data = request.get_json()
+#         print(id)
+#         d = dict(post_data)
+#         fire = FirebaseAPI(None)
+#         if d['tag']:
+#             group = fire.groupToInsert(d, d['tag'])
+#             db2.child('RestCustomer').child(id).update(group)
+#             response_object['message'] = 'Data updated!'
+#             return make_response({response_object})
+#         else:
+#             group = fire.groupToInsert(d, '')
+#             db2.child('RestCustomer').child(id).update(group)
+#             response_object['message'] = 'Data updated!'
+#             return make_response({response_object})
+#     if request.method == 'DELETE':
+#         db2.child('RestCustomer').child(id).remove()
+#         return make_response({'delete': 'success'})
+#     return jsonify(response_object)
