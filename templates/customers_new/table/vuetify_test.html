@@ -52,12 +52,13 @@
 
             <template v-slot:item.tag="{ item }">
               <div v-if='item.tag'>
-                  <v-btn @click="onShowTag"
-                         x-small
-                  >
+                <v-btn @click="onShowTag"
+                       x-small
+                       text-color="white"
+                >
                   <v-icon>
-                      mdi-label
-                    </v-icon>
+                    mdi-label-multiple
+                  </v-icon>
                 </v-btn>
               </div>
               <div v-for="tag in item.tag" v-if="showTag === true">
@@ -74,8 +75,53 @@
                     <v-icon>
                       mdi-label
                     </v-icon>
-                    <div>
-                      [[tag]]
+                    <div v-if="tag === 'CB010'">
+                      รับเหมาสาธารณูปโภค
+                    </div>
+                    <div v-if="tag === 'CC010'">
+                      รับเหมาก่อสร้างระบบวางท่อ
+                    </div>
+                    <div v-if="tag === 'CG010'">
+                      งานระบบประกอบอาคาร
+                    </div>
+                    <div v-if="tag === 'CI010'">
+                      รับเหมาก่อสร้างพลังงานทดแทน
+                    </div>
+                    <div v-if="tag === 'CJ010'">
+                      รับเหมาก่อสร้างงานอาคาร
+                    </div>
+                    <div v-if="tag === 'CM010'">
+                      ออกแบบ ตกแต่ง
+                    </div>
+                    <div v-if="tag === 'CF010'">
+                      รับเหมาขุดเจาะ
+                    </div>
+                    <div v-if="tag === 'CP010'">
+                      งานอลูมิเนียม
+                    </div>
+                    <div v-if="tag === 'CE010'">
+                      ผลิตและติดตั้ง
+                    </div>
+                    <div v-if="tag === 'CH010'">
+                      งานบริการ
+                    </div>
+                    <div v-if="tag === 'CK010'">
+                      รับสร้างบ้าน
+                    </div>
+                    <div v-if="tag === 'CN010'">
+                      ไม่แน่ใจ
+                    </div>
+                    <div v-if="tag === 'CD010'">
+                      ขาย
+                    </div>
+                    <div v-if="tag === 'RC010'">
+                      อสังหาฯ
+                    </div>
+                    <div v-if="tag === 'RA010'">
+                      แนวราบ
+                    </div>
+                    <div v-if="tag === 'RB010'">
+                      แนวสูง
                     </div>
                   </v-chip>
                 </div>
