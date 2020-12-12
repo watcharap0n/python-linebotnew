@@ -22,12 +22,12 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 app = Flask(__name__)
 
 
-ref = db.child('requestContract').get()
-for i in ref.each()[1:]:
-    if '' in i.val()['tag']:
-        print(i.val()['tag'])
-        # print(i.key())
-        db.child('requestContract').child(i.key()).update({'tag': ''})
+# ref = db.child('requestContract').get()
+# for i in ref.each()[1:]:
+#     if '' in i.val()['tag']:
+#         print(i.val()['tag'])
+#         # print(i.key())
+#         db.child('requestContract').child(i.key()).update({'tag': ''})
 
 
 
