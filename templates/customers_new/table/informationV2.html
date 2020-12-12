@@ -821,17 +821,16 @@
                       });
               },
               removeData(id) {
-                  const path = `/json_information/${id}`;
-                  axios.delete(path)
+                  const path = `/delete_information/${id}`;
+                  axios.post(path)
                       .then(() => {
-                          this.createInformation();
-                          this.showLog = 'Data updated!';
-                          this.showMessage = true;
+                          console.log(path)
+
                       })
                       .catch((error) => {
                           // eslint-disable-next-line
                           console.error(error);
-                          this.createInformation();
+
                       });
               },
               addData(payload) {

@@ -615,6 +615,12 @@ def return_information_update(id):
     return jsonify(response_object)
 
 
+@app.route('/delete_information/<id>', methods=['POST'])
+def delete_information(id):
+    db2.child('RestCustomer').child(id).remove()
+    return make_response({'type': 'success'})
+
+
 @app.route('/json_chip/<id>', methods=['PUT'])
 def return_Chip(id):
     response_object = {'status': 'success'}
