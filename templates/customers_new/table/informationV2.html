@@ -44,7 +44,6 @@
               :search="search"
               :headers="headers"
               :items="transaction"
-              sort-by="calories"
               :loading="!spinTable"
               loading-text="Loading... Please wait"
               class="elevation-1">
@@ -130,6 +129,24 @@
               </div>
               <div v-else>
               </div>
+            </template>
+
+            <template v-slot:item.actions="{ item }">
+              <v-icon
+                  small
+                  class="mr-2"
+                  @click="editItem(item)"
+                  color="green"
+              >
+                mdi-pencil
+              </v-icon>
+              <v-icon
+                  small
+                  color="red"
+                  @click="deleteItem(item)"
+              >
+                mdi-delete
+              </v-icon>
             </template>
 
             <template v-slot:top>
@@ -239,6 +256,18 @@
                       </span>
                   </template>
                 </v-tooltip>
+
+                <v-col cols="2" style="margin-top: 30px">
+                  <v-select
+                      :loading="!spinTable"
+                      :items="productMango"
+                      label="Product"
+                      v-model="search"
+                      menu-props="auto"
+                      outlined
+                      dense
+                  ></v-select>
+                </v-col>
                 {#                <v-switch#}
                 {#                    v-model="singleSelect"#}
                 {#                    label="Single select"#}
@@ -247,6 +276,7 @@
                 <v-spacer></v-spacer>
                 <div class="small" style="margin-left: 10px; margin-top: 25px; margin-right: 20px">
                   <v-select
+                      :loading="!spinTable"
                       v-model="sortTag"
                       :items="tags"
                       chips
@@ -257,6 +287,7 @@
                 </div>
                 <div class="small">
                   <v-text-field
+                      :loading="!spinTable"
                       v-model="search"
                       label="Search"
                       single-line
@@ -271,6 +302,7 @@
 
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
+                        :loading="!spinTable"
                         color="success"
                         style=" margin-left: 10px"
                         dark
@@ -447,23 +479,6 @@
               </v-toolbar>
             </template>
 
-            <template v-slot:item.actions="{ item }">
-              <v-icon
-                  small
-                  class="mr-2"
-                  @click="editItem(item)"
-                  color="green"
-              >
-                mdi-pencil
-              </v-icon>
-              <v-icon
-                  small
-                  color="red"
-                  @click="deleteItem(item)"
-              >
-                mdi-delete
-              </v-icon>
-            </template>
 
             <template v-slot:no-data>
               <v-btn
@@ -486,7 +501,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard'],
+              productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard', 'Mango ERP (Construction)'],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
               showSelect: [],
               singleSelect: false,
@@ -498,28 +513,9 @@
               spinChart: true,
               showTag: false,
               search: '',
-              name: 'kane',
-              headers: [
-                  {text: 'Edit/Delete', value: 'actions', sortable: false},
-                  {text: 'แท็ก', value: 'tag'},
-                  {text: 'ชื่อ', value: 'Name'},
-                  {text: 'ผลิตภัณฑ์', value: 'Product'},
-                  {text: 'อื่นๆ', value: 'Other'},
-                  {text: 'บริษัท', value: 'Company'},
-                  {text: 'เบอร์', value: 'Tel'},
-                  {text: 'อีเมล', value: 'Email'},
-                  {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
-                  {text: 'ข้อความ', value: 'Message'},
-                  {text: 'โปรไฟล์', value: 'Profile'},
-                  {text: 'วันเวลา', value: 'datetime'},
-                  {text: 'ช่องทาง', value: 'Channel'},
-                  {text: 'คนนำเข้า', value: 'Username'},
-                  {text: 'วันเวลานำ', value: 'datetime_insert'},
-
-              ],
+              searchProduct: '',
               transaction: [],
               tags: [],
-              testAmount: [12, 34, 55],
               amountInfo: '',
               amountDemo: '',
               amountImport: '',
@@ -577,6 +573,25 @@
               formTitle() {
                   return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
               },
+              headers() {
+                  return [
+                      {text: 'Edit/Delete', value: 'actions', sortable: false},
+                      {text: 'แท็ก', value: 'tag'},
+                      {text: 'ชื่อ', value: 'Name'},
+                      {text: 'ผลิตภัณฑ์', value: 'Product'},
+                      {text: 'อื่นๆ', value: 'Other'},
+                      {text: 'บริษัท', value: 'Company'},
+                      {text: 'เบอร์', value: 'Tel'},
+                      {text: 'อีเมล', value: 'Email'},
+                      {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
+                      {text: 'ข้อความ', value: 'Message'},
+                      {text: 'โปรไฟล์', value: 'Profile'},
+                      {text: 'วันเวลา', value: 'datetime'},
+                      {text: 'ช่องทาง', value: 'Channel'},
+                      {text: 'คนนำเข้า', value: 'Username'},
+                      {text: 'วันเวลานำ', value: 'datetime_insert'},
+                  ]
+              }
           },
           watch: {
               dialog(val) {
@@ -842,6 +857,9 @@
                           console.log(error)
                           this.createInformation()
                       });
+              },
+              sortProduct(value) {
+                  this.search = value
               },
           },
           delimiters: ["[[", "]]"],
