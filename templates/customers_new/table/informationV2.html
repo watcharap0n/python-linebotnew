@@ -797,7 +797,7 @@
 
               updateChip(chip, id) {
                   const path = `/json_chip/${id}`;
-                  axios.put(path, chip)
+                  axios.post(path, chip)
                       .then(() => {
                           console.log('success')
                       })

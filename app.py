@@ -620,7 +620,7 @@ def delete_information(id):
     return make_response({'type': 'success'})
 
 
-@app.route('/json_chip/<id>', methods=['PUT'])
+@app.route('/json_chip/<id>', methods=['POST'])
 def return_Chip(id):
     response_object = {'status': 'success'}
     if request.method == 'PUT':
