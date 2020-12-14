@@ -159,6 +159,7 @@ app = Flask(__name__)
 #     contact_subject = event['contact_subject']
 #     contact_tel = event['contact_tel']
 #     date = contract.val()['Date']
+
 #     time = contract.val()['Time']
 #     tag = contract.val()['tag']
 #     apiContract = {'key': key, 'email': contact_email, 'email_div': contact_email_div,
@@ -210,16 +211,26 @@ app = Flask(__name__)
 #         d = dict(post_data)
 #         fire = FirebaseAPI(None)
 #         if d['tag']:
-#             group = fire.groupToInsert(d, d['tag'])
-#             db2.child('RestCustomer').child(id).update(group)
-#             response_object['message'] = 'Data updated!'
+#             group = fire.grouptoinsert(d, d['tag'])
+#             db2.child('restcustomer').child(id).update(group)
+#             response_object['message'] = 'data updated!'
 #             return make_response({response_object})
 #         else:
-#             group = fire.groupToInsert(d, '')
-#             db2.child('RestCustomer').child(id).update(group)
-#             response_object['message'] = 'Data updated!'
+#             group = fire.grouptoinsert(d, '')
+#             db2.child('restcustomer').child(id).update(group)
+#             response_object['message'] = 'data updated!'
 #             return make_response({response_object})
-#     if request.method == 'DELETE':
-#         db2.child('RestCustomer').child(id).remove()
+#     if request.method == 'delete':
+#         db2.child('restcustomer').child(id).remove()
 #         return make_response({'delete': 'success'})
 #     return jsonify(response_object)
+'''
+dioqjffpwijidjij
+ciojdiejqi
+
+
+for i in ref:
+    print(i)
+ooo'''
+
+

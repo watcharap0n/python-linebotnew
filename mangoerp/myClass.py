@@ -26,6 +26,10 @@ class ButtonEvent:
         for i in self.loop:
             self.db.child(transaction).child(i).update({dict_key: self.tag_insert})
 
+    def button_tagInfo(self, transaction, dict_key, request_tag):
+        for i in self.loop:
+            self.db.child(transaction).child(i).update({dict_key: request_tag})
+
     def button_clean_tag(self, transaction, dict_key):
         for i in self.loop:
             self.db.child(transaction).child(i).update({dict_key: ''})

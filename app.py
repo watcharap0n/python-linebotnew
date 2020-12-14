@@ -358,6 +358,7 @@ def ajax_training():
         return make_response(event)
 
 
+
 @app.route('/LIFF_marketing/<string:site>', methods=['GET', 'POST'])
 def LIFF_marketing(site):
     if site == 'construction':
@@ -696,11 +697,13 @@ def marketing_information():
     elif request.method == 'POST':
         button = request.form['button_event']
         tags_index = request.form.getlist('tags')
+        infoTag = request.form.getlist('infoTag')
         key_information = request.form.getlist('key_information')
-        print(key_information)
         button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags_index)
         if button == 'button_tag':
             button_event.button_tag('RestCustomer', 'Tag')
+        elif button == 'button_infoTag':
+            button_event.button_tagInfo('RestCustomer', 'Tag', infoTag)
         elif button == 'button_excel':
             button_event.button_excel_information()
             return send_from_directory('static/excel', 'Customers.xlsx')
@@ -993,10 +996,13 @@ def tagInformation(tag):
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
+        infoTag = request.form.getlist('infoTag')
         key_information = request.form.getlist('key_information')
         button_event = ButtonEvent(loop=key_information, db=db2, tag_insert=tags)
         if button == 'button_tag':
             button_event.button_tag('RestCustomer', 'Tag')
+        elif button == 'button_infoTag':
+            button_event.button_tagInfo('RestCustomer', 'Tag', infoTag)
         elif button == 'button_excel':
             button_event.button_excel_information()
             return send_from_directory('static/excel', 'Customers.xlsx')

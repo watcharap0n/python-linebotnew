@@ -4,32 +4,118 @@
   <br><br><br>
   <div id="app">
     <div>
-      <div class="col-lg-8">
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fa fa-bar-chart"></i> Revenue Chart
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-8 my-auto">
-                <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
-                  <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-bar-chart"></i> Revenue Chart
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-8 my-auto">
+                  <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
+                    <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
+                  </div>
+                  <canvas ref="myChart" width="100" height="50"></canvas>
                 </div>
-                <canvas ref="myChart" width="100" height="50"></canvas>
-              </div>
-              <div class="col-sm-4 text-center my-auto">
-                <div class="h4 mb-0 text-primary">[[amountInfo]]</div>
-                <div class="small text-muted">ข้อมูลลูกค้า</div>
-                <hr>
-                <div class="h4 mb-0 text-warning">[[amountImport]]</div>
-                <div class="small text-muted">นำเข้า</div>
-                <hr>
-                <div class="h4 mb-0 text-success">[[amountDemo]]</div>
-                <div class="small text-muted">นัดDemo</div>
+                <div class="col-sm-4 text-center my-auto">
+                  <div class="h4 mb-0 text-primary">[[amountInfo]]</div>
+                  <div class="small text-muted">ข้อมูลลูกค้า</div>
+                  <hr>
+                  <div class="h4 mb-0 text-warning">[[amountImport]]</div>
+                  <div class="small text-muted">นำเข้า</div>
+                  <hr>
+                  <div class="h4 mb-0 text-success">[[amountDemo]]</div>
+                  <div class="small text-muted">นัดDemo</div>
+                </div>
               </div>
             </div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
+        <div class="col-lg-4">
+          <v-subheader>Today</v-subheader>
+
+          <v-expansion-panels popout>
+            <v-expansion-panel
+                v-for="(message, i) in messages"
+                :key="i"
+                hide-actions
+            >
+              <v-expansion-panel-header>
+                <v-row
+                    align="center"
+                    class="spacer"
+                    no-gutters
+                >
+                  <v-col
+                      cols="4"
+                      sm="2"
+                      md="1"
+                  >
+                    <v-avatar
+                        size="36px"
+                    >
+                      <img
+                          v-if="message.avatar"
+                          alt="Avatar"
+                          src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"
+                      >
+                      <v-icon
+                          v-else
+                          :color="message.color"
+                          v-text="message.icon"
+                      ></v-icon>
+                    </v-avatar>
+                  </v-col>
+
+                  <v-col
+                      class="hidden-xs-only"
+                      sm="5"
+                      md="3"
+                  >
+                    <strong v-html="message.name"></strong>
+                    <span
+                        v-if="message.total"
+                        class="grey--text"
+                    >
+                  &nbsp;([[ message.total ]])
+                </span>
+                  </v-col>
+
+                  <v-col
+                      class="text-no-wrap"
+                      cols="5"
+                      sm="3"
+                  >
+                    <v-chip
+                        v-if="message.new"
+                        :color="`${message.color} lighten-4`"
+                        class="ml-0 mr-2 black--text"
+                        label
+                        small
+                    >
+                      [[ message.new ]] new
+                    </v-chip>
+                    <strong v-html="message.title"></strong>
+                  </v-col>
+
+                  <v-col
+                      v-if="message.excerpt"
+                      class="grey--text text-truncate hidden-sm-and-down"
+                  >
+                    &mdash;
+                    [[ message.excerpt ]]
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-header>
+
+              <v-expansion-panel-content>
+                <v-divider></v-divider>
+                <v-card-text v-text="lorem"></v-card-text>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </div>
       </div>
       {#      <div v-if="!spinTable">#}
@@ -486,6 +572,32 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
+              messages: [
+                  {
+                      avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
+                      name: 'John Leider',
+                      title: 'Welcome to Vuetify!',
+                      excerpt: 'Thank you for joining our community...',
+                  },
+                  {
+                      color: 'red',
+                      icon: 'mdi-account-multiple',
+                      name: 'Social',
+                      new: 1,
+                      total: 3,
+                      title: 'Twitter',
+                  },
+                  {
+                      color: 'teal',
+                      icon: 'mdi-tag',
+                      name: 'Promos',
+                      new: 2,
+                      total: 4,
+                      title: 'Shop your way',
+                      exceprt: 'New deals available, Join Today',
+                  },
+              ],
+              lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel, everti delic',
               productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard'],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
               showSelect: [],

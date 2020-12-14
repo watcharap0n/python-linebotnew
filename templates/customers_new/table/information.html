@@ -419,9 +419,7 @@
                             {% endfor %}
                           </div>
                           <div class="dropdown-divider"></div>
-
                           <div class="row">
-
                             <button type="submit" name="button_event"
                                     style="margin-left: 15px"
                                     value="button_tag"
@@ -581,6 +579,66 @@
                           </div>
                         </div>
                       </div>
+                      <div class="dropdown btn-group dropright" style="margin-bottom: 15px">
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                aria-haspopup="true" aria-expanded="false"
+                                data-toggle="dropdown">
+                          <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                          <li class="dropdown-header">การติดต่อ</li>
+                          <li class="divider"></li>
+                          <div class="dropdown-item">
+                            <input type="checkbox"
+                                   name="infoTag"
+                                   id="contracted"
+                                   value="contracted">
+                            <label for="contracted">
+                              ติดต่อแล้ว
+                            </label>
+                          </div>
+                          <div class="dropdown-item">
+                            <input type="checkbox"
+                                   name="infoTag"
+                                   id="nContract"
+                                   value="nContract">
+                            <label for="nContract">
+                              ยังไม่ติดต่อ
+                            </label>
+                          </div>
+                          <li class="dropdown-header">นำข้อมูลเข้า RE</li>
+                          <li class="divider"></li>
+                          <div class="dropdown-item">
+                            <input type="checkbox"
+                                   name="infoTag"
+                                   id="importRE"
+                                   value="importRE">
+                            <label for="importRE">
+                              ข้อมูลรอบันทึก RE
+                            </label>
+                          </div>
+                          <div class="dropdown-item">
+                            <input type="checkbox"
+                                   name="infoTag"
+                                   id="imported"
+                                   value="imported">
+                            <label for="imported">
+                              บันทึกข้อมูลเข้า RE แล้ว
+                            </label>
+                          </div>
+                          <div class="dropdown-divider"></div>
+                          <div class="row">
+                            <button type="submit" name="button_event"
+                                    style="margin-left: 15px"
+                                    value="button_infoTag"
+                                    class="btn btn-secondary btn-sm"
+                            >
+                              <i class="fas fa-tags"></i>
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                       <button type="submit" name="button_event" value="button_edit"
                               class="btn btn-sm">
                         <i class="fa fa-edit"></i>
@@ -685,6 +743,14 @@
                                 แนวราบ
                               {% elif tag == 'RB010' %}
                                 แนวสูง
+                              {% elif tag == 'nContract' %}
+                                ยังไม่ติดต่อ
+                              {% elif tag == 'contracted' %}
+                                ติดต่อแล้ว
+                              {% elif tag == 'importRE' %}
+                                ข้อมูลรอบันทึก RE
+                              {% elif tag == 'imported' %}
+                                ข้อมูลบันทึกเข้า RE แล้ว
                               {% endif %}
                             </span>
                             </a>
