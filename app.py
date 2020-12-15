@@ -593,16 +593,14 @@ def return_information():
         post_data['Date'] = f'{o.day}-{o.month}-{o.year}'
         post_data['Time'] = f'{o.hour}:{o.minute}:{o.second}'
         post_data['Picture'] = ''
-        check_tag = dict(post_data).get('tag')
-        if check_tag:
-            post_data['Tag'] = post_data['tag']
-            del post_data['tag']
-            del post_data['id']
+        post_data['Other'] = ''
+        del post_data['id']
+        if dict(post_data).get('Tag'):
             db2.child('RestCustomer').push(post_data)
         else:
-            del post_data['id']
-            db2.child('RestCustomer').push(post_data)
+            post_data['Tag'] = ''
         print(post_data)
+        db2.child('RestCustomer').push(post_data)
         return jsonify(post_data)
 
 
