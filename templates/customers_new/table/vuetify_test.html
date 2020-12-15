@@ -266,7 +266,9 @@
                       menu-props="auto"
                       outlined
                       dense
-                  ></v-select>
+                      clearable
+                  >
+                  </v-select>
                 </v-col>
                 {#                <v-switch#}
                 {#                    v-model="singleSelect"#}
@@ -331,9 +333,11 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-account"
                                 v-model="editedItem.Name"
                                 label="Name"
                                 outlined
+                                dense
                             ></v-text-field>
 
                           </v-col>
@@ -343,6 +347,7 @@
                               md="4"
                           >
                             <v-select
+                                prepend-inner-icon="mdi-post-outline"
                                 v-model="editedItem.Product"
                                 :items="productMango"
                                 label="Product"
@@ -356,6 +361,7 @@
                               md="4"
                           >
                             <v-select
+                                prepend-inner-icon="mdi-post"
                                 v-model="editedItem.Other"
                                 :items="productOther"
                                 label="Product"
@@ -369,6 +375,7 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-office-building"
                                 v-model="editedItem.Company"
                                 label="Company"
                                 outlined
@@ -381,6 +388,7 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-card-account-phone"
                                 v-model="editedItem.Tel"
                                 label="Tel"
                                 outlined
@@ -393,6 +401,7 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-email"
                                 v-model="editedItem.Email"
                                 label="Email"
                                 outlined
@@ -405,10 +414,11 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-android-messages"
                                 v-model="editedItem.Message"
                                 label="Message"
                                 outlined
-                                dens
+                                dense
                             ></v-text-field>
 
                           </v-col>
@@ -418,9 +428,11 @@
                               md="4"
                           >
                             <v-text-field
+                                prepend-inner-icon="mdi-access-point-check"
                                 v-model="editedItem.Channel"
                                 label="Channel"
                                 outlined
+                                dense
                             ></v-text-field>
                           </v-col>
 
@@ -430,6 +442,7 @@
                               md="4"
                           >
                             <v-autocomplete
+                                prepend-inner-icon="mdi-tag"
                                 v-model="editedItem.Tag"
                                 :items="tags"
                                 outlined
