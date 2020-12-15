@@ -358,7 +358,6 @@ def ajax_training():
         return make_response(event)
 
 
-
 @app.route('/LIFF_marketing/<string:site>', methods=['GET', 'POST'])
 def LIFF_marketing(site):
     if site == 'construction':
@@ -590,7 +589,19 @@ def return_information():
         return jsonify(status)
     elif request.method == 'POST':
         post_data = request.get_json()
-        db2.child('RestCustomer').push(post_data)
+        o = TimeDate
+        post_data['Date'] = f'{o.day}-{o.month}-{o.year}'
+        post_data['Time'] = f'{o.hour}:{o.minute}:{o.second}'
+        post_data['Picture'] = ''
+        check_tag = dict(post_data).get('tag')
+        if check_tag:
+            post_data['Tag'] = post_data['tag']
+            del post_data['tag']
+            del post_data['id']
+            db2.child('RestCustomer').push(post_data)
+        else:
+            del post_data['id']
+            db2.child('RestCustomer').push(post_data)
         print(post_data)
         return jsonify(post_data)
 

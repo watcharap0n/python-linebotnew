@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
+
 class TimeDate:
     day = datetime.today().day
     month = datetime.today().month
@@ -254,7 +255,8 @@ class TagChart:
             group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
                      'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
                      'Picture': picture, 'Username': username, 'Tag': tag,
-                     'ImportDate/Time': f'{ImportDate} {ImportTime}', 'Tax': tax, 'Authorized': authorized, 'Position': position}
+                     'ImportDate/Time': f'{ImportDate} {ImportTime}', 'Tax': tax, 'Authorized': authorized,
+                     'Position': position}
             toList.append(group)
         return toList
 
@@ -465,8 +467,7 @@ class FirebaseAPI:
     def popChip(self, transaction, id, tag, value):
         ref = self.db.child(transaction).child(id).get().val()[tag]
         x = value
-        txt = ''
-        y = txt.join(x)
+        y = ''.join(x)
         count = 0
         for i in ref:
             toCount = ref[count]
