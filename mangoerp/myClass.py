@@ -1,4 +1,5 @@
 from datetime import datetime
+import datetime as tim
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
@@ -108,7 +109,90 @@ class ButtonEvent:
         datatoexcel.save()
 
 
-#
+class GetDateTime:
+    def __init__(self, value, db):
+        self.value = value
+        self.db = db
+
+    @classmethod
+    def todo_date(cls, value, db):
+        return cls(value, db)
+
+    def get_date(self, user):
+        return user.get(self.value)
+
+    def get_dict_key(self, mydict, val):
+        for key, value in mydict.items():
+            if val == value:
+                return key
+
+    @staticmethod
+    def len_amount(lst, key, value):
+        return [x for x in lst if x[key] == value]
+
+    @staticmethod
+    def len_amount_other(lst):
+        return [x for x in lst if x['channel'] != 'LINE' and x['channel'] != 'web mango']
+
+    @staticmethod
+    def dynamic_month(foo, months):
+        return [i for i in foo for month in months if i['month_check'] == month]
+
+    @staticmethod
+    def dynamic(lst, value, condition):
+        return [i for i in lst if i[value] == condition]
+
+    @staticmethod
+    def dynamic_product_channel(lst, condition_channel, condition_product):
+        return [i for i in lst if i['channel'] == condition_channel and i['product'] == condition_product]
+
+    @staticmethod
+    def dynamic_product_dates(dates, foo, condition):
+        return [result for date in dates for result in foo if date == result['date'] and result['product'] == condition]
+
+    @staticmethod
+    def dynamic_product_dates_channel(dates, foo, condition_product, condition_channel):
+        return [result for date in dates for result in foo if
+                date == result['date'] and result['product'] == condition_product and result[
+                    'channel'] == condition_channel]
+
+    @staticmethod
+    def dynamic_date_channel(dates, foo, condition_channel):
+        return [result for date in dates for result in foo if
+                date == result['date'] and result['channel'] == condition_channel]
+
+    @staticmethod
+    def dynamic_dates(dates, foo):
+        return [result for date in dates for result in foo if date == result['date']]
+
+    def data_datetime(self, transaction):
+        foo = []
+        cut_channels = []
+        cut_products = []
+        ref = self.db.child(transaction).get()
+        for i in ref.each():
+            v = i.val()
+            date = v['Date']
+            time = v['Time']
+            fname = v['Name']
+            company = v['Company']
+            product = v['Product']
+            channel = v['Channel']
+            message = v['Message']
+            Img = v['Picture']
+            email = v['Email']
+            cut_channels.append(channel)
+            cut_products.append(product)
+            d = tim.datetime.strptime(date, '%d-%m-%Y')
+            t = tim.datetime.strptime(time, '%H:%M:%S')
+            mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+                          'month': d.month, 'year': d.year, 'date': date, 'time': time,
+                          'message': message, 'img': Img, 'id': i.key(), 'email': email,
+                          'month_check': f'{d.year}-{d.month}'}
+            foo.append(mapProduct)
+        return foo, cut_products, cut_channels
+
+
 class TagChart:
     @staticmethod
     def information_excel(key, db2):
@@ -492,6 +576,8 @@ class FirebaseAPI:
 
     def information(self, transaction):
         lst = []
+        lst_date = []
+        lst_time = []
         ref = self.db.child(transaction).get()
         for i in ref.each()[1:]:
             key = i.key()
@@ -508,7 +594,9 @@ class FirebaseAPI:
             tax = i.val()['Tax']
             tel = i.val()['Tel']
             time = i.val()['Time']
+            lst_time.append(time)
             date = i.val()['Date']
+            lst_date.append(date)
             message = i.val()['Message']
             authorized = i.val()['Authorized']
             date_insert = i.val()['DateInsert']
@@ -524,7 +612,7 @@ class FirebaseAPI:
                 'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
             }
             lst.append(group)
-        return lst[::-1]
+        return lst[::-1], lst_time, lst_date
 
     def requestDemo(self, transaction):
         ref = self.db.child(transaction).get()

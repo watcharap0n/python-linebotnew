@@ -1,942 +1,575 @@
 {% extends "customers_new/layout.html" %}
 {% block content %}
-
   <br><br><br>
   <div id="app">
-    <div>
-      <div class="col-lg-8">
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fa fa-bar-chart"></i> Revenue Chart
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-8 my-auto">
-                <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
+    <v-row>
+      <v-col cols="6">
+
+      </v-col>
+      <v-col cols="6">
+        <v-app id="inspire" style="height: 430px">
+          <v-card class="overflow-hidden">
+            <v-app-bar
+
+                color="white"
+                scroll-target="#scrolling-techniques-7"
+            >
+              <v-toolbar-title>
+                <v-row>
+                  <v-col cols="6">
+                    <div class="text-center">
+                      <v-dialog
+                          v-model="sortingDialog"
+                          width="500"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                              :loading="!spinDateTime"
+                              color="red lighten-2"
+                              dark
+                              v-bind="attrs"
+                              v-on="on"
+                          >
+                            <v-icon left>
+                              mdi-sort-calendar-ascending
+                            </v-icon>
+                            Sorting
+                          </v-btn>
+                        </template>
+
+                        <v-card>
+                          <v-card-title class="headline grey lighten-2">
+                            Select Your BY
+                          </v-card-title>
+
+                          <v-card-text>
+                            <v-row>
+                              <v-col cols="12">
+                                <v-menu
+                                    ref="menu"
+                                    v-model="menu"
+                                    :close-on-content-click="false"
+                                    :return-value.sync="dates"
+                                    transition="scale-transition"
+                                    offset-y
+                                    min-width="290px"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-combobox
+                                        v-model="dates"
+                                        multiple
+                                        chips
+                                        small-chips
+                                        label="Multiple picker in menu"
+                                        prepend-icon="mdi-calendar"
+                                        readonly
+                                        v-bind="attrs"
+                                        v-on="on"
+                                    ></v-combobox>
+                                  </template>
+                                  <v-date-picker
+                                      v-model="dates"
+                                      multiple
+                                      no-title
+                                      scrollable
+                                  >
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        text
+                                        color="primary"
+                                        @click="menu = false"
+                                    >
+                                      Cancel
+                                    </v-btn>
+                                    <v-btn
+                                        text
+                                        color="primary"
+                                        @click="$refs.menu.save(dates)"
+                                    >
+                                      OK
+                                    </v-btn>
+                                  </v-date-picker>
+                                </v-menu>
+                              </v-col>
+                            </v-row>
+                            <v-row>
+                              <v-col cols="6">
+                                <v-select
+                                    v-model="selectProduct.product"
+                                    :items="products"
+                                    label="Product"
+                                    menu-props="auto"
+                                    outlined
+                                    dense
+                                    clearable
+                                >
+                                </v-select>
+                              </v-col>
+                              <v-col cols="6">
+                                <v-select
+                                    v-model="selectProduct.channel"
+                                    :items="channels"
+                                    label="Channel"
+                                    menu-props="auto"
+                                    outlined
+                                    dense
+                                    clearable
+                                >
+                                </v-select>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+
+                          <v-divider></v-divider>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                color="primary"
+                                text
+                                @click="sortingDialog = false"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                text
+                                @click="sortDate"
+                            >
+                              Submit
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="6">
+                    <div class="text-center">
+                      <v-dialog
+                          v-model="monthDialog"
+                          width="500"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                              :loading="!spinDateTime"
+                              color="red lighten-2"
+                              dark
+                              v-bind="attrs"
+                              v-on="on"
+                          >
+                            <v-icon left>
+                              mdi-calendar-month
+                            </v-icon>
+                            Y/M
+                          </v-btn>
+                        </template>
+
+                        <v-card>
+                          <v-card-title class="headline grey lighten-2">
+                            Select Month
+                          </v-card-title>
+                          <v-card-text>
+                            <v-row>
+                              <v-col cols="12">
+                                <v-menu
+                                    ref="menuMonth"
+                                    v-model="menuMonth"
+                                    :close-on-content-click="false"
+                                    :return-value.sync="date"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="290px"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-combobox
+                                        v-model="date"
+                                        multiple
+                                        chips
+                                        small-chips
+                                        label="Multiple picker in menu"
+                                        prepend-icon="mdi-calendar"
+                                        readonly
+                                        v-bind="attrs"
+                                        v-on="on"
+                                    ></v-combobox>
+                                  </template>
+                                  <v-date-picker
+                                      v-model="date"
+                                      type="month"
+                                      no-title
+                                      scrollable
+                                      multiple
+                                  >
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        text
+                                        color="primary"
+                                        @click="menuMonth = false"
+                                    >
+                                      Cancel
+                                    </v-btn>
+                                    <v-btn
+                                        text
+                                        color="primary"
+                                        @click="$refs.menuMonth.save(date)"
+                                    >
+                                      OK
+                                    </v-btn>
+                                  </v-date-picker>
+                                </v-menu>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+
+                          <v-divider></v-divider>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                color="primary"
+                                text
+                                @click="monthDialog = false"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                text
+                                @click="sortMonth"
+                            >
+                              Submit
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-toolbar-title>
+
+              <v-spacer></v-spacer>
+              <v-chip
+                  class="ma-2"
+                  color="green"
+                  text-color="white"
+                  @click="clickChannel('LINE')"
+              >
+                <v-avatar
+                    left
+                    class="green darken-4"
+                >
+                  [[amount_line]]
+                </v-avatar>
+                LINE
+              </v-chip>
+
+              <v-chip
+                  class="ma-2"
+                  color="green"
+                  text-color="white"
+                  @click="clickChannel('web mango')"
+              >
+                <v-avatar
+                    left
+                    class="green darken-4"
+                >
+                  [[amount_get_demo]]
+                </v-avatar>
+                GetDemo
+              </v-chip>
+
+              <v-chip
+                  class="ma-2"
+                  color="green"
+                  text-color="white"
+                  @click="clickChannel('event Impact')"
+              >
+                <v-avatar
+                    left
+                    class="green darken-4"
+                >
+                  [[amount_other]]
+                </v-avatar>
+                Other
+              </v-chip>
+              <v-chip
+                  class="ma-2"
+                  color="indigo"
+                  text-color="white"
+              >
+                <v-avatar left>
+                  <v-icon>mdi-account-circle</v-icon>
+                </v-avatar>
+                [[ms.length]]
+              </v-chip>
+            </v-app-bar>
+            <v-sheet
+                id="scrolling-techniques-7"
+                class="overflow-y-auto"
+                max-height="365"
+                elevate-on-scroll
+                style="height: 1500px;"
+            >
+              <v-container>
+                <div v-if="!spinDateTime" style="margin-left: 300px; margin-top: 150px">
                   <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
                 </div>
-                <canvas ref="myChart" width="100" height="50"></canvas>
-              </div>
-              <div class="col-sm-4 text-center my-auto">
-                <div class="h4 mb-0 text-primary">[[amountInfo]]</div>
-                <div class="small text-muted">ข้อมูลลูกค้า</div>
-                <hr>
-                <div class="h4 mb-0 text-warning">[[amountImport]]</div>
-                <div class="small text-muted">นำเข้า</div>
-                <hr>
-                <div class="h4 mb-0 text-success">[[amountDemo]]</div>
-                <div class="small text-muted">นัดDemo</div>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-        </div>
-      </div>
-      {#      <div v-if="!spinTable">#}
-      {#        <i id="spinner" class="fas fa-spinner fa-spin fa-2x"></i>#}
-      {#      </div>#}
-      <div class="container-fluid">
-        <v-app id="inspire">
-          <v-data-table
-              v-model="selected"
-              :single-select="singleSelect"
-              show-select
-              :search="search"
-              :headers="headers"
-              :items="transaction"
-              :loading="!spinTable"
-              loading-text="Loading... Please wait"
-              class="elevation-1">
-
-
-            <template v-slot:item.tag="{ item }">
-              <div v-if='item.tag'>
-                <v-btn @click="onShowTag"
-                       x-small
-                       text-color="white"
-                >
-                  <v-icon>
-                    mdi-label-multiple
-                  </v-icon>
-                </v-btn>
-              </div>
-              <div v-for="tag in item.tag" v-if="showTag === true">
-                <div v-if="tag">
-                  <v-chip
-                      class="ma-2"
-                      color="pink"
-                      label
-                      small
-                      close
-                      @click:close="chipRemove(item.tag, item.id)"
-                      text-color="white"
+                <v-expansion-panels popout v-else>
+                  <v-expansion-panel
+                      v-for="(m,i) in ms"
+                      :key="i"
                   >
-                    <v-icon>
-                      mdi-label
-                    </v-icon>
-                    <div v-if="tag === 'CB010'">
-                      รับเหมาสาธารณูปโภค
-                    </div>
-                    <div v-if="tag === 'CC010'">
-                      รับเหมาก่อสร้างระบบวางท่อ
-                    </div>
-                    <div v-if="tag === 'CG010'">
-                      งานระบบประกอบอาคาร
-                    </div>
-                    <div v-if="tag === 'CI010'">
-                      รับเหมาก่อสร้างพลังงานทดแทน
-                    </div>
-                    <div v-if="tag === 'CJ010'">
-                      รับเหมาก่อสร้างงานอาคาร
-                    </div>
-                    <div v-if="tag === 'CM010'">
-                      ออกแบบ ตกแต่ง
-                    </div>
-                    <div v-if="tag === 'CF010'">
-                      รับเหมาขุดเจาะ
-                    </div>
-                    <div v-if="tag === 'CP010'">
-                      งานอลูมิเนียม
-                    </div>
-                    <div v-if="tag === 'CE010'">
-                      ผลิตและติดตั้ง
-                    </div>
-                    <div v-if="tag === 'CH010'">
-                      งานบริการ
-                    </div>
-                    <div v-if="tag === 'CK010'">
-                      รับสร้างบ้าน
-                    </div>
-                    <div v-if="tag === 'CN010'">
-                      ไม่แน่ใจ
-                    </div>
-                    <div v-if="tag === 'CD010'">
-                      ขาย
-                    </div>
-                    <div v-if="tag === 'RC010'">
-                      อสังหาฯ
-                    </div>
-                    <div v-if="tag === 'RA010'">
-                      แนวราบ
-                    </div>
-                    <div v-if="tag === 'RB010'">
-                      แนวสูง
-                    </div>
-                  </v-chip>
-                </div>
-                <div v-else>
-                </div>
-              </div>
-              <div v-else>
-              </div>
-            </template>
-
-            <template v-slot:item.actions="{ item }">
-              <v-icon
-                  small
-                  class="mr-2"
-                  @click="editItem(item)"
-                  color="green"
-              >
-                mdi-pencil
-              </v-icon>
-              <v-icon
-                  small
-                  color="red"
-                  @click="deleteItem(item)"
-              >
-                mdi-delete
-              </v-icon>
-            </template>
-
-            <template v-slot:top>
-              <v-toolbar>
-                <v-tabs
-                    dark
-                    background-color="success">
-                  <v-tab>
-                    <v-badge
-                        color="blue"
-                        :content="amountInfo">
-                      ข้อมูลลูกค้า
-                    </v-badge>
-                  </v-tab>
-
-                  <v-tab>
-                    <a href="/marketing_import">
-                      <v-badge
-                          color="blue"
-                          :content="amountImport"
-                          class="text-white"
-                      >
-                        นำเข้า
-                      </v-badge>
-                    </a>
-                  </v-tab>
-
-                  <v-tab>
-                    <a href="/getDemo">
-                      <v-badge
-                          class="text-white"
-                          :content="amountDemo"
-                          color="blue"
-                      >
-                        นัดDemo
-                      </v-badge>
-                    </a>
-                  </v-tab>
-                </v-tabs>
-              </v-toolbar>
-              <v-toolbar flat>
-                <v-btn
-                    class="ma-2"
-                    :loading="!spinTable"
-                    :disabled="!spinTable"
-                    color="success"
-                    @click="LoadDataInfo"
-                >
-                  MANGO ANYWHERE
-                  <template v-slot:loader>
-                        <span class="custom-loader">
-                          <v-icon light>mdi-cached</v-icon>
-                        </span>
-                  </template>
-                </v-btn>
-                <v-divider
-                    class="mx-4"
-                    inset
-                    vertical
-                ></v-divider>
-                <v-form method="POST">
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                          elevation="3"
-                          medium
-                          small
-                          :loading="!spinTable"
-                          :disabled="!spinTable"
-                          v-bind="attrs"
-                          v-on="on"
-                          color="success"
-                          type="submit"
-                          @click="excelIndex(selected)"
-                      ><i class="far fa-file-excel"></i>
-                      </v-btn>
-                    </template>
-                    <span>Index Excel</span>
-                    <template v-slot:loader>
-                        <span class="custom-loader">
-                          <v-icon light>mdi-cached</v-icon>
-                        </span>
-                    </template>
-                  </v-tooltip>
-                </v-form>
-
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        style="margin-left: 10px"
-                        elevation="3"
-                        :loading="!spinTable"
-                        :disabled="!spinTable"
-                        medium
-                        small
-                        v-bind="attrs"
-                        v-on="on"
-                        color="success"
-                        @click="sortIndex(selected)"
-                    ><i class="fas fa-user-tag"></i>
-                    </v-btn>
-                  </template>
-                  <span>Index Sorting</span>
-                  <template v-slot:loader>
-                      <span class="custom-loader">
-                        <v-icon light>mdi-cached</v-icon>
-                      </span>
-                  </template>
-                </v-tooltip>
-
-                <v-col cols="2" style="margin-top: 30px">
-                  <v-select
-                      :loading="!spinTable"
-                      :items="productMango"
-                      label="Product"
-                      v-model="search"
-                      menu-props="auto"
-                      outlined
-                      dense
-                      clearable
-                  >
-                  </v-select>
-                </v-col>
-                {#                <v-switch#}
-                {#                    v-model="singleSelect"#}
-                {#                    label="Single select"#}
-                {#                    class="pa-3"#}
-                {#                ></v-switch>#}
-                <v-spacer></v-spacer>
-                <div class="small" style="margin-left: 10px; margin-top: 25px; margin-right: 20px">
-                  <v-select
-                      :loading="!spinTable"
-                      v-model="sortTag"
-                      :items="tags"
-                      chips
-                      multiple
-                      label="Tags"
-                  ></v-select>
-
-                </div>
-                <div class="small">
-                  <v-text-field
-                      :loading="!spinTable"
-                      v-model="search"
-                      label="Search"
-                      single-line
-                      hide-details
-                  ></v-text-field>
-                </div>
-                <v-dialog
-                    v-model="dialog"
-                    max-width="1000px"
-                >
-
-
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        :loading="!spinTable"
-                        color="success"
-                        style=" margin-left: 10px"
-                        dark
-                        small
-                        elevation="3"
-                        v-bind="attrs"
-                        v-on="on"
-                    >
-                      <i class="fa fa-plus" aria-hidden="true"></i>New Item
-                    </v-btn>
-                  </template>
-
-
-                  <v-card>
-                    <v-card-title>
-                      <span class="headline">[[ formTitle ]]</span>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
+                    <v-expansion-panel-header>
+                      <v-row>
+                        <v-col style="margin-top: 10px"
+                               cols="3"
+                               sm="3"
+                               md="3"
+                        >
+                          <v-menu
+                              bottom
+                              right
+                              transition="scale-transition"
+                              origin="top left"
                           >
-                            <v-text-field
-                                prepend-inner-icon="mdi-account"
-                                v-model="editedItem.Name"
-                                label="Name"
-                                outlined
-                                dense
-                            ></v-text-field>
+                            <template v-slot:activator="{ on }">
+                              <v-chip
+                                  pill
+                                  v-on="on"
+                              >
+                                <v-avatar left>
+                                  <v-img :src="m.img"></v-img>
+                                </v-avatar>
+                                [[m.company]]
+                              </v-chip>
+                            </template>
+                            <v-card width="300">
+                              <v-list dark>
+                                <v-list-item>
+                                  <v-list-item-avatar>
+                                    <v-img :src="m.img"></v-img>
+                                  </v-list-item-avatar>
+                                  <v-list-item-content>
+                                    <v-list-item-title>[[m.fname]]</v-list-item-title>
+                                    <v-list-item-subtitle>[[m.company]]</v-list-item-subtitle>
+                                  </v-list-item-content>
+                                  <v-list-item-action>
+                                    <v-btn
+                                        icon
+                                        @click="menu = false"
+                                    >
+                                      <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
+                                  </v-list-item-action>
+                                </v-list-item>
+                              </v-list>
+                              <v-list>
+                                <v-list-item @click="() => {}">
+                                  <v-list-item-action>
+                                    <v-icon>mdi-briefcase</v-icon>
+                                  </v-list-item-action>
+                                  <v-list-item-subtitle>[[m.email]]</v-list-item-subtitle>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                        </v-col>
 
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
+                        <v-col cols="3">
+                          <v-chip
+                              class="ma-2"
+                              color="primary lighten-1"
+                              text-color="white"
                           >
-                            <v-select
-                                prepend-inner-icon="mdi-post-outline"
-                                v-model="editedItem.Product"
-                                :items="productMango"
-                                label="Product"
-                                outlined
-                                dense
-                            ></v-select>
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
+                            [[m.product]]
+                          </v-chip>
+                        </v-col>
+                        <v-col
+                            cols="3"
+                            sm="3"
+                            md="3"
+                        >
+                          <v-chip
+                              class="ma-2"
+                              color="green lighten-1"
+                              text-color="white"
                           >
-                            <v-select
-                                prepend-inner-icon="mdi-post"
-                                v-model="editedItem.Other"
-                                :items="productOther"
-                                label="Product"
-                                outlined
-                                dense
-                            ></v-select>
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
+                            [[m.channel]]
+                          </v-chip>
+                        </v-col>
+                        <v-col
+                            cols="3"
+                            sm="3"
+                            md="3"
+                        >
+                          <v-chip
+                              style="margin-top: 10px"
+                              color="red lighten-4"
+                              class="ml-0 mr-2 black--text"
+                              label
+                              small
                           >
-                            <v-text-field
-                                prepend-inner-icon="mdi-office-building"
-                                v-model="editedItem.Company"
-                                label="Company"
-                                outlined
-                                dense
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                          >
-                            <v-text-field
-                                prepend-inner-icon="mdi-card-account-phone"
-                                v-model="editedItem.Tel"
-                                label="Tel"
-                                outlined
-                                dense
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                          >
-                            <v-text-field
-                                prepend-inner-icon="mdi-email"
-                                v-model="editedItem.Email"
-                                label="Email"
-                                outlined
-                                dense
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                          >
-                            <v-text-field
-                                prepend-inner-icon="mdi-android-messages"
-                                v-model="editedItem.Message"
-                                label="Message"
-                                outlined
-                                dense
-                            ></v-text-field>
-
-                          </v-col>
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                          >
-                            <v-text-field
-                                prepend-inner-icon="mdi-access-point-check"
-                                v-model="editedItem.Channel"
-                                label="Channel"
-                                outlined
-                                dense
-                            ></v-text-field>
-                          </v-col>
-
-                          <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                          >
-                            <v-autocomplete
-                                prepend-inner-icon="mdi-tag"
-                                v-model="editedItem.Tag"
-                                :items="tags"
-                                outlined
-                                dense
-                                chips
-                                small-chips
-                                label="Tags"
-                                multiple
-                            ></v-autocomplete>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
-
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                          color="blue darken-1"
-                          text
-                          @click="close"
-                      >
-                        Cancel
-                      </v-btn>
-                      <v-btn
-                          color="blue darken-1"
-                          text
-                          @click="save"
-                      >
-                        Save
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-
-                </v-dialog>
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                  <v-card>
-                    <v-card-title class="headline">Are you sure you want to delete this item?
-                    </v-card-title>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-toolbar>
-            </template>
-
-
-            <template v-slot:no-data>
-              <v-btn
-                  color="primary"
-                  @click="createInformation"
-              >
-                Reset
-              </v-btn>
-            </template>
-
-          </v-data-table>
+                            [[m.year]]/[[m.month]]/[[m.day]]
+                          </v-chip>
+                        </v-col>
+                      </v-row>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      [[m.message]]
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+              </v-container>
+            </v-sheet>
+          </v-card>
         </v-app>
-      </div>
-    </div>
+      </v-col>
+    </v-row>
+
+
   </div>
 
 
+
+
   <script>
+
       new Vue({
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              productMango: ['Construction', 'RealEstate', 'Project Planning', 'BI Dashboard', 'Mango ERP (Construction)'],
-              productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
-              showSelect: [],
-              singleSelect: false,
-              selected: [],
-              loading: false,
-              dialog: false,
-              dialogDelete: false,
-              spinTable: true,
-              spinChart: true,
-              showTag: false,
-              search: '',
-              searchProduct: '',
-              transaction: [],
-              tags: [],
-              amountInfo: '',
-              amountDemo: '',
-              amountImport: '',
-              sortTag: [],
-              editedIndex: -1,
-              editedItem: {
-                  id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
-              },
-              defaultItem: {
-                  id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
-              },
-              dataSetData: [],
-              amountCon: '',
-              amountReal: '',
-              amountPlan: '',
-              amountOther: '',
+              dates: [],
+              date: [],
+              products: [],
+              channels: [],
+              ms: [],
+              spinDateTime: true,
+              menu: false,
+              menuMonth: false,
+              sortingDialog: false,
+              monthDialog: false,
+              amount_line: '',
+              amount_get_demo: '',
+              amount_other: '',
+              selectProduct: [
+                  {
+                      product: '',
+                      channel: '',
+                  }
+              ],
           }),
-          computed: {
-              formTitle() {
-                  return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-              },
-              headers() {
-                  return [
-                      {text: 'Edit/Delete', value: 'actions', sortable: false},
-                      {text: 'แท็ก', value: 'tag'},
-                      {text: 'ชื่อ', value: 'Name'},
-                      {text: 'ผลิตภัณฑ์', value: 'Product'},
-                      {text: 'อื่นๆ', value: 'Other'},
-                      {text: 'บริษัท', value: 'Company'},
-                      {text: 'เบอร์', value: 'Tel'},
-                      {text: 'อีเมล', value: 'Email'},
-                      {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
-                      {text: 'ข้อความ', value: 'Message'},
-                      {text: 'โปรไฟล์', value: 'Profile'},
-                      {text: 'วันเวลา', value: 'datetime'},
-                      {text: 'ช่องทาง', value: 'Channel'},
-                      {text: 'คนนำเข้า', value: 'Username'},
-                      {text: 'วันเวลานำ', value: 'datetime_insert'},
-                  ]
-              }
+          created() {
+              this.getDateTime()
           },
           watch: {
-              dialog(val) {
-                  val || this.close()
-              },
-              dialogDelete(val) {
-                  val || this.closeDelete()
-              },
-              transaction: 'showData',
-              dataSetData: 'showChart'
-          },
-          created() {
-              this.createInformation()
-          },
-          mounted: async function () {
-              this.dataSetData = await this.getListData();
-              console.log("mounted Chart", this.dataSetData);
-              this.getDataSet();
-              this.buildChart(this.dataSetData);
+              ms: 'showDateTime'
           },
           methods: {
-              getDataSet: function () {
-                  console.log("get data sets");
-                  console.log(this.dataSetData);
-                  this.dataSetData.forEach(data => {
-                  })
-                  this.amountCon = this.dataSetData.map(function (chartData) {
-                      return chartData.con;
-                  });
-                  this.amountReal = this.dataSetData.map(function (chartData) {
-                      return chartData.real;
-                  });
-                  this.amountPlan = this.dataSetData.map(function (chartData) {
-                      return chartData.planing;
-                  });
-                  this.amountOther = this.dataSetData.map(function (chartData) {
-                      return chartData.other;
-                  });
+              showDateTime() {
+                  if (this.ms) {
+                      this.spinDateTime = true
+                  }
               },
-              getListData: async function () {
-                  this.spinChart = false
-                  const {data} = await axios.get(
-                      "/json_information"
-                  );
-                  return data.amountProduct;
+              clickChannel(value) {
+                  let data = {
+                      'channel': value
+                  }
+                  this.postDateTime(data)
               },
-              buildChart() {
-                  Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-                  Chart.defaults.global.defaultFontColor = '#292b2c';
-                  new Chart(this.$refs.myChart, {
-                      type: "bar",
-                      data: {
-                          labels: ['Construction', 'RealEstate', 'Planning', 'Other'],
-                          datasets: [
-                              {
-                                  label: 'Product',
-                                  data: [this.amountCon, this.amountReal, this.amountPlan, this.amountOther],
-                                  backgroundColor: [
-                                      'rgba(254,39,47,1)',
-                                      'rgba(251,220,47,1)',
-                                      'rgba(2,117,216,1)',
-                                      'rgba(139,242,47,1)',
-                                  ],
-                                  borderColor: [
-                                      'rgba(254,39,47,1)',
-                                      'rgba(251,220,47,1)',
-                                      'rgba(2,117,216,1)',
-                                      'rgba(139,242,47, 1)',
-                                  ],
-                                  borderWidth: 1
-                              }
-                          ]
-                      },
-                      options: {
-                          scales: {
-                              yAxes: [{
-                                  ticks: {
-                                      beginAtZero: true
-                                  }
-                              }]
-                          }
-                      }
-                  });
+              sortMonth() {
+                  let data = {
+                      'months': this.date
+                  }
+                  this.postMonth(data)
+                  console.log(data)
+                  this.monthDialog = false
               },
-              createInformation() {
-                  this.spinTable = false
-                  const path = '/json_information';
+              sortDate() {
+                  let data = {
+                      'product': this.selectProduct.product,
+                      'dates': this.dates,
+                      'channel': this.selectProduct.channel
+                  }
+                  console.log('data', data)
+                  this.postDateTime(data)
+                  this.sortingDialog = false
+              },
+              getDateTime() {
+                  this.spinDateTime = false
+                  const path = '/json_datetime';
                   axios.get(path)
                       .then((res) => {
-                          let response = this.transaction = res.data.transaction;
-                          let tags = this.tags = res.data.tags
-                          let amountInfo = this.amountInfo = res.data.amount_info
-                          let amountImport = this.amountImport = res.data.amount_import
-                          let amountDemo = this.amountDemo = res.data.amount_demo
-                          console.log('tags', tags)
-                          console.log('transaction: ', response)
+                          this.ms = res.data.ms
+                          this.amount_line = res.data.amount_channel.line
+                          this.amount_get_demo = res.data.amount_channel.get_demo
+                          this.amount_other = res.data.amount_channel.other
+                          this.products = res.data.products
+                          this.channels = res.data.channels
+                          console.log('res datetime', ok)
                       })
                       .catch((error) => {
                           console.error(error);
                       });
               },
-              onShowTag() {
-                  this.showTag = !this.showTag
-              },
-              chipRemove(remove, id) {
-                  let chip = remove.splice(remove.indexOf(remove), 1)
-                  this.updateChip(chip, id)
-              },
-              excelIndex(selected) {
-                  console.log(selected)
-                  key = []
-                  selected.forEach((data) => {
-                      key.push(data.id)
-                  })
-                  this.ExcelPush(key)
-                  console.log(key)
-              },
-              sortIndex(selected) {
-                  user = []
-                  console.log(this.sortTag)
-                  console.log(selected)
-                  this.selected.forEach((data) => {
-                      user.push(data.id)
-                  })
-                  group = {'tags': this.sortTag, 'key': user}
-                  console.log(group)
-                  this.SortPush(group)
-                  //  key = []
-                  //selected.forEach((i) => {
-                  //  console.log(i)
-                  // });
-              },
-              showData() { // condition
-                  if (this.transaction) {
-                      this.spinTable = true
-                  }
-              },
-              showChart() {
-                  if (this.dataSetData) {
-                      this.spinChart = true
-                  }
-              },
-              LoadDataInfo() { //
-                  this.spinTable = false;
-                  this.createInformation()
-                  console.log(this.spinTable)
-              },
-              editItem(item) {
-                  this.editedIndex = this.transaction.indexOf(item)
-                  this.editedItem = Object.assign({}, item)
-                  this.dialog = true
-                  console.log(this.editedItem)
-              },
-
-              deleteItem(item) {
-                  this.editedIndex = this.transaction.indexOf(item)
-                  this.editedItem = Object.assign({}, item)
-                  this.dialogDelete = true
-              },
-
-              deleteItemConfirm() {
-                  this.transaction.splice(this.editedIndex, 1)
-                  this.removeData(this.editedItem.id)
-                  this.closeDelete()
-              },
-
-              close() {
-                  this.dialog = false
-                  this.$nextTick(() => {
-                      this.editedItem = Object.assign({}, this.defaultItem)
-                      this.editedIndex = -1
-                  })
-              },
-
-              closeDelete() {
-                  this.dialogDelete = false
-                  this.$nextTick(() => {
-                      this.editedItem = Object.assign({}, this.defaultItem)
-                      this.editedIndex = -1
-                  })
-              },
-
-              save() {
-                  if (this.editedIndex > -1) {
-                      let payload = Object.assign(this.transaction[this.editedIndex], this.editedItem)
-                      this.updateData(payload, payload.id);
-                  } else {
-                      this.addData(this.editedItem)
-                      console.log(this.editedItem)
-                  }
-                  this.close()
-              },
-              ExcelPush(id) {
-                  const path = `/excel_information`;
-                  axios.post(path, id)
+              postDateTime(data) {
+                  const path = '/json_datetime';
+                  axios.post(path, data)
                       .then(() => {
                           console.log('success')
+                          this.getSortDate()
                       })
                       .catch((error) => {
                           // eslint-disable-next-line
                           console.error(error);
                       });
               },
-              SortPush(group) {
-                  const path = `/tag_information`;
-                  axios.post(path, group)
-                      .then(() => {
-                          this.createInformation();
-                          this.showLog = 'Sorting!';
-                          this.showMessage = true;
+              getSortDate() {
+                  this.spinDateTime = false
+                  const path = '/return_sort'
+                  axios.get(path)
+                      .then((res) => {
+                          this.amount_line = res.data.amount_channel.line
+                          this.amount_get_demo = res.data.amount_channel.get_demo
+                          this.amount_other = res.data.amount_channel.other
+                          this.ms = res.data.ms
                       })
                       .catch((error) => {
-                          // eslint-disable-next-line
-                          console.error(error);
-                          this.createInformation();
-                      });
+                          console.error(error)
+                      })
               },
-
-              updateChip(chip, id) {
-                  const path = `/json_chip/${id}`;
-                  axios.post(path, chip)
+              postMonth(data) {
+                  const path = '/data_month';
+                  axios.post(path, data)
                       .then(() => {
+                          this.getMonths()
                           console.log('success')
                       })
                       .catch((error) => {
                           console.error(error);
-                      })
+                      });
               },
-
-              updateData(payload, id) {
-                  const path = `/update_information/${id}`;
-                  axios.post(path, payload)
-                      .then(() => {
-                          this.showLog = 'Data updated!';
-                          this.showMessage = true;
+              getMonths() {
+                  this.spinDateTime = false
+                  const path = '/data_month';
+                  axios.get(path)
+                      .then((res) => {
+                          this.amount_line = res.data.amount_channel.line
+                          this.amount_get_demo = res.data.amount_channel.get_demo
+                          this.amount_other = res.data.amount_channel.other
+                          let ms = this.ms = res.data.ms
+                          console.log('months', ms)
                       })
                       .catch((error) => {
                           console.error(error);
-                          this.createInformation();
                       });
-              },
-              removeData(id) {
-                  const path = `/delete_information/${id}`;
-                  axios.post(path)
-                      .then(() => {
-                          console.log(path)
-                      })
-                      .catch((error) => {
-                          // eslint-disable-next-line
-                          console.error(error);
-
-                      });
-              },
-              addData(payload) {
-                  const path = '/json_information'
-                  axios.post(path, payload)
-                      .then(() => {
-                          console.log(payload)
-                          this.createInformation();
-                          this.showMessage = true;
-                      })
-                      .catch((error) => {
-                          console.log(error)
-                          this.createInformation()
-                      });
-              },
-              sortProduct(value) {
-                  this.search = value
-              },
+              }
           },
-          delimiters: ["[[", "]]"],
+          delimiters: ["[[", "]]"]
+
       })
   </script>
 
-
-
-
-  <style>
-      #spinner {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          color: darkblue;
-      }
-
-      #spinChar {
-          color: darkblue;
-      }
-
-
-      .custom-loader {
-          animation: loader 1s infinite;
-          display: flex;
-      }
-
-      @-moz-keyframes loader {
-          from {
-              transform: rotate(0);
-          }
-          to {
-              transform: rotate(360deg);
-          }
-      }
-
-      @-webkit-keyframes loader {
-          from {
-              transform: rotate(0);
-          }
-          to {
-              transform: rotate(360deg);
-          }
-      }
-
-      @-o-keyframes loader {
-          from {
-              transform: rotate(0);
-          }
-          to {
-              transform: rotate(360deg);
-          }
-      }
-
-      @keyframes loader {
-          from {
-              transform: rotate(0);
-          }
-          to {
-              transform: rotate(360deg);
-          }
-      }
-
-
-  </style>
 
 {% endblock %}

@@ -1,20 +1,21 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
     make_response, send_from_directory
+from collections import OrderedDict
 from flask_cors import CORS
 import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
 from pusher import Pusher
-from datetime import timedelta
+from datetime import timedelta, datetime
+import datetime
 from random import randrange
 from numpy import random
 from model_image import *
 from PIL import Image
 from mangoerp.myClass import TimeDate, ButtonEvent, FirebaseCustomer, FAQ, FirebaseNewCustomer, \
-    WebScraping, TagChart, pd, FirebaseAPI
+    WebScraping, TagChart, pd, FirebaseAPI, GetDateTime
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
-from datetime import datetime
 from firebase_admin import credentials, auth
 from mangoerp.mangoerp_card import *
 from mangoerp.flex_message import *
@@ -567,6 +568,134 @@ def page_info():
     return render_template('customers_new/table/informationV2.html')
 
 
+@app.route('/json_datetime', methods=['GET', 'POST'])
+def return_datetime():
+    if request.method == 'GET':
+        get_data = GetDateTime(None, db2)
+        month20 = get_data.todo_date('month', db2)
+        result = get_data.data_datetime('RestCustomer')
+        todo, product, channel = result[0], result[1], result[2]
+        todo.sort(key=month20.get_date)
+        product = list(OrderedDict.fromkeys(product).keys())
+        channel = list(OrderedDict.fromkeys(channel).keys())
+        LINE = get_data.len_amount(todo, 'channel', 'LINE')
+        get_demo = get_data.len_amount(todo, 'channel', 'web mango')
+        other = get_data.len_amount_other(todo)
+        status = {'ms': todo[::-1], 'products': product, 'channels': channel,
+                  'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}}
+        return jsonify(status)
+    elif request.method == 'POST':
+        lst = []
+        post_data = request.get_json()
+        print(post_data)
+        if post_data.get('dates'):
+            for i in post_data['dates']:
+                d = datetime.datetime.strptime(i, '%Y-%m-%d')
+                date = f'{d.day}-{d.month}-{d.year}'
+                lst.append(date)
+            if post_data.get('product') and post_data.get('channel') and post_data.get('dates'):
+                post_data = {'product': post_data['product'], 'dates': lst, 'channel': post_data['channel']}
+                db2.child('set_sort_data').set(post_data)
+            elif post_data.get('dates') and post_data.get('channel'):
+                post_data = {'dates': lst, 'channel': post_data['channel']}
+                db2.child('set_sort_data').set(post_data)
+            elif post_data.get('dates') and post_data.get('product'):
+                post_data = {'dates': lst, 'product': post_data['product']}
+                db2.child('set_sort_data').set(post_data)
+            else:
+                post_data = {'dates': lst}
+                db2.child('set_sort_data').set(post_data)
+        db2.child('set_sort_data').set(post_data)
+        return make_response(request.get_json())
+
+
+@app.route('/return_sort')
+def return_sort():
+    ref = db2.child('set_sort_data').get()
+    ref = dict(ref.val())
+    get_data = GetDateTime(None, db2)
+    month20 = get_data.todo_date('month', db2)
+    result = get_data.data_datetime('RestCustomer')
+    todo, product, channel = result[0], result[1], result[2]
+    todo.sort(key=month20.get_date)
+    print('ref', ref)
+    if ref.get('dates') and ref.get('product') and ref.get('channel'):
+        ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('dates') and ref.get('channel'):
+        ms = get_data.dynamic_date_channel(ref['dates'], todo, ref['channel'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('dates') and ref.get('product'):
+        ms = get_data.dynamic_product_dates(ref['dates'], todo, ref['product'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('product') and ref.get('channel'):
+        ms = get_data.dynamic_product_channel(todo, ref['channel'], ref['product'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('dates'):
+        ms = get_data.dynamic_dates(ref['dates'], todo)
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('product'):
+        dict_key = get_data.get_dict_key(ref, ref['product'])
+        ms = get_data.dynamic(todo, dict_key, ref['product'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif ref.get('channel'):
+        print('channel')
+        dict_key = get_data.get_dict_key(ref, ref['channel'])
+        ms = get_data.dynamic(todo, dict_key, ref['channel'])
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+
+
+@app.route('/data_month', methods=['GET', 'POST'])
+def data_month():
+    if request.method == 'GET':
+        get_data = GetDateTime(None, db2)
+        month20 = get_data.todo_date('month', db2)
+        result = get_data.data_datetime('RestCustomer')
+        todo = result[0]
+        todo.sort(key=month20.get_date)
+        ref = db2.child('sort_month').get()
+        ref = dict(ref.val())
+        ms = get_data.dynamic_month(todo, ref['months'])
+        print(ms)
+        LINE = get_data.len_amount(ms, 'channel', 'LINE')
+        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        other = get_data.len_amount_other(ms)
+        return jsonify({'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif request.method == 'POST':
+        post_data = request.get_json()
+        print(post_data)
+        db2.child('sort_month').set(post_data)
+        return make_response(post_data)
+
+
 @app.route('/json_information', methods=['GET', 'POST'])
 def return_information():
     tag = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
@@ -576,14 +705,15 @@ def return_information():
         transaction = FirebaseAPI(db=db2)
         fire = FirebaseNewCustomer(db=db2)
         marketing_infomation = transaction.information('RestCustomer')
-        len_transaction = len(marketing_infomation)
+        len_transaction = len(marketing_infomation[0])
         len_import = len(fire.liffCustomer())
         len_demo = len(fire.demoCustomer())
         REAL = fire.lenProduct('RestCustomer', 'RealEstate')
         CON = fire.lenProduct('RestCustomer', 'Construction')
         PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
         OTHER = fire.lenProduct('RestCustomer', 'Other')
-        status = {'transaction': marketing_infomation, 'status': 'success', 'tags': tag,
+        status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag,
+                  'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1],
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
                   'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}
         return jsonify(status)
