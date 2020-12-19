@@ -2,9 +2,11 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn import svm
 from attacut import tokenize
 from numpy import random
+from collections import OrderedDict
 import firebase_admin  # authen Firebase
 from firebase_admin import credentials, auth  # authen Firebase,
 import pyrebase
+import datetime as tim
 import json
 from flask import Flask, request, abort, render_template, jsonify, session, g
 import pandas as pd
@@ -28,7 +30,6 @@ app = Flask(__name__)
 #         print(i.val()['tag'])
 #         # print(i.key())
 #         db.child('requestContract').child(i.key()).update({'tag': ''})
-
 
 
 #
@@ -224,13 +225,265 @@ app = Flask(__name__)
 #         db2.child('restcustomer').child(id).remove()
 #         return make_response({'delete': 'success'})
 #     return jsonify(response_object)
-'''
-dioqjffpwijidjij
-ciojdiejqi
 
 
-for i in ref:
-    print(i)
-ooo'''
+# test = {'company': 'google', 'date/time': '5-12-2020 11:12:47', 'email': 'sldale2004@yahoo.com',
+#         'fname': 'HenryFap', 'index': 217, 'key': '-MNly6U1o2_3NDomkjrZ',
+#         'message': 'Invest $1 today to make $1000 tomorrow. \r\nLink - https://is.gd/eVGXkc', 'product': 'Mango Application on Mobile', 'tag': [''], 'tel': '89035069608'}
+#
+# del test['key']
+# del test['index']
+# d = datetime.datetime.strptime(test['date/time'], "%d-%m-%Y  %H:%M:%S")
+# day, month, year, hour, minute, sec = d.day, d.month, d.year, d.hour, d.minute, d.second
+# test['Date'] = test.pop('date/time')
+# test.update({'Date': f'{day}-{month}-{year}'})
+# test['Time'] = test
+# test.update({'Time': f'{hour}:{minute}:{sec}'})
+# event = {'Date': test['Date'], 'Time': test['Time'],'tag': test['tag'] ,'event': {test['company'], test['email'], test['fname'], test['product'], test['tel'], test['message']}}
+# print(event)
 
 
+class GetDateTime:
+    def __init__(self, value, db):
+        self.value = value
+        self.db = db
+
+    @classmethod
+    def todo_date(cls, value):
+        return cls(value, db=db)
+
+    def get_date(self, user):
+        return user.get(self.value)
+
+    @staticmethod
+    def dynamic_date(lst, value, condition):
+        return [i for i in lst if i[value] == condition]
+
+    # def data_datetime(self, transaction):
+    #     foo = []
+    #     ref = self.db.child(transaction).get()
+    #     for i in ref.each():
+    #         v = i.val()
+    #         date = v['Date']
+    #         time = v['Time']
+    #         fname = v['Name']
+    #         company = v['Company']
+    #         product = v['Product']
+    #         channel = v['Channel']
+    #         d = tim.datetime.strptime(date, '%d-%m-%Y')
+    #         t = tim.datetime.strptime(time, '%H:%M:%S')
+    #         mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+    #                       'month': d.month, 'year': d.year}
+    #         foo.append(mapProduct)
+    #     return foo
+
+
+foo = []
+ref = db.child('RestCustomer').get()
+cut_channel = []
+cut_product = []
+for i in ref.each():
+    v = i.val()
+    date = v['Date']
+    time = v['Time']
+    fname = v['Name']
+    company = v['Company']
+    product = v['Product']
+    cut_product.append(product)
+    channel = v['Channel']
+    cut_channel.append(channel)
+    d = tim.datetime.strptime(date, '%d-%m-%Y')
+    t = tim.datetime.strptime(time, '%H:%M:%S')
+    mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+                  'month': d.month, 'year': d.year, 'date': f'{date}', 'time': f'{time}', 'month_check': f'{d.year}-{d.month}'}
+    foo.append(mapProduct)
+
+
+
+
+# count = 0
+# for i in range(1, len(cut_channel)):
+#     count += 1
+#     while count < len(cut_channel):
+#         if cut_channel[i] == cut_channel[count]:
+#             del cut_channel[count]
+#         else:
+#             count += 1
+#     i += 1
+#
+# print(cut_channel)
+
+
+
+
+
+get_data = GetDateTime(value=None, db=db)
+month = get_data.todo_date('month')
+foo.sort(key=month.get_date)
+
+x = ['2020-11', '2020-12']
+lst = []
+for i in foo:
+    for e in x:
+        if i['month_check'] == e:
+            lst.append(i)
+
+for i in lst:
+    if i['channel'] != 'LINE' and i['channel'] != 'web mango':
+        print(i)
+
+
+# product = str(input('Product: '))
+# channel = str(input('Channel: '))
+# print(product, type(product))
+# print(channel, type(channel))
+# date = '2020-12-18'
+# d = tim.datetime.strptime(date, '%Y-%m-%d')
+# print(f'{d.day}-{d.month}-{d.year}')
+
+# x = ['2020-11-11', '2020-11-5', '2020-11-13']
+# for i in x:
+#     d = tim.datetime.strptime(i, '%Y-%m-%d')
+#     d = f'{d.day}-{d.month}-{d.year}'
+#     for e in foo:
+#         if d == e['date'] and e['product'] == 'Construction':
+#             print(e)
+#
+
+#
+
+# ref = db.child('set_sort_date').get()
+# ref = dict(ref.val())
+# print()
+# ms = [result for date in dates for result in foo if date == result['date'] and result['product'] == 'Construction']
+
+
+
+
+
+
+    # if i['day'] == :
+    #     print()
+
+    # if i['date'] == f'{d.day}-{d.month}-{d.year}':
+    #     pass
+
+# y = next(x for x in foo if x['month'] > 12)
+
+#
+# test = {y['month']: foo}
+# print(test)
+
+# m10 = get_data.dynamic_date(foo, 'month', 10)
+# m11 = get_data.dynamic_date(foo, 'product', 'RealEstate')
+# m12 = get_data.dynamic_date(foo, 'month', 12)
+# print(m11)
+
+
+# print(m11)
+# def get_dict_key(mydict, val):
+#     for key, value in mydict.items():
+#         if val == value:
+#             return key
+#
+# s = {'ok': 'ja'}
+# if s.get('jj'):
+#     print(s)
+# else:
+#     print('ok')
+
+
+# {#                      <v-expansion-panels popout>#}
+# {#                        <v-expansion-panel#}
+# {#                            v-for="(x, z) in m"#}
+# {#                            :key="z"#}
+# {#                        >#}
+# {#                          <v-expansion-panel-header>#}
+# {#                            <v-col cols="3">#}
+# {#                              <v-menu#}
+# {#                                  bottom#}
+# {#                                  right#}
+# {#                                  transition="scale-transition"#}
+# {#                                  origin="top left"#}
+# {#                              >#}
+# {#                                <template v-slot:activator="{ on }">#}
+# {#                                  <v-chip#}
+# {#                                      pill#}
+# {#                                      v-on="on"#}
+# {#                                  >#}
+# {#                                    <v-avatar left>#}
+# {#                                      <v-img :src="x.img"></v-img>#}
+# {#                                    </v-avatar>#}
+# {#                                    บริษัท: [[x.company]]#}
+# {#                                  </v-chip>#}
+# {#                                </template>#}
+# {#                                <v-card width="300">#}
+# {#                                  <v-list dark>#}
+# {#                                    <v-list-item>#}
+# {#                                      <v-list-item-avatar>#}
+# {#                                        <v-img :src="x.img"></v-img>#}
+# {#                                      </v-list-item-avatar>#}
+# {#                                      <v-list-item-content>#}
+# {#                                        <v-list-item-title>[[x.fname]]</v-list-item-title>#}
+# {#                                        <v-list-item-subtitle>[[x.company]]</v-list-item-subtitle>#}
+# {#                                      </v-list-item-content>#}
+# {#                                      <v-list-item-action>#}
+# {#                                        <v-btn#}
+# {#                                            icon#}
+# {#                                            @click="menu = false"#}
+# {#                                        >#}
+# {#                                          <v-icon>mdi-close-circle</v-icon>#}
+# {#                                        </v-btn>#}
+# {#                                      </v-list-item-action>#}
+# {#                                    </v-list-item>#}
+# {#                                  </v-list>#}
+# {#                                  <v-list>#}
+# {#                                    <v-list-item @click="() => {}">#}
+# {#                                      <v-list-item-action>#}
+# {#                                        <v-icon>mdi-briefcase</v-icon>#}
+# {#                                      </v-list-item-action>#}
+# {#                                      <v-list-item-subtitle>[[x.email]]</v-list-item-subtitle>#}
+# {#                                    </v-list-item>#}
+# {#                                  </v-list>#}
+# {#                                </v-card>#}
+# {#                              </v-menu>#}
+# {#                            </v-col>#}
+# {#                            <v-col cols="3">#}
+# {#                              <v-chip#}
+# {#                                  class="ma-2"#}
+# {#                                  color="red"#}
+# {#                                  outlined#}
+# {#                              >#}
+# {#                                <v-icon left>#}
+# {#                                  mdi-office-building#}
+# {#                                </v-icon>#}
+# {#                                [[x.product]]#}
+# {#                              </v-chip>#}
+# {#                            </v-col>#}
+# {#                            <v-col cols="3">#}
+# {#                              <v-chip#}
+# {#                                  class="ma-2"#}
+# {#                                  color="success"#}
+# {#                                  outlined#}
+# {#                              >#}
+# {#                                <v-icon left>#}
+# {#                                  mdi-server-plus#}
+# {#                                </v-icon>#}
+# {#                                [[x.channel]]#}
+# {#                              </v-chip>#}
+# {#                            </v-col>#}
+# {#                            <v-col cols="2" class="grey--text text-truncate hidden-sm-and-down">#}
+# {#                              [[x.datetime]]#}
+# {#                            </v-col>#}
+# {##}
+# {#                          </v-expansion-panel-header>#}
+# {#                          <v-expansion-panel-content>#}
+# {#                            <v-row>#}
+# {#                              <v-col cols="4" v-if="x.message">#}
+# {#                                ข้อความ: [[x.message]]#}
+# {#                              </v-col>#}
+# {#                            </v-row>#}
+# {#                          </v-expansion-panel-content>#}
+# {##}
+# {#                        </v-expansion-panel>#}
+# {#                      </v-expansion-panels>#}

@@ -445,7 +445,8 @@
                         </v-row>
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
-                        [[m.message]]
+                        <p>ชื่อ [[m.fname]]</p>
+                        <p v-if="m.message">ข้อความ [[m.message]]</p>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
