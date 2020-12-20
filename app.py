@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
-    make_response, send_from_directory
+    make_response, send_from_directory, send_file
 from collections import OrderedDict
 from flask_cors import CORS
 import uuid, time, os, firebase_admin, base64, pyrebase
@@ -561,11 +561,15 @@ def vuetifyTest():
     return render_template('customers_new/table/vuetify_test.html')
 
 
-@app.route('/information_v2')
+@app.route('/information_v2', methods=['GET', 'POST'])
 def page_info():
     if not g.user:
         return redirect(url_for('welcome'))
-    return render_template('customers_new/table/informationV2.html')
+    if request.method == 'GET':
+        return render_template('customers_new/table/informationV2.html')
+    elif request.method == 'POST':
+        
+        return send_from_directory('static/excel', 'testVue.xlsx')
 
 
 @app.route('/json_datetime', methods=['GET', 'POST'])
@@ -688,7 +692,8 @@ def data_month():
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
         get_demo = get_data.len_amount(ms, 'channel', 'web mango')
         other = get_data.len_amount_other(ms)
-        return jsonify({'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        return jsonify(
+            {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif request.method == 'POST':
         post_data = request.get_json()
         print(post_data)
@@ -785,7 +790,11 @@ def excel_information():
         datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
         data.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
-        return send_from_directory('static/excel', 'testVue.xlsx')
+        path = 'static/excel'
+        filename = 'testVue.xlsx'
+        full_path = path + '/' + filename
+        return send_file(full_path, as_attachment=True,
+                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 @app.route('/tag_information', methods=['POST'])
