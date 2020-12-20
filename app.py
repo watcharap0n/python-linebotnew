@@ -568,7 +568,6 @@ def page_info():
     if request.method == 'GET':
         return render_template('customers_new/table/informationV2.html')
     elif request.method == 'POST':
-        
         return send_from_directory('static/excel', 'testVue.xlsx')
 
 
@@ -776,25 +775,22 @@ def return_Chip(id):
     return jsonify(response_object)
 
 
-@app.route('/excel_information', methods=['GET', 'POST'])
+@app.route('/excel_information', methods=['POST'])
 def excel_information():
     if request.method == 'POST':
         post_data = request.get_json()
         print('post_data', post_data)
-        xls = [{'Name': post_data, 'Product': 'product', 'Other': 'other', 'Company': 'company', 'Tel': 'tel',
-                'Email': 'email',
-                'EmailLiff': 'pEmail', 'Message': 'message', 'Profile': 'profile', 'Date': 'cDate', 'Time': 'cTime',
-                'Picture': 'picture', 'Username': 'username', 'DateInsert': 'date', 'TimeInsert': 'time', 'Tag': 'tag',
-                'Channel': 'channel'}]
-        data = pd.DataFrame(xls)
+        lst = []
+        for i in post_data:
+            ref = db2.child('RestCustomer').child(i).get()
+            lst.append(dict(ref.val()))
+        print(lst)
+        data_frame = pd.DataFrame(lst)
+        print(data_frame)
         datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
-        data.to_excel(datatoexcel, sheet_name='Sheet1')
+        data_frame.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
-        path = 'static/excel'
-        filename = 'testVue.xlsx'
-        full_path = path + '/' + filename
-        return send_file(full_path, as_attachment=True,
-                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        return make_response('post_data')
 
 
 @app.route('/tag_information', methods=['POST'])

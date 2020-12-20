@@ -629,29 +629,61 @@
                   inset
                   vertical
               ></v-divider>
+
+
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-form method="post">
-                    <v-btn
-                        elevation="3"
-                        medium
-                        small
-                        :loading="!spinTable"
-                        :disabled="!spinTable"
-                        v-bind="attrs"
-                        v-on="on"
-                        color="success"
-                        type="submit"
-                        @submit="excelIndex(selected)"
-                    ><i class="far fa-file-excel"></i>
-                    </v-btn>
-                  </v-form>
-                </template>
-                <span>Index Excel</span>
-                <template v-slot:loader>
-                        <span class="custom-loader">
-                          <v-icon light>mdi-cached</v-icon>
-                        </span>
+                  <v-dialog
+                      v-model="dialogExcel"
+                      persistent
+                      max-width="290"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          style="margin-left: 10px"
+                          elevation="3"
+                          :loading="!spinTable"
+                          :disabled="!spinTable"
+                          medium
+                          small
+                          v-bind="attrs"
+                          v-on="on"
+                          color="success"
+                          @click="excelIndex(selected)"
+                      >
+                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title class="headline">
+                        ดาวโหลดไฟล์ Excel
+                      </v-card-title>
+                      <v-card-text v-for="(i, x) in selected" :key="x">
+                        ลำดับ : [[x + 1]] ชื่อ : [[i.Name]]
+                      </v-card-text>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialogExcel = false"
+                        >
+                          ยกเลิก
+                        </v-btn>
+                        <form method="post">
+                          <v-btn
+                              color="green darken-1"
+                              text
+                              type="submit"
+                              @click="dialogExcel = false"
+                          >
+                            ตกลง
+                          </v-btn>
+                        </form>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                 </template>
               </v-tooltip>
 
@@ -942,6 +974,7 @@
               selected: [],
               loading: false,
               dialog: false,
+              dialogExcel: false,
               dialogDelete: false,
               spinTable: true,
               spinChart: true,
