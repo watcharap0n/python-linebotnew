@@ -1284,6 +1284,17 @@ def webhookNew():
             json.dump(raw_json, dataline)
         body = request.get_data(as_text=True)
         signature = request.headers['X-Line-Signature']
+        add_oa = decoded['events'][0]['type']
+        userId = decoded['events'][0]['userId']
+        if add_oa == 'follow':
+            quick_push(userId, 'สวัสดีค่ะ ยินดีให้บริการสามารถ เลือกสิ่งที่ท่านสนใจด้านล่างได้เลยค่ะ',
+                       QuickReply=QuickReply(items=[
+                           QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
+                           QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
+                           QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
+                           QuickReplyButton(action=MessageAction(label='สอบถามการอบรม', text='สอบถามการอบรม')),
+                           QuickReplyButton(action=MessageAction(label='สอบถามการใช้งาน', text='สอบถามการใช้งาน'))
+                       ]))
         try:
             postback = decoded['events'][0]['type']
             data = decoded['events'][0]['postback']['data']
@@ -1458,7 +1469,6 @@ def detect_object(img, rtoken, user_id, line_bot_api):
     class_ids = []
     confidences = []
     boxes = []
-    stff = time.time()
     for out in outs:
         for detection in out:
             scores = detection[5:]
@@ -1756,6 +1766,10 @@ def get_datetime(x, line_bot_api):
 def questionFor(question, resule):
     pre = [x for x in question if resule == [x]]
     return pre
+
+
+def quick_push(userId, x, QuickReply):
+    line_bot_api2.push_message(userId, TextSendMessage(text=x, quick_reply=QuickReply))
 
 
 def quick_reply(event, x, QuickReply):
