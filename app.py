@@ -1287,7 +1287,7 @@ def webhookNew():
         add_oa = decoded['events'][0]['type']
         userId = decoded['events'][0]['source']['userId']
         if add_oa == 'follow':
-            quick_push(userId, 'สวัสดีค่ะ ยินดีให้บริการสามารถ เลือกสิ่งที่ท่านสนใจด้านล่างได้เลยค่ะ',
+            quick_push(userId, 'สวัสดีค่ะ น้องแมงโก้ยินดีให้บริการท่านสามารถเลือกสอบถามเรื่องที่ท่านสนใจได้เลยค่ะ',
                        QuickReply=QuickReply(items=[
                            QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
                            QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
