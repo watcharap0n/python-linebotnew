@@ -1284,17 +1284,17 @@ def webhookNew():
             json.dump(raw_json, dataline)
         body = request.get_data(as_text=True)
         signature = request.headers['X-Line-Signature']
-        # add_oa = decoded['events'][0]['type']
-        # userId = decoded['events'][0]['userId']
-        # if add_oa == 'follow':
-        #     quick_push(userId, 'สวัสดีค่ะ ยินดีให้บริการสามารถ เลือกสิ่งที่ท่านสนใจด้านล่างได้เลยค่ะ',
-        #                QuickReply=QuickReply(items=[
-        #                    QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
-        #                    QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
-        #                    QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
-        #                    QuickReplyButton(action=MessageAction(label='สอบถามการอบรม', text='สอบถามการอบรม')),
-        #                    QuickReplyButton(action=MessageAction(label='สอบถามการใช้งาน', text='สอบถามการใช้งาน'))
-        #                ]))
+        add_oa = decoded['events'][0]['type']
+        userId = decoded['events'][0]['source']['userId']
+        if add_oa == 'follow':
+            quick_push(userId, 'สวัสดีค่ะ ยินดีให้บริการสามารถ เลือกสิ่งที่ท่านสนใจด้านล่างได้เลยค่ะ',
+                       QuickReply=QuickReply(items=[
+                           QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
+                           QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
+                           QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
+                           QuickReplyButton(action=MessageAction(label='สอบถามการอบรม', text='สอบถามการอบรม')),
+                           QuickReplyButton(action=MessageAction(label='สอบถามการใช้งาน', text='สอบถามการใช้งาน'))
+                       ]))
         try:
             postback = decoded['events'][0]['type']
             data = decoded['events'][0]['postback']['data']
