@@ -413,22 +413,6 @@ def ajax_marketing():
         insertDatabase = {'channel': 'LINE', 'tag': '', 'day': to.day, 'month': to.month, 'year': to.year,
                           'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
         db2.child('LineLiff').push(insertDatabase)
-        pusher.trigger(u'customer', u'add', {
-            u'key': '',
-            u'index': '',
-            u'tag': '',
-            u'name': event['firstname'],
-            u'product': event['product'],
-            u'other': event['other'],
-            u'company': event['company'],
-            u'tel': event['tel'],
-            u'email': event['email'],
-            u'emailLIFF': event['token'],
-            u'comment': event['comment'],
-            u'displayName': event['displayName'],
-            u'dtg': f'{to.day}/{to.month}/{to.year} {to.hour}:{to.minute}:{to.second}',
-            u'channel': event['channel']
-        })
         firstname = event['firstname']
         email = event['email']
         company = event['company']
