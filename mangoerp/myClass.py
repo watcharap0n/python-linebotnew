@@ -132,7 +132,7 @@ class GetDateTime:
 
     @staticmethod
     def len_amount_other(lst):
-        return [x for x in lst if x['channel'] != 'LINE' and x['channel'] != 'web mango']
+        return [x for x in lst if x['channel'] != 'LINE' and x['channel'] != 'GetDemo']
 
     @staticmethod
     def dynamic_month(foo, months):
