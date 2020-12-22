@@ -359,7 +359,7 @@ class TagChart:
             tag = i.val()['tag']
             name = i.val()['event']['fname']
             group = {'Name': name, 'Product': product, 'Other': '', 'Company': company, 'Tel': tel, 'Email': email,
-                     'Message': message, 'Date': cDate, 'Time': cTime, 'Tag': tag, 'Channel': 'web mango'}
+                     'Message': message, 'Date': cDate, 'Time': cTime, 'Tag': tag, 'Channel': 'GetDemo'}
             toList.append(group)
         return toList
 
@@ -376,7 +376,7 @@ class TagChart:
         tag = i.val()['tag']
         name = i.val()['event']['fname']
         group = {'Name': name, 'Product': product, 'Other': '', 'Company': company, 'Tel': tel, 'Email': email,
-                 'Message': message, 'Date': cDate, 'Time': cTime, 'Tag': tag, 'Channel': 'web mango'}
+                 'Message': message, 'Date': cDate, 'Time': cTime, 'Tag': tag, 'Channel': 'GetDemo'}
         return group
 
     @staticmethod
@@ -709,7 +709,7 @@ class FirebaseNewCustomer:
             tag = demo.val()['tag']
             apiDemo = {'Index': count, 'key': key, 'Name': fname, 'Company': company, 'Email': email,
                        'Product': product, 'Message': message, 'tel': tel, 'tag': tag, 'Time': time,
-                       'Date': date, 'Channel': 'web mango'}
+                       'Date': date, 'Channel': 'GetDemo'}
             test.append(apiDemo)
             count += 1
         return test
