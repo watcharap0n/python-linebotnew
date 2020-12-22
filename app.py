@@ -366,48 +366,49 @@ def LIFF_marketing(site):
         dataPath_marketing('Construction')
         product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/construction.html', lst=toList)
+        return render_template('customers_new/event/construction.html')
     elif site == 'planing':
         toList = []
         dataPath_marketing('Project Planning')
         product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/planing.html', lst=toList)
+        return render_template('customers_new/event/planing.html')
     elif site == 'reales':
         toList = []
         dataPath_marketing('Real Estate')
         product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/reales.html', lst=toList)
+        return render_template('customers_new/event/reales.html')
     elif site == 'rent':
         toList = []
         dataPath_marketing('เช่าสุดคุ้ม')
         product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
         toList.append(product)
-        return render_template('customers_new/event/rent.html', lst=toList)
+        return render_template('customers_new/event/rent.html')
     elif site == 'anywhere':
         toList = []
         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         toList.append(product)
-        return render_template('customers_new/event/quote.html', lst=toList)
+        return render_template('customers_new/event/quote.html')
     elif site == 'powerbi':
         toList = []
         dataPath_marketing('powerBI')
         product = {'product': 'Power BI'}
         toList.append(product)
-        return render_template('customers_new/event/powerbi.html', lst=toList)
+        return render_template('customers_new/event/powerbi.html')
     elif site == 'event':
         toList = []
         dataPath_marketing('Event')
         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         toList.append(product)
-        return render_template('customers_new/event/event.html', lst=toList)
+        return render_template('customers_new/event/event.html')
 
 
 @app.route('/ajax_marketing', methods=['POST'])
 def ajax_marketing():
     if request.method == 'POST':
-        event = request.form.to_dict()
+        event = request.get_json()
+        event = dict(event)
         to = TimeDate()
         insertDatabase = {'channel': 'LINE', 'tag': '', 'day': to.day, 'month': to.month, 'year': to.year,
                           'hour': to.hour, 'min': to.minute, 'sec': to.second, 'event': event}
