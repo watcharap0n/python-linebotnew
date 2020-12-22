@@ -1,0 +1,145 @@
+{% extends "customers_new/loginLayout.html" %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+<script>
+
+    $(window).on('load', function () {
+        liff.init({liffId: "1655208213-LYVWao4g"}, () => {
+            if (liff.isLoggedIn()) {
+                runApp()
+            } else {
+                liff.login();
+            }
+        }, err => console.error(err.code, error.message));
+        // liff.init(function (data) {
+    });
+</script>
+
+<script src="https://static.line-scdn.net/liff/edge/versions/2.3.0/sdk.js"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function runApp() {
+        $('#btn').on('click', function () {
+            document.getElementById("comment").defaultValue = "None"
+            var firstname = $('#first').val()
+            var email = $('#email').val()
+            var company = $('#compa').val()
+            var tel = $('#tel').val()
+            if (firstname === '' || company === '' || email === '' || tel === '') {
+                $("#message").html("some field is empty!!")
+            } else {
+                liff.getProfile().then(profile => {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/ajax_marketing',
+                        data: {
+                            'firstname': $('#first').val(),
+                            'email': $('#email').val(),
+                            'company': $('#compa').val(),
+                            'tel': $('#tel').val(),
+                            'product': $('#pro').val(),
+                            'channel': 'LINE',
+                            'other': '',
+                            'comment': $('#comment').val(),
+                            'userId': profile.userId,
+                            'token': liff.getDecodedIDToken().email + ' ',
+                            'displayName': profile.displayName,
+                            'picture': profile.pictureUrl
+                        },
+                        success: function (res, status) {
+                            liff.getProfile().then(function (profile) {
+                                console.log("res eang: ", res)
+                                console.log("status: ", status)
+                                liff.closeWindow();
+                            })
+                        },
+
+                    });
+                });
+            }
+        });
+    }
+
+    // $('#btn').on('click', function () {
+    //     liff.getProfile().then(profile => {
+    //         $.ajax({
+    //             type: 'POST',
+    //             url: '/letme',
+    //             data: {
+    //                 'firstname': $('#first').val(),
+    //                 'email': $('#email').val(),
+    //                 'company': $('#compa').val(),
+    //                 'tel': $('#tel').val(),
+    //                 'product': $('#pro').val(),
+    //                 'userId': profile.userId,
+    //                 'token': liff.getDecodedIDToken().email,
+    //                 'displayName': profile.displayName,
+    //                 'picture': profile.pictureUrl
+    //             },
+    //             success: function (res, status) {
+    //                 liff.getProfile().then(function (profile) {
+    //                     console.log("res eang: ", res)
+    //                     console.log("status: ", status)
+    //                     liff.closeWindow();
+    //                 })
+    //             },
+    //
+    //         });
+    //     });
+    // });
+
+</script>
+
+<br>
+
+<div class="container">
+    <center><img src="/static/images/mango-profile.jpg" class="rounded-circle" alt="Cinque Terre" height="140"></center>
+    <form method="POST" id="perform" onsubmit="return validation()">
+        <div class="form-group">
+            <label for="first">ชื่อผู้ติดต่อ :</label>
+            <input type="text" class="form-control" id="first" placeholder="Name"
+                   name="firstname" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="compa">ชื่อบริษัท :</label>
+            <input type="text" class="form-control" id="compa" placeholder="Company"
+                   name="company" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="pro">ผลิตภัณฑ์ที่ท่านสนใจ :</label><br>
+            <select class="form-control" name="product" id="pro">
+                <option value="">Please, select</option>
+                {% for p in lst %}
+                {% for i in p.product %}
+                <option value="{{i}}" {% if i == p.product %} selected {% endif %}>
+                    {{i}}
+                </option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">อีเมล :</label>
+            <input type="email" class="form-control" id="email" placeholder="Email"
+                   name="email" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="tel">เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ :</label>
+            <input type="tel" class="form-control" id="tel" placeholder="Tel"
+                   name="tel" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="comment">รายละเอียดเพิ่มเติม :</label>
+            <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
+        </div>
+
+        <button id="btn" type="button" class="btn btn-success btn-block">Submit</button>
+    </form>
+</div>
+<br>
+<br>
+{% endblock %}
+

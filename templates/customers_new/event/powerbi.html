@@ -1,132 +1,200 @@
-{% extends "customers_new/loginLayout.html" %}
-
+{% extends "layout.html" %}
 {% block content %}
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
-<script>
 
-    $(window).on('load', function () {
-        liff.init({liffId: "1655208213-qjWDbpKe"}, () => {
-            if (liff.isLoggedIn()) {
-                runApp()
-            } else {
-                liff.login();
-            }
-        }, err => console.error(err.code, error.message));
-        // liff.init(function (data) {
-    });
-</script>
+<div id="app">
+    <v-app id="inspire">
+        <v-container>
+            <div class="d-flex flex-column justify-space-between align-center">
+                <v-img
+                        width="360"
+                        src="/static/images/bi.png"
+                ></v-img>
+            </div>
+            <v-row justify="center">
+                <v-col
+                        cols="12"
+                        sm="10"
+                        md="8"
+                        lg="6"
+                >
+                    <v-card>
+                        <v-form
+                                ref="form"
+                                v-model="valid"
+                                lazy-validation
+                        >
+                            <v-card-text>
+                                <v-text-field
+                                        dense
+                                        outlined
+                                        clearable
+                                        v-model="formElement.name"
+                                        :rules="validOther"
+                                        label="ชื่อผู้ติดต่อ"
+                                        required
+                                ></v-text-field>
 
-<script src="https://static.line-scdn.net/liff/edge/versions/2.3.0/sdk.js"></script>
+                                <v-text-field
+                                        dense
+                                        outlined
+                                        clearable
+                                        v-model="formElement.company"
+                                        :rules="validOther"
+                                        label="บริษัท"
+                                        required
+                                ></v-text-field>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-    function runApp() {
-        $('#btn').on('click', function () {
-            document.getElementById("comment").defaultValue = "None"
-            var firstname = $('#first').val()
-            var email = $('#email').val()
-            var company = $('#compa').val()
-            var tel = $('#tel').val()
-            if (firstname === '' || company === '' || email === '' || tel === '') {
-                $("#message").html("some field is empty!!")
-            } else {
-                liff.getProfile().then(profile => {
-                    $.ajax({
-                        type: 'POST',
-                        url: '/ajax_marketing',
-                        data: {
-                            'firstname': $('#first').val(),
-                            'email': $('#email').val(),
-                            'company': $('#compa').val(),
-                            'tel': $('#tel').val(),
-                            'product': 'BI Dashboard',
-                            'channel': 'LINE',
-                            'other': '  ',
-                            'comment': $('#comment').val(),
-                            'userId': profile.userId,
-                            'token': liff.getDecodedIDToken().email + ' ',
-                            'displayName': profile.displayName,
-                            'picture': profile.pictureUrl
-                        },
-                        success: function (res, status) {
-                            liff.getProfile().then(function (profile) {
-                                console.log("res eang: ", res)
-                                console.log("status: ", status)
-                                liff.closeWindow();
-                            })
-                        },
+                                <v-text-field
+                                        dense
+                                        outlined
+                                        clearable
+                                        v-model="formElement.email"
+                                        :rules="validEmail"
+                                        label="อีเมล"
+                                        required
+                                ></v-text-field>
 
-                    });
-                });
-            }
-        });
-    }
+                                <v-select
+                                        dense
+                                        outlined
+                                        clearable
+                                        v-model="formElement.other"
+                                        :items="products"
+                                        label="ผลิตภัณฑ์อื่นๆที่ท่านสนใจ"
+                                        required
+                                ></v-select>
 
-    // $('#btn').on('click', function () {
-    //     liff.getProfile().then(profile => {
-    //         $.ajax({
-    //             type: 'POST',
-    //             url: '/letme',
-    //             data: {
-    //                 'firstname': $('#first').val(),
-    //                 'email': $('#email').val(),
-    //                 'company': $('#compa').val(),
-    //                 'tel': $('#tel').val(),
-    //                 'product': $('#pro').val(),
-    //                 'userId': profile.userId,
-    //                 'token': liff.getDecodedIDToken().email,
-    //                 'displayName': profile.displayName,
-    //                 'picture': profile.pictureUrl
-    //             },
-    //             success: function (res, status) {
-    //                 liff.getProfile().then(function (profile) {
-    //                     console.log("res eang: ", res)
-    //                     console.log("status: ", status)
-    //                     liff.closeWindow();
-    //                 })
-    //             },
-    //
-    //         });
-    //     });
-    // });
 
-</script>
+                                <v-text-field
+                                        dense
+                                        outlined
+                                        clearable
+                                        v-model="formElement.tel"
+                                        :rules="validTel"
+                                        label="เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ"
+                                        type="tel"
+                                        required
+                                ></v-text-field>
 
-<br>
-
-<div class="container">
-    <center><img src="/static/images/bi.png" alt="Cinque Terre" width="380" height="109"></center>
-    <form method="POST" id="perform" onsubmit="return validation()">
-        <div class="form-group">
-            <label for="first">ชื่อผู้ติดต่อ :</label>
-            <input type="text" class="form-control" id="first" placeholder="Name"
-                   name="firstname" value="" required>
-        </div>
-        <div class="form-group">
-            <label for="compa">ชื่อบริษัท :</label>
-            <input type="text" class="form-control" id="compa" placeholder="Company"
-                   name="company" value="" required>
-        </div>
-        <div class="form-group">
-            <label for="email">อีเมล :</label>
-            <input type="email" class="form-control" id="email" placeholder="Email"
-                   name="email" value="" required>
-        </div>
-        <div class="form-group">
-            <label for="tel">เบอร์ที่สะดวกให้เจ้าหน้าที่ติดต่อกลับ :</label>
-            <input type="tel" class="form-control" id="tel" placeholder="Tel"
-                   name="tel" value="" required>
-        </div>
-        <div class="form-group">
-            <label for="comment">รายละเอียดเพิ่มเติม :</label>
-            <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
-        </div>
-
-        <button id="btn" type="button" class="btn btn-success btn-block">Submit</button>
-    </form>
+                                <v-textarea
+                                        dense
+                                        outlined
+                                        v-model="formElement.message"
+                                        clearable
+                                        autocomplete
+                                        label="ข้อมูลที่ท่านต้องการทราบเพิ่มเติม"
+                                ></v-textarea>
+                                <v-card-actions>
+                                    <v-btn block
+                                            :disabled="!valid"
+                                            color="success"
+                                            class="mr-4"
+                                            @click="validate"
+                                    >
+                                        ยืนยัน
+                                    </v-btn>
+                                    </v-btnblock>
+                                </v-card-actions>
+                            </v-card-text>
+                        </v-form>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-app>
 </div>
-<br>
-<br>
+
+
+<script>
+    new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data: () => ({
+            validCheck: [v => !!v || 'กรุณาคลิกเพื่อไปต่อ'],
+            validSelect: [v => !!v || 'กรุณาเลือกผลิตภัณฑ์'],
+            validEmail: [
+                v => !!v || 'กรุณากรอกอีเมล',
+                v => /.+@.+\..+/.test(v) || 'กรุณากรอกอีเมลให้ถูกต้อง',
+            ],
+            validTel: [
+                v => !!v || 'กรุณากรอกเบอร์โทร',
+                v => (v && v.length <= 10) || 'เบอร์โทรกรอกไม่ครบ',
+            ],
+            validOther: [v => !!v || 'กรุณากรอกข้อมูลให้ครบถ้วน'],
+            formElement: {
+                name: '',
+                email: '',
+                other: '',
+                company: '',
+                tel: '',
+                message: '',
+            },
+            valid: false,
+            width: '',
+            products: ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']
+
+        }),
+        created() {
+            liff.init({liffId: "1655208213-qjWDbpKe"}, () => {
+                if (liff.isLoggedIn()) {
+
+                } else {
+                    liff.login();
+                }
+            }, err => console.error(err.code, error.message));
+        },
+        methods: {
+            validate() {
+                let form = this.$refs.form.validate()
+                let element = this.formElement
+                if (form === true) {
+                    liff.getProfile()
+                        .then(profile => {
+                            let to_dict = {
+                                'firstname': element.name,
+                                'email': element.email,
+                                'company': element.company,
+                                'tel': element.tel,
+                                'product': 'BI Dashboard',
+                                'other': element.other,
+                                'comment': element.message,
+                                'userId': profile.userId,
+                                'token': liff.getDecodedIDToken().email + ' ',
+                                'displayName': profile.displayName,
+                                'picture': profile.pictureUrl,
+                                'channel': 'LINE',
+                            }
+                            this.sendPost(to_dict)
+                        })
+                } else {
+                    console.log('error')
+                }
+            },
+            sendPost(value) {
+                const path = '/ajax_marketing'
+                axios.post(path, value)
+                    .then(() => {
+                        console.log(value)
+                        this.popUp()
+
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+            },
+            popUp() {
+                 Swal.fire("ข้อมูลบันทึกเรียบร้อย!", "เจ้าหน้าที่ได้รับข้อมูลของท่านแล้ว\nและจะดำเนินการติดต่อกลับให้เร็วที่สุด", "success").then(() => {
+                    liff.closeWindow();
+                })
+            },
+
+        },
+        delimiters: ["[[", "]]"],
+    })
+
+
+</script>
+
 {% endblock %}
 
