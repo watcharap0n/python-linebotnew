@@ -442,7 +442,7 @@ class TagChart:
                  'Tel': tel, 'Email': email, 'EmailLiff': '', 'Message': message,
                  'Profile': '', 'Date': cDate, 'Time': cTime, 'Picture': '',
                  'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': 'web mango', 'Tax': '', 'Authorized': '', 'Position': ''}
+                 'Channel': 'GetDemo', 'Tax': '', 'Authorized': '', 'Position': ''}
         return group
 
     @staticmethod
@@ -462,7 +462,7 @@ class TagChart:
                  'Tel': contact_tel, 'Email': contact_email, 'EmailLiff': '', 'Message': contact_message,
                  'Profile': '', 'Date': cdate, 'Time': ctime, 'Picture': '',
                  'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': 'web mango'}
+                 'Channel': 'Contact', 'Tax': '', 'Authorized': '', 'Position': ''}
         return group
 
     @staticmethod

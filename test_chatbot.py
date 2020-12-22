@@ -278,25 +278,25 @@ class GetDateTime:
     #     return foo
 
 
-foo = []
-ref = db.child('RestCustomer').get()
-cut_channel = []
-cut_product = []
-for i in ref.each():
-    v = i.val()
-    date = v['Date']
-    time = v['Time']
-    fname = v['Name']
-    company = v['Company']
-    product = v['Product']
-    cut_product.append(product)
-    channel = v['Channel']
-    cut_channel.append(channel)
-    d = tim.datetime.strptime(date, '%d-%m-%Y')
-    t = tim.datetime.strptime(time, '%H:%M:%S')
-    mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
-                  'month': d.month, 'year': d.year, 'date': f'{date}', 'time': f'{time}', 'month_check': f'{d.year}-{d.month}'}
-    foo.append(mapProduct)
+# foo = []
+# ref = db.child('RestCustomer').get()
+# cut_channel = []
+# cut_product = []
+# for i in ref.each():
+#     v = i.val()
+#     date = v['Date']
+#     time = v['Time']
+#     fname = v['Name']
+#     company = v['Company']
+#     product = v['Product']
+#     cut_product.append(product)
+#     channel = v['Channel']
+#     cut_channel.append(channel)
+#     d = tim.datetime.strptime(date, '%d-%m-%Y')
+#     t = tim.datetime.strptime(time, '%H:%M:%S')
+#     mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+#                   'month': d.month, 'year': d.year, 'date': f'{date}', 'time': f'{time}', 'month_check': f'{d.year}-{d.month}'}
+#     foo.append(mapProduct)
 
 
 
@@ -314,23 +314,26 @@ for i in ref.each():
 # print(cut_channel)
 
 
+ref = db.child('RestCustomer').get()
+for i in ref.each()[1:]:
+    if i.val()['Channel'] == 'web mango':
+        db.child('RestCustomer').child(i.key()).update({'Channel': 'GetDemo'})
+        print(i.val())
 
-
-
-get_data = GetDateTime(value=None, db=db)
-month = get_data.todo_date('month')
-foo.sort(key=month.get_date)
-
-x = ['2020-11', '2020-12']
-lst = []
-for i in foo:
-    for e in x:
-        if i['month_check'] == e:
-            lst.append(i)
-
-for i in lst:
-    if i['channel'] != 'LINE' and i['channel'] != 'web mango':
-        print(i)
+# get_data = GetDateTime(value=None, db=db)
+# month = get_data.todo_date('month')
+# foo.sort(key=month.get_date)
+#
+# x = ['2020-11', '2020-12']
+# lst = []
+# for i in foo:
+#     for e in x:
+#         if i['month_check'] == e:
+#             lst.append(i)
+#
+# for i in lst:
+#     if i['channel'] != 'LINE' and i['channel'] != 'web mango':
+#         print(i)
 
 
 # product = str(input('Product: '))
