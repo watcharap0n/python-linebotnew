@@ -567,7 +567,7 @@ def return_datetime():
         product = list(OrderedDict.fromkeys(product).keys())
         channel = list(OrderedDict.fromkeys(channel).keys())
         LINE = get_data.len_amount(todo, 'channel', 'LINE')
-        get_demo = get_data.len_amount(todo, 'channel', 'web mango')
+        get_demo = get_data.len_amount(todo, 'channel', 'GetDemo')
         other = get_data.len_amount_other(todo)
         status = {'ms': todo[::-1], 'products': product, 'channels': channel,
                   'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}}
@@ -610,35 +610,35 @@ def return_sort():
     if ref.get('dates') and ref.get('product') and ref.get('channel'):
         ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif ref.get('dates') and ref.get('channel'):
         ms = get_data.dynamic_date_channel(ref['dates'], todo, ref['channel'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif ref.get('dates') and ref.get('product'):
         ms = get_data.dynamic_product_dates(ref['dates'], todo, ref['product'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif ref.get('product') and ref.get('channel'):
         ms = get_data.dynamic_product_channel(todo, ref['channel'], ref['product'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif ref.get('dates'):
         ms = get_data.dynamic_dates(ref['dates'], todo)
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
@@ -646,7 +646,7 @@ def return_sort():
         dict_key = get_data.get_dict_key(ref, ref['product'])
         ms = get_data.dynamic(todo, dict_key, ref['product'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
@@ -655,7 +655,7 @@ def return_sort():
         dict_key = get_data.get_dict_key(ref, ref['channel'])
         ms = get_data.dynamic(todo, dict_key, ref['channel'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
@@ -674,7 +674,7 @@ def data_month():
         ms = get_data.dynamic_month(todo, ref['months'])
         print(ms)
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
-        get_demo = get_data.len_amount(ms, 'channel', 'web mango')
+        get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
         other = get_data.len_amount_other(ms)
         return jsonify(
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
