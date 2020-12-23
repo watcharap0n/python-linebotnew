@@ -316,8 +316,8 @@ class GetDateTime:
 
 ref = db.child('RestCustomer').get()
 for i in ref.each()[1:]:
-    if i.val()['Channel'] == 'web mango':
-        db.child('RestCustomer').child(i.key()).update({'Channel': 'GetDemo'})
+    if i.val()['Product'] == 'Pusit (Consulting)':
+        db.child('RestCustomer').child(i.key()).update({'Product': 'Consulting'})
         print(i.val())
 
 # get_data = GetDateTime(value=None, db=db)

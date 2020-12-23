@@ -170,7 +170,7 @@ class GetDateTime:
         cut_channels = []
         cut_products = []
         ref = self.db.child(transaction).get()
-        for i in ref.each():
+        for i in ref.each()[1:]:
             v = i.val()
             date = v['Date']
             time = v['Time']
