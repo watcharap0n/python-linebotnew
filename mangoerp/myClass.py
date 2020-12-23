@@ -577,6 +577,7 @@ class FirebaseAPI:
     def information(self, transaction):
         lst = []
         lst_date = []
+        products = []
         lst_time = []
         ref = self.db.child(transaction).get()
         for i in ref.each()[1:]:
@@ -603,6 +604,7 @@ class FirebaseAPI:
             time_insert = i.val()['TimeInsert']
             username = i.val()['Username']
             product = i.val()['Product']
+            products.append(product)
             group = {
                 'id': key, 'Name': name, 'tag': tag, 'Product': product, 'Email': email, 'Other': other,
                 'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
@@ -612,7 +614,7 @@ class FirebaseAPI:
                 'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
             }
             lst.append(group)
-        return lst[::-1], lst_time, lst_date
+        return lst[::-1], lst_time, lst_date, products
 
     def requestDemo(self, transaction):
         ref = self.db.child(transaction).get()

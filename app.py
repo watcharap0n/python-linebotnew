@@ -606,7 +606,6 @@ def return_sort():
     result = get_data.data_datetime('RestCustomer')
     todo, product, channel = result[0], result[1], result[2]
     todo.sort(key=month20.get_date)
-    print('ref', ref)
     if ref.get('dates') and ref.get('product') and ref.get('channel'):
         ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
         LINE = get_data.len_amount(ms, 'channel', 'LINE')
@@ -701,8 +700,9 @@ def return_information():
         CON = fire.lenProduct('RestCustomer', 'Construction')
         PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
         OTHER = fire.lenProduct('RestCustomer', 'Other')
+        products = list(OrderedDict.fromkeys(marketing_infomation[3]).keys())
         status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag,
-                  'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1],
+                  'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1], 'products': products,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
                   'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}
         return jsonify(status)
