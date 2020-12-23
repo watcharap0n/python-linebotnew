@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, render_template, jsonify, json, redirect, url_for, session, flash, g, \
-    make_response, send_from_directory, send_file
+    make_response, send_from_directory, Response
 from collections import OrderedDict
 from flask_cors import CORS
 import uuid, time, os, firebase_admin, base64, pyrebase
@@ -190,6 +190,24 @@ def apiContractReq():
             return response
         except:
             return jsonify({'error Sending: Please try again'}, 400)
+
+
+@app.route('/ML')
+def ml_dlib():
+    return render_template('customers_new/form/machine_learning_dlib.html')
+
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+def gen():
+    while True:
+        cap = cv2.VideoCapture(0)
+        frame = webdlib(cap)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
