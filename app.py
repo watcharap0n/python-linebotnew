@@ -569,7 +569,7 @@ def page_info():
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
-        return render_template('customers_new/table/informationV2.html')
+        return render_template('customers_new/table/informationV2.vue')
     elif request.method == 'POST':
         return send_from_directory('static/excel', 'testVue.xlsx')
 

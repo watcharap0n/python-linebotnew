@@ -3,7 +3,7 @@
 
     <br><br><br>
     <div id="app">
-        <v-app id="inspire" class="fixed-nav sticky-footer bg-gray-200">
+        <v-app id="inspire" class="fixed-nav sticky-footer bg-gray-200" >
             <v-row>
                 <v-col cols="6">
                     <div class="card mb-3">
@@ -12,22 +12,10 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-sm-8 my-auto">
-                                    <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
-                                        <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
-                                    </div>
-                                    <canvas ref="myChart" width="100" height="50"></canvas>
+                                <div v-if="!spinChart" style="margin-left: 300px; margin-top: 50px">
+                                    <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
                                 </div>
-                                <div class="col-sm-4 text-center my-auto">
-                                    <div class="h4 mb-0 text-primary">[[amountInfo]]</div>
-                                    <div class="small text-muted">ข้อมูลลูกค้า</div>
-                                    <hr>
-                                    <div class="h4 mb-0 text-warning">[[amountImport]]</div>
-                                    <div class="small text-muted">นำเข้า</div>
-                                    <hr>
-                                    <div class="h4 mb-0 text-success">[[amountDemo]]</div>
-                                    <div class="small text-muted">นัดDemo</div>
-                                </div>
+                                <canvas ref="myChart" width="100"></canvas>
                             </div>
                         </div>
                         <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
@@ -335,7 +323,7 @@
                         <v-sheet
                                 id="scrolling-techniques-7"
                                 class="overflow-y-auto"
-                                max-height="365"
+                                max-height="415"
                                 elevate-on-scroll
                                 style="height: 1500px;"
                         >
