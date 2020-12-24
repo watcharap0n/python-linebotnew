@@ -384,42 +384,42 @@ def LIFF_marketing(site):
         dataPath_marketing('Construction')
         product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/construction.html')
+        return render_template('customers_new/event/construction.vue')
     elif site == 'planing':
         toList = []
         dataPath_marketing('Project Planning')
         product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/planing.html')
+        return render_template('customers_new/event/planing.vue')
     elif site == 'reales':
         toList = []
         dataPath_marketing('Real Estate')
         product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
         toList.append(product)
-        return render_template('customers_new/event/reales.html')
+        return render_template('customers_new/event/reales.vue')
     elif site == 'rent':
         toList = []
         dataPath_marketing('เช่าสุดคุ้ม')
         product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
         toList.append(product)
-        return render_template('customers_new/event/rent.html')
+        return render_template('customers_new/event/rent.vue')
     elif site == 'anywhere':
         toList = []
         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         toList.append(product)
-        return render_template('customers_new/event/quote.html')
+        return render_template('customers_new/event/quote.vue')
     elif site == 'powerbi':
         toList = []
         dataPath_marketing('powerBI')
         product = {'product': 'Power BI'}
         toList.append(product)
-        return render_template('customers_new/event/powerbi.html')
+        return render_template('customers_new/event/powerbi.vue')
     elif site == 'event':
         toList = []
         dataPath_marketing('Event')
         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
         toList.append(product)
-        return render_template('customers_new/event/event.html')
+        return render_template('customers_new/event/event.vue')
 
 
 @app.route('/ajax_marketing', methods=['POST'])
@@ -531,7 +531,7 @@ def marketing_import():
             'information': information,
             'imports': marketing_import,
         }
-        return render_template('customers_new/table/import.html', data=data)
+        return render_template('customers_new/table/import.vue', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -561,7 +561,7 @@ def marketing_import():
 
 @app.route('/vuetify', methods=['GET', 'POST'])
 def vuetifyTest():
-    return render_template('customers_new/table/vuetify_test.html')
+    return render_template('customers_new/table/vuetify_test.vue')
 
 
 @app.route('/information_v2', methods=['GET', 'POST'])
@@ -840,7 +840,7 @@ def marketing_information():
             'PLAN': len(PLAN),
             'OTHER': len(OTHER)
         }
-        return render_template('customers_new/table/information.html', data=data, randrange=randrange)
+        return render_template('customers_new/table/information.vue', data=data, randrange=randrange)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags_index = request.form.getlist('tags')
@@ -905,7 +905,7 @@ def getDemo():
             'amount_import': len_import,
             'tag': tags,
         }
-        return render_template('customers_new/table/getDemo.html', data=data)
+        return render_template('customers_new/table/getDemo.vue', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -950,7 +950,7 @@ def getContract():
             'amount_import': len_import,
             'tag': tags,
         }
-        return render_template('customers_new/table/getContract.html', data=data)
+        return render_template('customers_new/table/getContract.vue', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -988,7 +988,7 @@ def marketing_import_update(id):
             'tag': tags,
             'other': other
         }
-        return render_template('customers_new/form/update_import.html', data=data)
+        return render_template('customers_new/form/update_import.vue', data=data)
     elif request.method == 'POST':
         product = request.form['product']
         name = request.form['name']
@@ -1031,7 +1031,7 @@ def marketing_information_update(id):
             'tag': tags,
             'other': other
         }
-        return render_template('customers_new/form/update_information.html', data=data)
+        return render_template('customers_new/form/update_information.vue', data=data)
     elif request.method == 'POST':
         product = request.form['product']
         name = request.form['name']
@@ -1101,7 +1101,7 @@ def tagImport(tag):
         txt = txt.strip(" ' ")
         txt = txt.split("'")
         data = req.req_path_list(txt, ref, 'tag', db2)
-        return render_template('customers_new/table/tagImport.html', data=data)
+        return render_template('customers_new/table/tagImport.vue', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -1139,7 +1139,7 @@ def tagInformation(tag):
         txt = txt.strip(" ' ")
         txt = txt.split("'")
         data = req.req_path_list(txt, ref, 'Tag', db2)
-        return render_template('customers_new/table/tagInformation.html', data=data)
+        return render_template('customers_new/table/tagInformation.vue', data=data)
     elif request.method == 'POST':
         button = request.form['button_event']
         tags = request.form.getlist('tags')
@@ -1163,7 +1163,7 @@ def tagInformation(tag):
             req = TagChart
             ref = db2.child('RestCustomer').get()
             data = req.req_path_list(tags, ref, 'Tag', db2)
-            return render_template('customers_new/table/tagInformation.html', data=data)
+            return render_template('customers_new/table/tagInformation.vue', data=data)
         elif button == 'button_remove_tag':
             button_event.button_clean_tag('RestCustomer', 'Tag')
         return redirect(url_for('tagInformation', tag=tag))

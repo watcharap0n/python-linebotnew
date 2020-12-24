@@ -273,7 +273,7 @@
 #             lst = []
 #             news = {'news': ['รับข้อมูลข่าวสาร', 'ไม่รับข้อมูลข่าวสาร']}
 #             lst.append(news)
-#             return render_template('customers_old/event.html', lst=lst)
+#             return render_template('customers_old/event.vue', lst=lst)
 #
 #
 # @app.route('/mango/<string:site>', methods=['GET', 'POST'])
@@ -287,7 +287,7 @@
 #         lst = []
 #         product = {'product': ['RealEstate', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
 #         lst.append(product)
-#         return render_template('customers_new/event/construction.html', lst=lst)
+#         return render_template('customers_new/event/construction.vue', lst=lst)
 #     elif request.path == '/mango/planing':
 #         print(site)
 #         x = 'Project Planning'
@@ -297,7 +297,7 @@
 #         lst = []
 #         product = {'product': ['Construction', 'RealEstate', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
 #         lst.append(product)
-#         return render_template('customers_new/event/planing.html', lst=lst)
+#         return render_template('customers_new/event/planing.vue', lst=lst)
 #     elif request.path == '/mango/reales':
 #         print(site)
 #         x = 'Real Estate'
@@ -307,7 +307,7 @@
 #         lst = []
 #         product = {'product': ['Construction', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP']}
 #         lst.append(product)
-#         return render_template('customers_new/event/reales.html', lst=lst)
+#         return render_template('customers_new/event/reales.vue', lst=lst)
 #     elif request.path == '/mango/rent':
 #         print(site)
 #         x = 'เช่าสุดคุ้ม'
@@ -317,19 +317,19 @@
 #         lst = []
 #         product = {'product': ['เช่าสุดคุ้ม', "ลดแรงส่งท้ายปี", "แบ่งชำระ เบา เบา"]}
 #         lst.append(product)
-#         return render_template('customers_new/event/rent.html', lst=lst)
+#         return render_template('customers_new/event/rent.vue', lst=lst)
 #     elif request.path == '/mango/anywhere':
 #         print('anywhere')
 #         lst = []
 #         product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
 #         lst.append(product)
-#         return render_template('customers_new/event/quote.html', lst=lst)
+#         return render_template('customers_new/event/quote.vue', lst=lst)
 #     elif request.path == '/mango/powerbi':
 #         print(site)
 #         lst = []
 #         product = {'product': 'Power BI'}
 #         lst.append(product)
-#         return render_template('customers_new/event/powerbi.html', lst=lst)
+#         return render_template('customers_new/event/powerbi.vue', lst=lst)
 #
 #
 # @app.route('/trainLetme', methods=['GET', 'POST'])
@@ -390,7 +390,7 @@
 #             lst = []
 #             product = {'product': ['Construction', 'RealEstate', 'Project Planning', 'Other']}
 #             lst.append(product)
-#             return render_template('customers_new/event/event.html', lst=lst)
+#             return render_template('customers_new/event/event.vue', lst=lst)
 #     elif request.method == 'POST':
 #         if event == 'event':
 #             r = request.form.to_dict()
@@ -415,7 +415,7 @@
 #             line_bot_api2.push_message(userId, TextSendMessage(
 #                 text='ขอบคุณลูกค้ามากค่ะ 😁'))
 #             return make_response(r)
-#     return render_template('customers_new/event/event.html')
+#     return render_template('customers_new/event/event.vue')
 #
 #
 # @app.route('/saveimage', methods=['POST'])
@@ -629,7 +629,7 @@
 #             'amount': getDemo[1],
 #             'demo': getDemo[0]
 #         }
-#         return render_template('customers_new/table/getDemo.html', data=data)
+#         return render_template('customers_new/table/getDemo.vue', data=data)
 #     elif request.method == 'POST':
 #         try:
 #             broadcast = request.form['msg']
