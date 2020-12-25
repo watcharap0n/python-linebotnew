@@ -69,7 +69,7 @@
                                   {% set txt = reqs.split() %}
                                   checked
                                 {% endif %}>
-                          
+
                             <label class="custom-control-label" for="customCheck">Remember
                               Me</label>
                           </div>

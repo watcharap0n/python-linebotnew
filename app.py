@@ -312,9 +312,11 @@ def login(customer):
 
 @app.route('/forgot', methods=['GET', 'POST'])
 def forgot():
+    if request.method == 'GET':
+        return render_template('main/forgot.html')
     if request.method == 'POST':
-        forgot = request.form['email']
         try:
+            forgot = request.form['email']
             pb.auth().send_password_reset_email(forgot)
             return render_template('main/forgot.html', error='Please check your email verify reset password.')
         except:
