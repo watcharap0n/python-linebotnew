@@ -284,7 +284,7 @@ def login(customer):
                     sessionCustomer(user, password)
                     flash('You were successfully logged in')
                     res = make_response(redirect(url_for('marketing_import')))
-                    res.set_cookie(user, password, max_age=60 * 60 * 24 * 365 * 5)
+                    res.set_cookie('user_id', f'{user} {password}', max_age=60 * 60 * 24 * 365 * 5)
                     flash('You were successfully logged in')
                     return res
                 else:

@@ -19,17 +19,20 @@
                         <h1 class="h4 text-gray-900 mb-4">LINE BOT MANGO </h1>
                         <h3 class="h6 text-primary mb-4"><b> Customer {{ data.customer }}</b></h3>
                       </div>
-                      {% set reqs = request.cookies %}
-                      {% set key = list(reqs)[2] %}
-                      {% set value = request.cookies.get(key) %}
+
+
                       <form class="user" method="POST" action="">
                         <div class="form-group">
                           <input :class="getInputClass('username')"
                                  type="text"
                                  placeholder="Email"
                                  name="username"
-                              {% if key %}
-                                 value="{{ key }}"
+                              {% if request.cookies.get('user_id') %}
+                                {% set reqs = request.cookies.get('user_id') %}
+                                {% set txt = reqs.split() %}
+                                {% if reqs %}
+                                 value="{{ txt[0] }}"
+                                {% endif %}
                               {% else %}
                                  value=""
                               {% endif %}
@@ -43,11 +46,15 @@
                                  type="password"
                                  placeholder="Password"
                                  name="password"
-                                 {% if key %}
-                                 value="{{ value }}"
-                                 {% else %}
+                              {% if request.cookies.get('user_id') %}
+                                {% set reqs = request.cookies.get('user_id') %}
+                                {% set txt = reqs.split() %}
+                                {% if reqs %}
+                                 value="{{ txt[1] }}"
+                                {% endif %}
+                              {% else %}
                                  value=""
-                                 {% endif %}
+                              {% endif %}
                           >
                           <div style="margin-top: 10px" class="invalid-feedback">
                             [[getErrorMessage('password')]]
@@ -56,8 +63,14 @@
                         <div class="form-group">
                           <div class="custom-control custom-checkbox small">
                             <input type="checkbox" class="custom-control-input" name="remember" id="customCheck"
-                                   value="check" {% if key %} checked {% endif %}>
-                            <label class="custom-control-label"  for="customCheck">Remember
+                                   value="check"
+                                {% if request.cookies.get('user_id') %}
+                                  {% set reqs = request.cookies.get('user_id') %}
+                                  {% set txt = reqs.split() %}
+                                  checked
+                                {% endif %}>
+                          
+                            <label class="custom-control-label" for="customCheck">Remember
                               Me</label>
                           </div>
                         </div>
