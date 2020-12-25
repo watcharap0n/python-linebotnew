@@ -20,7 +20,7 @@
                         <h3 class="h6 text-primary mb-4"><b> Customer {{ data.customer }}</b></h3>
                       </div>
                       {% set reqs = request.cookies %}
-                      {% set key = list(reqs)[1] %}
+                      {% set key = list(reqs)[2] %}
                       {% set value = request.cookies.get(key) %}
                       <form class="user" method="POST" action="">
                         <div class="form-group">
