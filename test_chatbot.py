@@ -21,9 +21,11 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
-app = Flask(__name__)
 
 
+s = "{'user': user, 'pwd': password}"
+
+print(dict(s))
 # ref = db.child('requestContract').get()
 # for i in ref.each()[1:]:
 #     if '' in i.val()['tag']:
@@ -243,21 +245,21 @@ app = Flask(__name__)
 # print(event)
 
 
-class GetDateTime:
-    def __init__(self, value, db):
-        self.value = value
-        self.db = db
-
-    @classmethod
-    def todo_date(cls, value):
-        return cls(value, db=db)
-
-    def get_date(self, user):
-        return user.get(self.value)
-
-    @staticmethod
-    def dynamic_date(lst, value, condition):
-        return [i for i in lst if i[value] == condition]
+# class GetDateTime:
+#     def __init__(self, value, db):
+#         self.value = value
+#         self.db = db
+#
+#     @classmethod
+#     def todo_date(cls, value):
+#         return cls(value, db=db)
+#
+#     def get_date(self, user):
+#         return user.get(self.value)
+#
+#     @staticmethod
+#     def dynamic_date(lst, value, condition):
+#         return [i for i in lst if i[value] == condition]
 
     # def data_datetime(self, transaction):
     #     foo = []
@@ -314,11 +316,11 @@ class GetDateTime:
 # print(cut_channel)
 
 
-ref = db.child('RestCustomer').get()
-for i in ref.each()[1:]:
-    if i.val()['Product'] == 'Pusit (Consulting)':
-        db.child('RestCustomer').child(i.key()).update({'Product': 'Consulting'})
-        print(i.val())
+# ref = db.child('RestCustomer').get()
+# for i in ref.each()[1:]:
+#     if i.val()['Product'] == 'Pusit (Consulting)':
+#         db.child('RestCustomer').child(i.key()).update({'Product': 'Consulting'})
+#         print(i.val())
 
 # get_data = GetDateTime(value=None, db=db)
 # month = get_data.todo_date('month')

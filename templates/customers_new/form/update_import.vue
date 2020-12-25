@@ -8,7 +8,7 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-edit">
-                            แก้ไขข้อมูลลูกค้า <strong style="color: #25D366;" id="fname"> {{ data.user.Name }} </strong>
+                            แก้ไขข้อมูลลูกค้า <strong style="color: #25D366;" id="fname">   {{ data.user.Name }} </strong>
                         </i>
                     </div>
                     <div class="card-body">

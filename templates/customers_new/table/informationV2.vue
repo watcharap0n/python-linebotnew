@@ -323,7 +323,7 @@
             <v-sheet
                 id="scrolling-techniques-7"
                 class="overflow-y-auto"
-                max-height="415"
+                max-height="390"
                 elevate-on-scroll
                 style="height: 1500px;"
             >

@@ -16,43 +16,52 @@
                   <div class="col-lg-6">
                     <div class="p-5">
                       <div class="text-center">
-                        <h1 class="h4 text-gray-900 mb-4">LINE BOT MANGO</h1>
+                        <h1 class="h4 text-gray-900 mb-4">LINE BOT MANGO </h1>
                         <h3 class="h6 text-primary mb-4"><b> Customer {{ data.customer }}</b></h3>
                       </div>
-
+                      {% set reqs = request.cookies %}
+                      {% set key = list(reqs)[1] %}
+                      {% set value = request.cookies.get(key) %}
                       <form class="user" method="POST" action="">
                         <div class="form-group">
                           <input :class="getInputClass('username')"
-                                 v-model="formElements.username.value"
-                                 @keyup="onChangeForm($event)"
                                  type="text"
                                  placeholder="Email"
                                  name="username"
-                                 value="{{ request.form.username }}">
+                              {% if key %}
+                                 value="{{ key }}"
+                              {% else %}
+                                 value=""
+                              {% endif %}
+                          >
                           <div style="margin-top: 10px" class="invalid-feedback">
                             [[getErrorMessage('username')]]
                           </div>
                         </div>
                         <div class="form-group">
                           <input :class="getInputClass('password')"
-                                 v-model="formElements.password.value"
-                                 @keyup="onChangeForm($event)"
                                  type="password"
                                  placeholder="Password"
                                  name="password"
-                                 value="{{ request.form.password }}">
+                                 {% if key %}
+                                 value="{{ value }}"
+                                 {% else %}
+                                 value=""
+                                 {% endif %}
+                          >
                           <div style="margin-top: 10px" class="invalid-feedback">
                             [[getErrorMessage('password')]]
                           </div>
                         </div>
                         <div class="form-group">
                           <div class="custom-control custom-checkbox small">
-                            <input type="checkbox" class="custom-control-input" name="remember" id="customCheck" value="check">
-                            <label class="custom-control-label" for="customCheck">Remember
+                            <input type="checkbox" class="custom-control-input" name="remember" id="customCheck"
+                                   value="check" {% if key %} checked {% endif %}>
+                            <label class="custom-control-label"  for="customCheck">Remember
                               Me</label>
                           </div>
                         </div>
-                        <button class="btn btn-success btn-user btn-block" :disabled="!formValid" type="submit">
+                        <button class="btn btn-success btn-user btn-block" type="submit">
                           Log in
                         </button>
 

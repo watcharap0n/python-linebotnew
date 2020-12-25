@@ -28,11 +28,11 @@ app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 bootstrap = Bootstrap(app)
 app.secret_key = 'watcharaponweeraborirakz'
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(seconds=20)
 cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
 firebase_auth = firebase_admin.initialize_app(cred)
 
-COOKIE_TIME_OUT = 60*60*24*7 #7 days
+COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 days
+
 
 def database_test():
     with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
@@ -105,7 +105,7 @@ def before_request():
         print("error login")
 
 
-def sessionCustomer(user, password, remember):
+def sessionCustomer(user, password):
     getLogin = pb.auth().sign_in_with_email_and_password(user, password)
     with open('log/log_LoginSession', 'w') as logLogin:
         json.dump(getLogin, logLogin)
@@ -211,6 +211,14 @@ def gen():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
+@app.route('/cookie/')
+def cookie():
+    res = make_response("Setting a cookie")
+    res.set_cookie('foo', 'bar', max_age=60 * 60 * 24 * 365 * 2)
+    print(res)
+    return res
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
@@ -263,7 +271,7 @@ def login(customer):
         data = {
             'customer': user
         }
-        return render_template('main/login.vue', data=data)
+        return render_template('main/login.vue', data=data, list=list)
     elif request.method == 'POST':
         error = 'Invalid credentials. Please try again.'
         session.pop('user_id', None)
@@ -272,9 +280,17 @@ def login(customer):
         remember = request.form.getlist('remember')
         if customer == 'new':
             try:
-                sessionCustomer(user, password, remember)
-                flash('You were successfully logged in')
-                return redirect(url_for('marketing_import'))
+                if remember:
+                    sessionCustomer(user, password)
+                    flash('You were successfully logged in')
+                    res = make_response(redirect(url_for('marketing_import')))
+                    res.set_cookie(user, password, max_age=60 * 60 * 24 * 365 * 5)
+                    flash('You were successfully logged in')
+                    return res
+                else:
+                    sessionCustomer(user, password)
+                    flash('You were successfully logged in')
+                    return redirect(url_for('marketing_import'))
             except:
                 data = {
                     'user': user,
@@ -283,7 +299,7 @@ def login(customer):
                 return render_template('main/login.vue', data=data)
         elif customer == 'old':
             try:
-                sessionCustomer(user, password, remember)
+                sessionCustomer(user, password)
                 flash('You were successfully logged in')
                 return redirect(url_for('training_import'))
             except:
@@ -314,6 +330,7 @@ def logout():
 @app.route('/')
 @app.route('/welcome')
 def welcome():
+    print(g.user)
     return render_template('main/welcome.html')
 
 
@@ -512,6 +529,7 @@ def training_import():
 
 @app.route('/marketing_import', methods=['GET', 'POST'])
 def marketing_import():
+    reqs = request.cookies.get('check')
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
@@ -726,7 +744,8 @@ def return_information():
         PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
         OTHER = fire.lenProduct('RestCustomer', 'Other')
         products = list(OrderedDict.fromkeys(marketing_infomation[3]).keys())
-        status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag, 'amount_contact': str(len_contact),
+        status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag,
+                  'amount_contact': str(len_contact),
                   'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1], 'products': products,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
                   'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}
@@ -1211,7 +1230,6 @@ def graph():
         PJ = len(PJ)
         Con = len(Con)
         Real = len(Real)
-        stf = datetime.today().strftime('%B')
         key_erp = {'Rental': Rental, 'CSM': CSM,
                    'QCM': QCM, 'Maintenance': Maintenance, 'MRP': MRP, 'เช่าสุดคุ้ม': Rent,
                    'Project Planning': PJ, 'Construction': Con, 'Real Estate': Real}
@@ -1220,7 +1238,7 @@ def graph():
         key_erp = max(key_erp)
         value_erp = max(value_erp)
         data = {
-            'stff': stf,
+
             'user': lst,
             'rental': Rental,
             'csm': CSM,
