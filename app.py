@@ -28,10 +28,11 @@ app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 bootstrap = Bootstrap(app)
 app.secret_key = 'watcharaponweeraborirakz'
-
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(seconds=20)
 cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
 firebase_auth = firebase_admin.initialize_app(cred)
 
+COOKIE_TIME_OUT = 60*60*24*7 #7 days
 
 def database_test():
     with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
@@ -104,7 +105,7 @@ def before_request():
         print("error login")
 
 
-def sessionCustomer(user, password):
+def sessionCustomer(user, password, remember):
     getLogin = pb.auth().sign_in_with_email_and_password(user, password)
     with open('log/log_LoginSession', 'w') as logLogin:
         json.dump(getLogin, logLogin)
@@ -114,7 +115,7 @@ def sessionCustomer(user, password):
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=60)
+    app.permanent_session_lifetime = timedelta(minutes=COOKIE_TIME_OUT)
 
 
 @app.route('/test', methods=['GET', 'POST'])
@@ -213,7 +214,7 @@ def gen():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
-        return render_template('main/signup.html')
+        return render_template('main/signup.vue')
     elif request.method == 'POST':
         error = 'Please fill in all information.'
         confirm_error = 'Passwords do not match.'
@@ -225,9 +226,9 @@ def signup():
         password = request.form['password']
         confirm_pwd = request.form['confirmpwd']
         if password != confirm_pwd:
-            return render_template('main/signup.html', error=confirm_error)
+            return render_template('main/signup.vue', error=confirm_error)
         if email is None or password is None or first_name is None or last_name is None:
-            return render_template('main/signup.html', error=error)
+            return render_template('main/signup.vue', error=error)
         try:
             user = auth.create_user(email=email, password=password, display_name=userId)
             to = TimeDate()
@@ -243,11 +244,13 @@ def signup():
             db1.child('id').push(data)
             return redirect(url_for('welcome'))
         except:
-            return render_template('main/signup.html', error=error)
+            return render_template('main/signup.vue', error=error)
 
 
 @app.route('/lg/<string:customer>', methods=['GET', 'POST'])
 def login(customer):
+    if g.user:
+        return redirect(url_for('marketing_import'))
     user = None
     newCustomer = {'customer': 'new'}
     trainCustomer = {'customer': 'old'}
@@ -260,15 +263,16 @@ def login(customer):
         data = {
             'customer': user
         }
-        return render_template('main/login.html', data=data)
+        return render_template('main/login.vue', data=data)
     elif request.method == 'POST':
         error = 'Invalid credentials. Please try again.'
         session.pop('user_id', None)
         user = request.form['username']
         password = request.form['password']
+        remember = request.form.getlist('remember')
         if customer == 'new':
             try:
-                sessionCustomer(user, password)
+                sessionCustomer(user, password, remember)
                 flash('You were successfully logged in')
                 return redirect(url_for('marketing_import'))
             except:
@@ -276,10 +280,10 @@ def login(customer):
                     'user': user,
                     'error': error
                 }
-                return render_template('main/login.html', data=data)
+                return render_template('main/login.vue', data=data)
         elif customer == 'old':
             try:
-                sessionCustomer(user, password)
+                sessionCustomer(user, password, remember)
                 flash('You were successfully logged in')
                 return redirect(url_for('training_import'))
             except:
@@ -287,7 +291,7 @@ def login(customer):
                     'user': user,
                     'error': error
                 }
-                return render_template('main/login.html', data=data)
+                return render_template('main/login.vue', data=data)
 
 
 @app.route('/forgot', methods=['GET', 'POST'])
@@ -511,6 +515,8 @@ def marketing_import():
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
+        req = request.cookies.get('user_id')
+        print(req)
         tags = ['CB010', 'CC010', 'CG010', 'CI010', 'CJ010', 'CM010',
                 'CF010', 'CP010', 'CE010', 'CH010', 'CK010', 'CN010', 'CD010',
                 'RC010', 'RA010', 'RB010']
@@ -714,12 +720,13 @@ def return_information():
         len_transaction = len(marketing_infomation[0])
         len_import = len(fire.liffCustomer())
         len_demo = len(fire.demoCustomer())
+        len_contact = len(fire.contractCustomer())
         REAL = fire.lenProduct('RestCustomer', 'RealEstate')
         CON = fire.lenProduct('RestCustomer', 'Construction')
         PLAN = fire.lenProduct('RestCustomer', 'Project Planning')
         OTHER = fire.lenProduct('RestCustomer', 'Other')
         products = list(OrderedDict.fromkeys(marketing_infomation[3]).keys())
-        status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag,
+        status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag, 'amount_contact': str(len_contact),
                   'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1], 'products': products,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
                   'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}

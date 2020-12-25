@@ -168,7 +168,7 @@
 #         data = {
 #             'customer': user
 #         }
-#         return render_template('main/login.html', data=data)
+#         return render_template('main/login.vue', data=data)
 #     if request.method == 'POST':
 #         error = 'Invalid credentials. Please try again.'
 #         session.pop('user_id', None)
@@ -184,7 +184,7 @@
 #                     'user': user,
 #                     'error': error
 #                 }
-#                 return render_template('main/login.html', data=data)
+#                 return render_template('main/login.vue', data=data)
 #         elif customer == 'old':
 #             try:
 #                 sessionCustomer(user, password)
@@ -195,7 +195,7 @@
 #                     'user': user,
 #                     'error': error
 #                 }
-#                 return render_template('main/login.html', data=data)
+#                 return render_template('main/login.vue', data=data)
 #
 #
 # @app.route('/logout')
@@ -208,7 +208,7 @@
 # @app.route('/signup', methods=['GET', 'POST'])
 # def signup():
 #     if request.method == 'GET':
-#         return render_template('main/signup.html')
+#         return render_template('main/signup.vue')
 #     elif request.method == 'POST':
 #         error = 'Please fill in all information.'
 #         confirm_error = 'Passwords do not match.'
@@ -220,9 +220,9 @@
 #         password = request.form['password']
 #         confirm_pwd = request.form['confirmpwd']
 #         if password != confirm_pwd:
-#             return render_template('main/signup.html', error=confirm_error)
+#             return render_template('main/signup.vue', error=confirm_error)
 #         if email is None or password is None or first_name is None or last_name is None:
-#             return render_template('main/signup.html', error=error)
+#             return render_template('main/signup.vue', error=error)
 #         try:
 #             user = auth.create_user(email=email, password=password, display_name=userId)
 #             to = TimeDate()
@@ -238,7 +238,7 @@
 #             db1.child('id').push(data)
 #             return redirect(url_for('welcome'))
 #         except:
-#             return render_template('main/signup.html', error=error)
+#             return render_template('main/signup.vue', error=error)
 #
 #
 # @app.route('/setting')

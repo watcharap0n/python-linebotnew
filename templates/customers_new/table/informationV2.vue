@@ -600,7 +600,7 @@
                   <a href="#">
                     <v-badge
                         class="text-white"
-                        content="0"
+                        :content="amountContact"
                         color="blue"
                     >
                       ติดต่อเรา
@@ -1015,6 +1015,7 @@
               amountInfo: '',
               amountDemo: '',
               amountImport: '',
+              amountContact: '',
               sortTag: [],
               editedIndex: -1,
               dates: [],
@@ -1030,6 +1031,7 @@
               amount_line: '',
               amount_get_demo: '',
               amount_other: '',
+              amount_contact: '',
               selectProduct: [
                   {
                       product: '',
@@ -1223,6 +1225,7 @@
                           this.amountInfo = res.data.amount_info
                           this.amountImport = res.data.amount_import
                           this.amountDemo = res.data.amount_demo
+                          this.amountContact = res.data.amount_contact
                           this.productMango = res.data.products
                           console.log('tags', tags)
                           console.log('transaction: ', response)

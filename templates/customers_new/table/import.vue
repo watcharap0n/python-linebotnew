@@ -13,7 +13,7 @@
             <div class="card-body-icon">
               <i class="fa fa-cog" aria-hidden="true"></i>
             </div>
-            <div class="mr-5"><span id="message-count">{{ data.CON }} </span>Construction</div>
+            <div class="mr-5"><span id="message-count"></span>Construction</div>
           </div>
           <a class="card-footer text-white clearfix small z-1" href="#">
             <span class="float-left">View Details</span>
@@ -29,7 +29,7 @@
             <div class="card-body-icon">
               <i class="fa fa-cog" aria-hidden="true"></i>
             </div>
-            <div class="mr-5"><span id="message-count">{{ data.REAL }} </span>Real Estate</div>
+            <div class="mr-5"><span id="message-count"> </span>Real Estate</div>
           </div>
           <a class="card-footer text-white clearfix small z-1" href="#">
             <span class="float-left">View Details</span>
@@ -45,7 +45,7 @@
             <div class="card-body-icon">
               <i class="fa fa-cog" aria-hidden="true"></i>
             </div>
-            <div class="mr-5"><span id="order-count">{{ data.PLAN }} </span>Project Planning</div>
+            <div class="mr-5"><span id="order-count"></span>Project Planning</div>
           </div>
           <a class="card-footer text-white clearfix small z-1" href="#">
             <span class="float-left">View Details</span>
@@ -61,7 +61,7 @@
             <div class="card-body-icon">
               <i class="fa fa-cog" aria-hidden="true"></i>
             </div>
-            <div class="mr-5"><span id="order-count">{{ data.OTHER }} </span>OTHER</div>
+            <div class="mr-5"><span id="order-count"></span>OTHER</div>
           </div>
           <a class="card-footer text-white clearfix small z-1" href="#">
             <span class="float-left">View Details</span>
