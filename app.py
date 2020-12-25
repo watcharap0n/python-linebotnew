@@ -600,6 +600,102 @@ def page_info():
         return send_from_directory('static/excel', 'testVue.xlsx')
 
 
+@app.route('/sort_table', methods=['GET', 'POST'])
+def sort_table():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    if request.method == 'GET':
+        return render_template('customers_new/table/sort_table.vue')
+    elif request.method == 'POST':
+        return send_from_directory('static/excel', 'testVue.xlsx')
+
+
+@app.route('/return_sort_table', methods=['GET', 'POST'])
+def return_sort_table():
+    if request.method == 'GET':
+        ref = db2.child('setTable').get()
+        ref = dict(ref.val())
+        get_data = GetDateTime(None, db2)
+        month20 = get_data.todo_date('month', db2)
+        result = get_data.data_datetime('RestCustomer')
+        todo, product, channel = result[0], result[1], result[2]
+        todo.sort(key=month20.get_date)
+        if ref.get('dates') and ref.get('product') and ref.get('channel'):
+            ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('dates') and ref.get('channel'):
+            ms = get_data.dynamic_date_channel(ref['dates'], todo, ref['channel'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('dates') and ref.get('product'):
+            ms = get_data.dynamic_product_dates(ref['dates'], todo, ref['product'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('product') and ref.get('channel'):
+            ms = get_data.dynamic_product_channel(todo, ref['channel'], ref['product'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('dates'):
+            ms = get_data.dynamic_dates(ref['dates'], todo)
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('product'):
+            dict_key = get_data.get_dict_key(ref, ref['product'])
+            ms = get_data.dynamic(todo, dict_key, ref['product'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('channel'):
+            print('channel')
+            dict_key = get_data.get_dict_key(ref, ref['channel'])
+            ms = get_data.dynamic(todo, dict_key, ref['channel'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+    elif request.method == 'POST':
+        lst = []
+        post_data = request.get_json()
+        if post_data.get('dates'):
+            for i in post_data['dates']:
+                d = datetime.datetime.strptime(i, '%Y-%m-%d')
+                date = f'{d.day}-{d.month}-{d.year}'
+                lst.append(date)
+            if post_data.get('product') and post_data.get('channel') and post_data.get('dates'):
+                post_data = {'product': post_data['product'], 'dates': lst, 'channel': post_data['channel']}
+                db2.child('set_sort_data').set(post_data)
+            elif post_data.get('dates') and post_data.get('channel'):
+                post_data = {'dates': lst, 'channel': post_data['channel']}
+                db2.child('set_sort_data').set(post_data)
+            elif post_data.get('dates') and post_data.get('product'):
+                post_data = {'dates': lst, 'product': post_data['product']}
+                db2.child('set_sort_data').set(post_data)
+            else:
+                post_data = {'dates': lst}
+                db2.child('set_sort_data').set(post_data)
+        db2.child('setTable').set(post_data)
+        return make_response(post_data)
+
+
 @app.route('/json_datetime', methods=['GET', 'POST'])
 def return_datetime():
     if request.method == 'GET':

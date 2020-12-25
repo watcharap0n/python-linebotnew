@@ -974,8 +974,6 @@
               </v-dialog>
             </v-toolbar>
           </template>
-
-
           <template v-slot:no-data>
             <v-btn
                 color="primary"
@@ -985,7 +983,6 @@
             </v-btn>
           </template>
         </v-data-table>
-
       </div>
     </v-app>
   </div>
@@ -1126,7 +1123,6 @@
                       {text: 'อีเมล', value: 'Email'},
                   ]
               }
-
           },
           watch: {
               dialog(val) {
@@ -1412,7 +1408,6 @@
               sortProduct(value) {
                   this.search = value
               },
-
               showDateTime() {
                   if (this.ms) {
                       this.spinDateTime = true
