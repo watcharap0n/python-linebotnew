@@ -159,6 +159,7 @@
                                 'email': element.email,
                                 'company': element.company,
                                 'tel': element.tel,
+                                'other': '',
                                 'product': element.product,
                                 'comment': element.message,
                                 'userId': profile.userId,
