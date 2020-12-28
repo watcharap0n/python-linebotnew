@@ -249,8 +249,9 @@
       </v-card>
 
 
-      <div>
+      <v-container>
         <v-data-table
+            :hidden="!showTable"
             :loading="!spinChart"
             :headers="headers"
             :items="transaction"
@@ -258,10 +259,26 @@
             class="elevation-1"
         >
           <template v-slot:top>
+            <v-toolbar>
+              <v-tabs
+                  dark
+                  background-color="success">
+                <v-tab>
+                  <v-badge
+                      color="blue"
+                      :content="transaction.length">
+                    ข้อมูลลูกค้า
+                  </v-badge>
+                </v-tab>
+
+
+                <v-spacer></v-spacer>
+              </v-tabs>
+            </v-toolbar>
             <v-toolbar
                 flat
             >
-              <v-toolbar-title>My CRUD</v-toolbar-title>
+              <v-toolbar-title>Dynamic Table</v-toolbar-title>
               <v-divider
                   class="mx-4"
                   inset
@@ -270,22 +287,23 @@
               <v-spacer></v-spacer>
               <v-dialog
                   v-model="dialog"
-                  max-width="500px"
+                  max-width="800px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
-                      color="primary"
+                      disabled
+                      color="success"
                       dark
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                   >
-                    New Item
+                    เพิ่มข้อมูล
                   </v-btn>
                 </template>
                 <v-card>
                   <v-card-title>
-                    <span class="headline">{{ formTitle }}</span>
+                    <span class="headline">[[formTitle]]</span>
                   </v-card-title>
 
                   <v-card-text>
@@ -297,8 +315,11 @@
                             md="4"
                         >
                           <v-text-field
-                              v-model="editedItem.name"
-                              label="Dessert name"
+                              prepend-inner-icon="mdi-account"
+                              v-model="editedItem.fname"
+                              label="ชื่อ"
+                              outlined
+                              dense
                           ></v-text-field>
                         </v-col>
                         <v-col
@@ -307,8 +328,11 @@
                             md="4"
                         >
                           <v-text-field
-                              v-model="editedItem.calories"
-                              label="Calories"
+                              prepend-inner-icon="mdi-post-outline"
+                              v-model="editedItem.product"
+                              label="ผลิตภัณฑ์"
+                              outlined
+                              dense
                           ></v-text-field>
                         </v-col>
                         <v-col
@@ -317,8 +341,11 @@
                             md="4"
                         >
                           <v-text-field
-                              v-model="editedItem.fat"
-                              label="Fat (g)"
+                              prepend-inner-icon="mdi-office-building"
+                              v-model="editedItem.company"
+                              label="บริษัท"
+                              outlined
+                              dense
                           ></v-text-field>
                         </v-col>
                         <v-col
@@ -327,8 +354,11 @@
                             md="4"
                         >
                           <v-text-field
-                              v-model="editedItem.carbs"
-                              label="Carbs (g)"
+                              prepend-inner-icon="mdi-email"
+                              v-model="editedItem.email"
+                              label="อีเมล"
+                              outlined
+                              dense
                           ></v-text-field>
                         </v-col>
                         <v-col
@@ -337,8 +367,24 @@
                             md="4"
                         >
                           <v-text-field
-                              v-model="editedItem.protein"
-                              label="Protein (g)"
+                              prepend-inner-icon="mdi-card-account-phone"
+                              v-model="editedItem.tel"
+                              label="เบอร์"
+                              outlined
+                              dense
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                            cols="12"
+                            sm="6"
+                            md="4"
+                        >
+                          <v-text-field
+                              prepend-inner-icon="mdi-access-point-check"
+                              v-model="editedItem.channel"
+                              label="ช่องทาง"
+                              outlined
+                              dense
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -377,15 +423,52 @@
               </v-dialog>
             </v-toolbar>
           </template>
+          <template v-slot:item.channel="{ item }">
+            <v-chip
+                class="ma-2"
+                color="green"
+                text-color="white"
+                v-if="item.channel === 'LINE'"
+            >
+              [[item.channel]]
+            </v-chip>
+            <v-chip
+                class="ma-2"
+                color="primary"
+                text-color="white"
+                v-else-if="item.channel === 'GetDemo'"
+            >
+              [[item.channel]]
+            </v-chip>
+            <v-chip
+                class="ma-2"
+                color="secondary"
+                text-color="white"
+                v-else-if="item.channel === 'Contact'"
+            >
+              [[item.channel]]
+            </v-chip>
+            <v-chip
+                class="ma-2"
+                color="orange"
+                text-color="white"
+                v-else
+            >
+              [[item.channel]]
+            </v-chip>
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-icon
+                disabled
                 small
                 class="mr-2"
                 @click="editItem(item)"
+                disable
             >
               mdi-pencil
             </v-icon>
             <v-icon
+                disabled
                 small
                 @click="deleteItem(item)"
             >
@@ -394,7 +477,7 @@
           </template>
 
         </v-data-table>
-      </div>
+      </v-container>
     </v-app>
   </div>
 
@@ -414,6 +497,7 @@
               menuMonth: false,
               dialogCustoms: false,
               dialogMonth: false,
+              showTable: false,
               products: [],
               channels: [],
               formProduct: '',
@@ -421,29 +505,36 @@
               transaction: [],
               headers: [
                   {text: 'Actions', value: 'actions', sortable: false},
+                  {text: 'แท็ก', value: 'tag'},
                   {text: 'ชื่อ', value: 'fname'},
                   {text: 'ผลิตภัณฑ์', value: 'product'},
                   {text: 'บริษัท', value: 'company'},
                   {text: 'อีเมล', value: 'email'},
                   {text: 'เบอร์', value: 'tel'},
+                  {text: 'ช่องทาง', value: 'channel'},
                   {text: 'วันเวลา', value: 'datetime'},
               ],
               editedItem: {
-                  name: '',
-                  calories: 0,
-                  fat: 0,
-                  carbs: 0,
-                  protein: 0,
+                  id: '',
+                  fname: '',
+                  product: '',
+                  company: '',
+                  email: '',
+                  tel: '',
+                  channel: '',
               },
               defaultItem: {
-                  name: '',
-                  calories: 0,
-                  fat: 0,
-                  carbs: 0,
-                  protein: 0,
+                  id: '',
+                  fname: '',
+                  product: '',
+                  company: '',
+                  email: '',
+                  tel: '',
+                  channel: '',
               },
           }),
           created() {
+              this.showTable = false
               this.createTable()
           },
           computed: {
@@ -483,13 +574,15 @@
                   this.dialogCustoms = false
               },
               sortMonth() {
-                  _json = {'month': this.month}
+                  _json = {'months': this.month}
+                  this.postMonth(_json)
                   this.dialogMonth = false
               },
               postSorting(data) {
                   const path = '/return_sort_table'
                   axios.post(path, data)
                       .then(() => {
+                          this.showTable = true
                           this.getTable()
                           console.log('success')
                       })
@@ -497,17 +590,39 @@
                           console.error(error)
                       })
               },
+              postMonth(data) {
+                  const path = '/data_month';
+                  axios.post(path, data)
+                      .then(() => {
+                          this.showTable = true
+                          this.getMonths()
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
               getTable() {
                   this.spinChart = false
                   const path = '/return_sort_table'
                   axios.get(path)
                       .then((res) => {
-                          let transaction = this.transaction = res.data.ms
-                          console.log(transaction)
+                          this.transaction = res.data.ms
                       })
                       .catch((err) => {
                           console.error(err)
                       })
+              },
+              getMonths() {
+                  this.spinChart = false
+                  const path = '/data_month';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
               },
               editItem(item) {
                   this.editedIndex = this.transaction.indexOf(item)

@@ -1223,8 +1223,6 @@
                           this.amountDemo = res.data.amount_demo
                           this.amountContact = res.data.amount_contact
                           this.productMango = res.data.products
-                          console.log('tags', tags)
-                          console.log('transaction: ', response)
                       })
                       .catch((error) => {
                           console.error(error);

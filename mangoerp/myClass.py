@@ -182,11 +182,12 @@ class GetDateTime:
             Img = v['Picture']
             email = v['Email']
             tel = v['Tel']
+            tag = v['Tag']
             cut_channels.append(channel)
             cut_products.append(product)
             d = tim.datetime.strptime(date, '%d-%m-%Y')
             t = tim.datetime.strptime(time, '%H:%M:%S')
-            mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+            mapProduct = {'fname': fname, 'Tag': tag, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
                           'month': d.month, 'year': d.year, 'date': date, 'time': time,
                           'message': message, 'img': Img, 'id': i.key(), 'email': email,
                           'month_check': f'{d.year}-{d.month}', 'tel': tel, 'datetime': f'{date} {time}'}

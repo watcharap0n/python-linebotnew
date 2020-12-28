@@ -23,9 +23,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 
 
 
-s = "{'user': user, 'pwd': password}"
-
-print(dict(s))
 # ref = db.child('requestContract').get()
 # for i in ref.each()[1:]:
 #     if '' in i.val()['tag']:
