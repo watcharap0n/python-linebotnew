@@ -1,432 +1,105 @@
 {% extends "customers_new/layout.html" %}
 {% block content %}
   <br><br><br>
+
   <div id="app">
-    <v-row>
-      <v-col cols="6">
-
-      </v-col>
-      <v-col cols="6">
-        <v-app id="inspire" style="height: 430px">
-          <v-card class="overflow-hidden">
-            <v-app-bar
-
-                color="white"
-                scroll-target="#scrolling-techniques-7"
+    <v-app id="inspire" class="fixed-nav sticky-footer bg-gray-200">
+      <v-container>
+        <div class="text-center">
+            <v-combobox
+                v-model="model"
+                :filter="filter"
+                :hide-no-data="!searchTag"
+                :items="itemsTag"
+                :search-input.sync="searchTag"
+                hide-selected
+                label="เลือกแท็กที่ต้องการ"
+                multiple
+                small-chips
+                solo
             >
-              <v-toolbar-title>
-                <v-row>
-                  <v-col cols="6">
-                    <div class="text-center">
-                      <v-dialog
-                          v-model="sortingDialog"
-                          width="500"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                              :loading="!spinDateTime"
-                              color="red lighten-2"
-                              dark
-                              v-bind="attrs"
-                              v-on="on"
-                          >
-                            <v-icon left>
-                              mdi-sort-calendar-ascending
-                            </v-icon>
-                            Sorting
-                          </v-btn>
-                        </template>
-
-                        <v-card>
-                          <v-card-title class="headline grey lighten-2">
-                            Select Your BY
-                          </v-card-title>
-
-                          <v-card-text>
-                            <v-row>
-                              <v-col cols="12">
-                                <v-menu
-                                    ref="menu"
-                                    v-model="menu"
-                                    :close-on-content-click="false"
-                                    :return-value.sync="dates"
-                                    transition="scale-transition"
-                                    offset-y
-                                    min-width="290px"
-                                >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-combobox
-                                        v-model="dates"
-                                        multiple
-                                        chips
-                                        small-chips
-                                        label="Multiple picker in menu"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                    ></v-combobox>
-                                  </template>
-                                  <v-date-picker
-                                      v-model="dates"
-                                      multiple
-                                      no-title
-                                      scrollable
-                                  >
-                                    <v-spacer></v-spacer>
-                                    <v-btn
-                                        text
-                                        color="primary"
-                                        @click="menu = false"
-                                    >
-                                      Cancel
-                                    </v-btn>
-                                    <v-btn
-                                        text
-                                        color="primary"
-                                        @click="$refs.menu.save(dates)"
-                                    >
-                                      OK
-                                    </v-btn>
-                                  </v-date-picker>
-                                </v-menu>
-                              </v-col>
-                            </v-row>
-                            <v-row>
-                              <v-col cols="6">
-                                <v-select
-                                    v-model="selectProduct.product"
-                                    :items="products"
-                                    label="Product"
-                                    menu-props="auto"
-                                    outlined
-                                    dense
-                                    clearable
-                                >
-                                </v-select>
-                              </v-col>
-                              <v-col cols="6">
-                                <v-select
-                                    v-model="selectProduct.channel"
-                                    :items="channels"
-                                    label="Channel"
-                                    menu-props="auto"
-                                    outlined
-                                    dense
-                                    clearable
-                                >
-                                </v-select>
-                              </v-col>
-                            </v-row>
-                          </v-card-text>
-
-                          <v-divider></v-divider>
-
-                          <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                color="primary"
-                                text
-                                @click="sortingDialog = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                                color="primary"
-                                text
-                                @click="sortDate"
-                            >
-                              Submit
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="6">
-                    <div class="text-center">
-                      <v-dialog
-                          v-model="monthDialog"
-                          width="500"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                              :loading="!spinDateTime"
-                              color="red lighten-2"
-                              dark
-                              v-bind="attrs"
-                              v-on="on"
-                          >
-                            <v-icon left>
-                              mdi-calendar-month
-                            </v-icon>
-                            Y/M
-                          </v-btn>
-                        </template>
-
-                        <v-card>
-                          <v-card-title class="headline grey lighten-2">
-                            Select Month
-                          </v-card-title>
-                          <v-card-text>
-                            <v-row>
-                              <v-col cols="12">
-                                <v-menu
-                                    ref="menuMonth"
-                                    v-model="menuMonth"
-                                    :close-on-content-click="false"
-                                    :return-value.sync="date"
-                                    transition="scale-transition"
-                                    offset-y
-                                    max-width="290px"
-                                    min-width="290px"
-                                >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-combobox
-                                        v-model="date"
-                                        multiple
-                                        chips
-                                        small-chips
-                                        label="Multiple picker in menu"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                    ></v-combobox>
-                                  </template>
-                                  <v-date-picker
-                                      v-model="date"
-                                      type="month"
-                                      no-title
-                                      scrollable
-                                      multiple
-                                  >
-                                    <v-spacer></v-spacer>
-                                    <v-btn
-                                        text
-                                        color="primary"
-                                        @click="menuMonth = false"
-                                    >
-                                      Cancel
-                                    </v-btn>
-                                    <v-btn
-                                        text
-                                        color="primary"
-                                        @click="$refs.menuMonth.save(date)"
-                                    >
-                                      OK
-                                    </v-btn>
-                                  </v-date-picker>
-                                </v-menu>
-                              </v-col>
-                            </v-row>
-                          </v-card-text>
-
-                          <v-divider></v-divider>
-
-                          <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                color="primary"
-                                text
-                                @click="monthDialog = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                                color="primary"
-                                text
-                                @click="sortMonth"
-                            >
-                              Submit
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-toolbar-title>
-
-              <v-spacer></v-spacer>
-              <v-chip
-                  class="ma-2"
-                  color="green"
-                  text-color="white"
-                  @click="clickChannel('LINE')"
-              >
-                <v-avatar
-                    left
-                    class="green darken-4"
-                >
-                  [[amount_line]]
-                </v-avatar>
-                LINE
-              </v-chip>
-
-              <v-chip
-                  class="ma-2"
-                  color="green"
-                  text-color="white"
-                  @click="clickChannel('web mango')"
-              >
-                <v-avatar
-                    left
-                    class="green darken-4"
-                >
-                  [[amount_get_demo]]
-                </v-avatar>
-                GetDemo
-              </v-chip>
-
-              <v-chip
-                  class="ma-2"
-                  color="green"
-                  text-color="white"
-                  @click="clickChannel('event Impact')"
-              >
-                <v-avatar
-                    left
-                    class="green darken-4"
-                >
-                  [[amount_other]]
-                </v-avatar>
-                Other
-              </v-chip>
-              <v-chip
-                  class="ma-2"
-                  color="indigo"
-                  text-color="white"
-              >
-                <v-avatar left>
-                  <v-icon>mdi-account-circle</v-icon>
-                </v-avatar>
-                [[ms.length]]
-              </v-chip>
-            </v-app-bar>
-            <v-sheet
-                id="scrolling-techniques-7"
-                class="overflow-y-auto"
-                max-height="365"
-                elevate-on-scroll
-                style="height: 1500px;"
-            >
-              <v-container>
-                <div v-if="!spinDateTime" style="margin-left: 300px; margin-top: 150px">
-                  <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
-                </div>
-                <v-expansion-panels popout v-else>
-                  <v-expansion-panel
-                      v-for="(m,i) in ms"
-                      :key="i"
+              <template v-slot:no-data>
+                <v-list-item>
+                   <v-icon color="green">mdi-arrow-right-thick</v-icon>
+                  <span class="subheading">สร้าง</span>&nbsp;&nbsp;
+                  <v-chip
+                      style="color: white"
+                      color="pink lighten-2"
+                      label
+                      small
                   >
-                    <v-expansion-panel-header>
-                      <v-row>
-                        <v-col style="margin-top: 10px"
-                               cols="3"
-                               sm="3"
-                               md="3"
-                        >
-                          <v-menu
-                              bottom
-                              right
-                              transition="scale-transition"
-                              origin="top left"
-                          >
-                            <template v-slot:activator="{ on }">
-                              <v-chip
-                                  pill
-                                  v-on="on"
-                              >
-                                <v-avatar left>
-                                  <v-img :src="m.img"></v-img>
-                                </v-avatar>
-                                [[m.company]]
-                              </v-chip>
-                            </template>
-                            <v-card width="300">
-                              <v-list dark>
-                                <v-list-item>
-                                  <v-list-item-avatar>
-                                    <v-img :src="m.img"></v-img>
-                                  </v-list-item-avatar>
-                                  <v-list-item-content>
-                                    <v-list-item-title>[[m.fname]]</v-list-item-title>
-                                    <v-list-item-subtitle>[[m.company]]</v-list-item-subtitle>
-                                  </v-list-item-content>
-                                  <v-list-item-action>
-                                    <v-btn
-                                        icon
-                                        @click="menu = false"
-                                    >
-                                      <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn>
-                                  </v-list-item-action>
-                                </v-list-item>
-                              </v-list>
-                              <v-list>
-                                <v-list-item @click="() => {}">
-                                  <v-list-item-action>
-                                    <v-icon>mdi-briefcase</v-icon>
-                                  </v-list-item-action>
-                                  <v-list-item-subtitle>[[m.email]]</v-list-item-subtitle>
-                                </v-list-item>
-                              </v-list>
-                            </v-card>
-                          </v-menu>
-                        </v-col>
+                    [[ searchTag ]]
+                  </v-chip>
+                </v-list-item>
+              </template>
+              <template v-slot:selection="{ attrs, item, parent, selected, index}">
+                <v-chip
+                    v-if="index < 2"
+                    v-if="item === Object(item)"
+                    v-bind="attrs"
+                    color="pink lighten-2"
+                    :input-value="selected"
+                    label
+                    small
+                    close
+                    close-icon="mdi-delete"
+                    @click:close="parent.selectItem(item)"
+                >
+                      <span class="pr-2" style="color: white">
+                        [[ item.text ]]
+                      </span>
+                </v-chip>
+                  <span v-if="index === 2"
+                          class="grey--text caption">(+[[ model.length - 2 ]] others)
+                    </span>
+              </template>
 
-                        <v-col cols="3">
-                          <v-chip
-                              class="ma-2"
-                              color="primary lighten-1"
-                              text-color="white"
-                          >
-                            [[m.product]]
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                            cols="3"
-                            sm="3"
-                            md="3"
-                        >
-                          <v-chip
-                              class="ma-2"
-                              color="green lighten-1"
-                              text-color="white"
-                          >
-                            [[m.channel]]
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                            cols="3"
-                            sm="3"
-                            md="3"
-                        >
-                          <v-chip
-                              style="margin-top: 10px"
-                              color="red lighten-4"
-                              class="ml-0 mr-2 black--text"
-                              label
-                              small
-                          >
-                            [[m.year]]/[[m.month]]/[[m.day]]
-                          </v-chip>
-                        </v-col>
-                      </v-row>
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      [[m.message]]
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
-              </v-container>
-            </v-sheet>
-          </v-card>
-        </v-app>
-      </v-col>
-    </v-row>
+              <template v-slot:item="{ index, item }">
+                <v-text-field
+                    v-if="editingTag === item"
+                    v-model="editingTag.text"
+                    autofocus
+                    flat
+                    background-color="transparent"
+                    hide-details
+                    solo
+                    @keyup.enter="edit(index, item)"
+                ></v-text-field>
+                <v-chip
+                    v-else
+                    color="pink lighten-2"
+                    dark
+                    label
+                    small
+                >
+                  [[ item.text ]]
+                </v-chip>
+                <v-spacer></v-spacer>
+                <v-list-item-action @click.stop>
+                  <v-row>
+                    <v-col>
+                      <v-btn
+                          icon
+                          @click.stop.prevent="edit(index, item)"
+                      >
+                        <v-icon color="teal">[[ editingTag !== item ? 'mdi-pencil' : 'mdi-check' ]]</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col>
+                      <v-btn
+                          icon
+                          @click.stop.prevent="toRemove(index, item)"
+                      >
+                        <v-icon color="red">mdi-delete</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-list-item-action>
+              </template>
+            </v-combobox>
+          </div>
+      </v-container>
+    </v-app>
   </div>
 
 
@@ -438,131 +111,107 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
-              dates: [],
-              date: [],
-              products: [],
-              channels: [],
-              ms: [],
-              spinDateTime: true,
+              dialogTag: false,
+              activator: null,
+              attach: null,
+              colorsTag: 'pink',
+              editingTag: null,
+              editingIndexTag: -1,
+              itemsTag: [],
+              searchTag: null,
+              nonce: 1,
               menu: false,
-              menuMonth: false,
-              sortingDialog: false,
-              monthDialog: false,
-              amount_line: '',
-              amount_get_demo: '',
-              amount_other: '',
-              selectProduct: [
-                  {
-                      product: '',
-                      channel: '',
-                  }
-              ],
+              model: [],
+              x: 0,
+              y: 0,
           }),
+
           created() {
-              this.getDateTime()
+              this.getTags();
           },
           watch: {
-              ms: 'showDateTime'
+              model(val, prev) {
+                  if (val.length === prev.length) return
+                  this.model = val.map(v => {
+                      if (typeof v === 'string') {
+                          v = {
+                              text: v,
+                              color: this.colorsTag
+                          }
+                          this.addTag(v)
+                          this.nonce++
+                      }
+                      return v
+                  })
+              },
           },
           methods: {
-              showDateTime() {
-                  if (this.ms) {
-                      this.spinDateTime = true
+              edit(index, item) {
+                  if (!this.editingTag) {
+                      this.editingTag = item
+                      this.editingIndexTag = index
+
+                  } else {
+                      this.setTag(item.id, this.editingTag)
+                      this.editingTag = null
+                      this.editingIndexTag = -1
                   }
               },
-              clickChannel(value) {
-                  let data = {
-                      'channel': value
-                  }
-                  this.postDateTime(data)
+              toRemove(index, item) {
+                  this.itemsTag.splice(this.itemsTag.indexOf(item), 1)
+                  this.removeTag({'index': item.id})
               },
-              sortMonth() {
-                  let data = {
-                      'months': this.date
-                  }
-                  this.postMonth(data)
-                  console.log(data)
-                  this.monthDialog = false
-              },
-              sortDate() {
-                  let data = {
-                      'product': this.selectProduct.product,
-                      'dates': this.dates,
-                      'channel': this.selectProduct.channel
-                  }
-                  console.log('data', data)
-                  this.postDateTime(data)
-                  this.sortingDialog = false
-              },
-              getDateTime() {
-                  this.spinDateTime = false
-                  const path = '/json_datetime';
-                  axios.get(path)
-                      .then((res) => {
-                          this.ms = res.data.ms
-                          this.amount_line = res.data.amount_channel.line
-                          this.amount_get_demo = res.data.amount_channel.get_demo
-                          this.amount_other = res.data.amount_channel.other
-                          this.products = res.data.products
-                          this.channels = res.data.channels
-                          console.log('res datetime', ok)
+              addTag(item) {
+                  const path = '/add_tags'
+                  axios.post(path, item)
+                      .then(() => {
+                          this.getTags()
+                          console.log('success')
                       })
-                      .catch((error) => {
-                          console.error(error);
-                      });
+                      .catch((err) => {
+                          console.error(err)
+                      })
               },
-              postDateTime(data) {
-                  const path = '/json_datetime';
-                  axios.post(path, data)
+              setTag(index, item) {
+                  const path = `/tags/${index}`;
+                  axios.post(path, item)
                       .then(() => {
                           console.log('success')
-                          this.getSortDate()
-                      })
-                      .catch((error) => {
-                          // eslint-disable-next-line
-                          console.error(error);
-                      });
-              },
-              getSortDate() {
-                  this.spinDateTime = false
-                  const path = '/return_sort'
-                  axios.get(path)
-                      .then((res) => {
-                          this.amount_line = res.data.amount_channel.line
-                          this.amount_get_demo = res.data.amount_channel.get_demo
-                          this.amount_other = res.data.amount_channel.other
-                          this.ms = res.data.ms
                       })
                       .catch((error) => {
                           console.error(error)
                       })
               },
-              postMonth(data) {
-                  const path = '/data_month';
-                  axios.post(path, data)
+              removeTag(index) {
+                  const path = `/tags`;
+                  axios.post(path, index)
                       .then(() => {
-                          this.getMonths()
+                          this.getTags()
                           console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error)
+                      })
+              },
+              filter(item, queryText, itemText) {
+                  const hasValue = val => val != null ? val : ''
+                  const text = hasValue(itemText)
+                  const query = hasValue(queryText)
+                  return text.toString()
+                      .toLowerCase()
+                      .indexOf(query.toString().toLowerCase()) > -1
+              },
+              getTags() {
+                  const path = '/tags';
+                  axios.get(path)
+                      .then((res) => {
+                          let tags = this.itemsTag = res.data.val_tags;
+                          console.log(tags)
                       })
                       .catch((error) => {
                           console.error(error);
                       });
               },
-              getMonths() {
-                  this.spinDateTime = false
-                  const path = '/data_month';
-                  axios.get(path)
-                      .then((res) => {
-                          this.amount_line = res.data.amount_channel.line
-                          this.amount_get_demo = res.data.amount_channel.get_demo
-                          this.amount_other = res.data.amount_channel.other
-                          let ms = this.ms = res.data.ms
-                          console.log('months', ms)
-                      })
-                      .catch((error) => {
-                          console.error(error);
-                      });
-              }
           },
           delimiters: ["[[", "]]"]
 

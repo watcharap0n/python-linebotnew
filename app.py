@@ -531,7 +531,6 @@ def training_import():
 
 @app.route('/marketing_import', methods=['GET', 'POST'])
 def marketing_import():
-    reqs = request.cookies.get('check')
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
@@ -588,6 +587,39 @@ def marketing_import():
 @app.route('/vuetify', methods=['GET', 'POST'])
 def vuetifyTest():
     return render_template('customers_new/table/vuetify_test.vue')
+
+
+@app.route('/tags', methods=['GET', 'POST'])
+def tags():
+    if request.method == 'GET':
+        lst = []
+        ref = db2.child('customer_tag').get()
+        for i in ref.each()[2:]:
+            tag = {'text': i.val()['text'], 'color': i.val()['color'], 'id': i.key()}
+            lst.append(tag)
+        return jsonify({'val_tags': lst})
+    elif request.method == 'POST':
+        post_data = request.get_json()
+        db2.child('customer_tag').child(post_data['index']).remove()
+        return make_response(post_data)
+
+
+@app.route('/tags/<string:index>', methods=['POST'])
+def tags_index(index):
+    print(index)
+    post_data = request.get_json()
+    post_data = dict(post_data)
+    del post_data['id']
+    db2.child('customer_tag').child(index).update(post_data)
+    return make_response(post_data)
+
+@app.route('/add_tags', methods=['POST'])
+def add_tags():
+    post_data = request.get_json()
+    db2.child('customer_tag').push(post_data)
+    return make_response(post_data)
+
+
 
 
 @app.route('/information_v2', methods=['GET', 'POST'])
@@ -832,6 +864,7 @@ def return_information():
     if request.method == 'GET':
         transaction = FirebaseAPI(db=db2)
         fire = FirebaseNewCustomer(db=db2)
+        val_tags = db2.child('customersTag').get().val()
         marketing_infomation = transaction.information('RestCustomer')
         len_transaction = len(marketing_infomation[0])
         len_import = len(fire.liffCustomer())
@@ -843,7 +876,7 @@ def return_information():
         OTHER = fire.lenProduct('RestCustomer', 'Other')
         products = list(OrderedDict.fromkeys(marketing_infomation[3]).keys())
         status = {'transaction': marketing_infomation[0], 'status': 'success', 'tags': tag,
-                  'amount_contact': str(len_contact),
+                  'amount_contact': str(len_contact), 'val_tags': val_tags,
                   'ax_date': marketing_infomation[2], 'ax_time': marketing_infomation[1], 'products': products,
                   'amount_info': str(len_transaction), 'amount_import': str(len_import), 'amount_demo': str(len_demo),
                   'amountProduct': [{'real': len(REAL), 'con': len(CON), 'planing': len(PLAN), 'other': len(OTHER)}]}

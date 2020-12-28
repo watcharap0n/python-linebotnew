@@ -485,54 +485,7 @@
                   <v-icon>
                     mdi-label
                   </v-icon>
-                  <div v-if="tag === 'CB010'">
-                    รับเหมาสาธารณูปโภค
-                  </div>
-                  <div v-if="tag === 'CC010'">
-                    รับเหมาก่อสร้างระบบวางท่อ
-                  </div>
-                  <div v-if="tag === 'CG010'">
-                    งานระบบประกอบอาคาร
-                  </div>
-                  <div v-if="tag === 'CI010'">
-                    รับเหมาก่อสร้างพลังงานทดแทน
-                  </div>
-                  <div v-if="tag === 'CJ010'">
-                    รับเหมาก่อสร้างงานอาคาร
-                  </div>
-                  <div v-if="tag === 'CM010'">
-                    ออกแบบ ตกแต่ง
-                  </div>
-                  <div v-if="tag === 'CF010'">
-                    รับเหมาขุดเจาะ
-                  </div>
-                  <div v-if="tag === 'CP010'">
-                    งานอลูมิเนียม
-                  </div>
-                  <div v-if="tag === 'CE010'">
-                    ผลิตและติดตั้ง
-                  </div>
-                  <div v-if="tag === 'CH010'">
-                    งานบริการ
-                  </div>
-                  <div v-if="tag === 'CK010'">
-                    รับสร้างบ้าน
-                  </div>
-                  <div v-if="tag === 'CN010'">
-                    ไม่แน่ใจ
-                  </div>
-                  <div v-if="tag === 'CD010'">
-                    ขาย
-                  </div>
-                  <div v-if="tag === 'RC010'">
-                    อสังหาฯ
-                  </div>
-                  <div v-if="tag === 'RA010'">
-                    แนวราบ
-                  </div>
-                  <div v-if="tag === 'RB010'">
-                    แนวสูง
-                  </div>
+                  [[tag]]
                 </v-chip>
               </div>
               <div v-else>
@@ -743,32 +696,108 @@
                 </v-select>
               </v-col>
               {#
-          <v-switch
-              #}
+{#          <v-switch#}
+{#              #}
               {# v-model="singleSelect" #}
               {# label="Single select" #}
               {# class="pa-3" #}
               {#></v-switch>
-          #}
+{#          #}
               <v-spacer></v-spacer>
-              <div class="small" style="margin-left: 10px; margin-top: 25px; margin-right: 20px">
-                <v-select
+              <div class="small" style="margin-left: 10px; margin-top: 23px; margin-right: 20px">
+                <v-combobox
                     :loading="!spinTable"
-                    v-model="sortTag"
-                    :items="tags"
-                    chips
+                    v-model="model"
+                    :filter="filter"
+                    :hide-no-data="!searchTag"
+                    :items="itemsTag"
+                    :search-input.sync="searchTag"
+                    hide-selected
+                    label="เลือกแท็กที่ต้องการ"
                     multiple
-                    label="Tags"
-                >
-                  <template v-slot:selection="{ item, index }">
+                    dense
+                    small-chips
 
-                    <v-chip v-if="index < 2" small>
-                      <span>[[ item ]]</span>
-                    </v-chip>
-                    <span v-if="index === 2"
-                          class="grey--text caption">(+[[ tags.length - 2 ]] others)</span>
+                >
+                  <template v-slot:no-data>
+                    <v-list-item>
+                      <v-icon color="green">mdi-arrow-right-thick</v-icon>
+                      <span class="subheading">สร้าง</span>&nbsp;&nbsp;
+                      <v-chip
+                          style="color: white"
+                          color="pink lighten-2"
+                          label
+                          small
+                      >
+                        [[ searchTag ]]
+                      </v-chip>
+                    </v-list-item>
                   </template>
-                </v-select>
+                  <template v-slot:selection="{ attrs, item, parent, selected, index}">
+                    <v-chip
+                        v-if="index < 1"
+                        v-if="item === Object(item)"
+                        v-bind="attrs"
+                        color="pink lighten-2"
+                        :input-value="selected"
+                        label
+                        small
+                        close
+                        close-icon="mdi-delete"
+                        @click:close="parent.selectItem(item)"
+                    >
+                      <span class="pr-2" style="color: white">
+                        [[ item.text ]]
+                      </span>
+                    </v-chip>
+                    <span v-if="index === 1"
+                          class="grey--text caption">(+[[ model.length - 1 ]] แท็กอื่นๆ)
+                    </span>
+                  </template>
+
+                  <template v-slot:item="{ index, item }">
+                    <v-text-field
+                        v-if="editingTag === item"
+                        v-model="editingTag.text"
+                        autofocus
+                        flat
+                        background-color="transparent"
+                        hide-details
+                        solo
+                        @keyup.enter="edit(index, item)"
+                    ></v-text-field>
+                    <v-chip
+                        v-else
+                        color="pink lighten-2"
+                        dark
+                        label
+                        small
+                    >
+                      [[ item.text ]]
+                    </v-chip>
+                    <v-spacer></v-spacer>
+                    <v-list-item-action @click.stop>
+                      <v-row>
+                        <v-col>
+                          <v-btn
+                              icon
+                              @click.stop.prevent="edit(index, item)"
+                          >
+                            <v-icon color="teal">[[ editingTag !== item ? 'mdi-pencil' : 'mdi-check' ]]</v-icon>
+                          </v-btn>
+                        </v-col>
+                        <v-col>
+                          <v-btn
+                              icon
+                              @click.stop.prevent="toRemove(index, item)"
+                          >
+                            <v-icon color="red">mdi-delete</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-list-item-action>
+                  </template>
+                </v-combobox>
 
               </div>
               <div class="small">
@@ -1013,7 +1042,7 @@
               amountDemo: '',
               amountImport: '',
               amountContact: '',
-              sortTag: [],
+
               editedIndex: -1,
               dates: [],
               date: [],
@@ -1029,6 +1058,18 @@
               amount_get_demo: '',
               amount_other: '',
               amount_contact: '',
+              dialogTag: false,
+              activator: null,
+              attach: null,
+              colorsTag: 'pink',
+              editingTag: null,
+              editingIndexTag: -1,
+              itemsTag: [],
+              searchTag: null,
+              nonce: 1,
+              model: [],
+              x: 0,
+              y: 0,
               selectProduct: [
                   {
                       product: '',
@@ -1125,6 +1166,20 @@
               }
           },
           watch: {
+              model(val, prev) {
+                  if (val.length === prev.length) return
+                  this.model = val.map(v => {
+                      if (typeof v === 'string') {
+                          v = {
+                              text: v,
+                              color: this.colorsTag
+                          }
+                          this.addTag(v)
+                          this.nonce++
+                      }
+                      return v
+                  })
+              },
               dialog(val) {
                   val || this.close()
               },
@@ -1136,6 +1191,7 @@
               ms: 'showDateTime'
           },
           created() {
+              this.getTags();
               this.createInformation()
               this.getDateTime()
               this.headers = Object.values(this.headersMap);
@@ -1246,18 +1302,18 @@
               },
               sortIndex(selected) {
                   user = []
-                  console.log(this.sortTag)
+                  model = []
+                  console.log(this.model)
                   console.log(selected)
                   this.selected.forEach((data) => {
                       user.push(data.id)
                   })
-                  group = {'tags': this.sortTag, 'key': user}
+                  this.model.forEach((data) => {
+                      model.push(data.text)
+                  })
+                  group = {'tags': model, 'key': user}
                   console.log(group)
                   this.SortPush(group)
-                  //  key = []
-                  //selected.forEach((i) => {
-                  //  console.log(i)
-                  // });
               },
               showData() { // condition
                   if (this.transaction) {
@@ -1498,6 +1554,72 @@
                           this.amount_other = res.data.amount_channel.other
                           let ms = this.ms = res.data.ms
                           console.log('months', ms)
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+              edit(index, item) {
+                  if (!this.editingTag) {
+                      this.editingTag = item
+                      this.editingIndexTag = index
+
+                  } else {
+                      this.setTag(item.id, this.editingTag)
+                      this.editingTag = null
+                      this.editingIndexTag = -1
+                  }
+              },
+              toRemove(index, item) {
+                  this.itemsTag.splice(this.itemsTag.indexOf(item), 1)
+                  this.removeTag({'index': item.id})
+              },
+              addTag(item) {
+                  const path = '/add_tags'
+                  axios.post(path, item)
+                      .then(() => {
+                          this.getTags()
+                          console.log('success')
+                      })
+                      .catch((err) => {
+                          console.error(err)
+                      })
+              },
+              setTag(index, item) {
+                  const path = `/tags/${index}`;
+                  axios.post(path, item)
+                      .then(() => {
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error)
+                      })
+              },
+              removeTag(index) {
+                  const path = `/tags`;
+                  axios.post(path, index)
+                      .then(() => {
+                          this.getTags()
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error)
+                      })
+              },
+              filter(item, queryText, itemText) {
+                  const hasValue = val => val != null ? val : ''
+                  const text = hasValue(itemText)
+                  const query = hasValue(queryText)
+                  return text.toString()
+                      .toLowerCase()
+                      .indexOf(query.toString().toLowerCase()) > -1
+              },
+              getTags() {
+                  const path = '/tags';
+                  axios.get(path)
+                      .then((res) => {
+                          let tags = this.itemsTag = res.data.val_tags;
+                          console.log(tags)
                       })
                       .catch((error) => {
                           console.error(error);

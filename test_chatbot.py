@@ -21,7 +21,44 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
+tags = [
+    {'ee': 'fw an optiong or create one'},
+    {'ww': 'gw an option or create one'},
+    {'text': 'รับเหมาสาธารณูปโภค', 'color': 'green'},
+    {'text': 'รับเหมาก่อสร้างระบบวางท่อ', 'color': 'green'},
+    {'text': 'งานระบบประกอบอาคาร', 'color': 'green'},
+    {'text': 'รับเหมาก่อสร้างพลังงานทดแทน', 'color': 'green'},
+    {'text': 'รับเหมาก่อสร้างงานอาคาร', 'color': 'green'},
+    {'text': 'ออกแบบตกแต่ง', 'color': 'green'},
+    {'text': 'รับเหมาขุดเจาะ', 'color': 'green'},
+    {'text': 'งานอลูมิเนียม', 'color': 'green'},
+    {'text': 'ผลิตและติดตั้ง', 'color': 'green'},
+    {'text': 'งานบริการ', 'color': 'green'},
+    {'text': 'รับสร้างบ้าน', 'color': 'green'},
+    {'text': 'ไม่แน่ใจ', 'color': 'green'},
+    {'text': 'ขาย', 'color': 'green'},
+    {'text': 'อสังหาฯ', 'color': 'green'},
+    {'text': 'แนวราบ', 'color': 'green'},
+    {'text': 'แนวสูง', 'color': 'green'}
+]
 
+for i in tags:
+    db.child('customer_tag').push(i)
+
+db.child('customer_tag').push(tags)
+lst = []
+ref = db.child('customer_tag').get()
+for i in ref.each()[2:]:
+    print(i.val())
+    tag = {'text': i.val()['text'], 'color': i.val()['color'], 'id': i.key()}
+    lst.append(tag)
+
+print(lst)
+
+
+
+#
+# ref = db.child('customersTag').child(1).remove()
 
 # ref = db.child('requestContract').get()
 # for i in ref.each()[1:]:
@@ -258,23 +295,23 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #     def dynamic_date(lst, value, condition):
 #         return [i for i in lst if i[value] == condition]
 
-    # def data_datetime(self, transaction):
-    #     foo = []
-    #     ref = self.db.child(transaction).get()
-    #     for i in ref.each():
-    #         v = i.val()
-    #         date = v['Date']
-    #         time = v['Time']
-    #         fname = v['Name']
-    #         company = v['Company']
-    #         product = v['Product']
-    #         channel = v['Channel']
-    #         d = tim.datetime.strptime(date, '%d-%m-%Y')
-    #         t = tim.datetime.strptime(time, '%H:%M:%S')
-    #         mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
-    #                       'month': d.month, 'year': d.year}
-    #         foo.append(mapProduct)
-    #     return foo
+# def data_datetime(self, transaction):
+#     foo = []
+#     ref = self.db.child(transaction).get()
+#     for i in ref.each():
+#         v = i.val()
+#         date = v['Date']
+#         time = v['Time']
+#         fname = v['Name']
+#         company = v['Company']
+#         product = v['Product']
+#         channel = v['Channel']
+#         d = tim.datetime.strptime(date, '%d-%m-%Y')
+#         t = tim.datetime.strptime(time, '%H:%M:%S')
+#         mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
+#                       'month': d.month, 'year': d.year}
+#         foo.append(mapProduct)
+#     return foo
 
 
 # foo = []
@@ -296,8 +333,6 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 #     mapProduct = {'fname': fname, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
 #                   'month': d.month, 'year': d.year, 'date': f'{date}', 'time': f'{time}', 'month_check': f'{d.year}-{d.month}'}
 #     foo.append(mapProduct)
-
-
 
 
 # count = 0
@@ -360,15 +395,11 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
 # ms = [result for date in dates for result in foo if date == result['date'] and result['product'] == 'Construction']
 
 
+# if i['day'] == :
+#     print()
 
-
-
-
-    # if i['day'] == :
-    #     print()
-
-    # if i['date'] == f'{d.day}-{d.month}-{d.year}':
-    #     pass
+# if i['date'] == f'{d.day}-{d.month}-{d.year}':
+#     pass
 
 # y = next(x for x in foo if x['month'] > 12)
 
