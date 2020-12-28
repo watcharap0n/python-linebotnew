@@ -42,18 +42,18 @@ tags = [
     {'text': 'แนวสูง', 'color': 'green'}
 ]
 
-for i in tags:
-    db.child('customer_tag').push(i)
+# for i in tags:
+#     db.child('customer_tag').push(i)
 
-db.child('customer_tag').push(tags)
-lst = []
-ref = db.child('customer_tag').get()
-for i in ref.each()[2:]:
-    print(i.val())
-    tag = {'text': i.val()['text'], 'color': i.val()['color'], 'id': i.key()}
-    lst.append(tag)
+# db.child('customer_tag').push(tags)
+# lst = []
+# ref = db.child('customer_tag').get()
+# for i in ref.each()[2:]:
+#     print(i.val())
+#     tag = {'text': i.val()['text'], 'color': i.val()['color'], 'id': i.key()}
+#     lst.append(tag)
 
-print(lst)
+# print(lst)
 
 
 

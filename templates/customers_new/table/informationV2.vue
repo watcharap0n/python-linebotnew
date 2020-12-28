@@ -1405,7 +1405,6 @@
                           this.showMessage = true;
                       })
                       .catch((error) => {
-                          // eslint-disable-next-line
                           console.error(error);
                           this.createInformation();
                       });

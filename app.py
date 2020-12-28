@@ -926,7 +926,7 @@ def delete_information(id):
 @app.route('/json_chip/<id>', methods=['POST'])
 def return_Chip(id):
     response_object = {'status': 'success'}
-    if request.method == 'PUT':
+    if request.method == 'POST':
         post_data = request.get_json()
         fire = FirebaseAPI(db2)
         print(post_data)
