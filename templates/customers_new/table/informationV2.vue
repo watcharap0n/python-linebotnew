@@ -674,7 +674,7 @@
                   ><i class="fas fa-user-tag"></i>
                   </v-btn>
                 </template>
-                <span>ติดแท็ก</span>
+                <span>Index Sorting</span>
                 <template v-slot:loader>
                       <span class="custom-loader">
                         <v-icon light>mdi-cached</v-icon>

@@ -34,7 +34,6 @@ firebase_auth = firebase_admin.initialize_app(cred)
 COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 days
 
 
-
 def database_test():
     with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
         data = json.load(json_file)
