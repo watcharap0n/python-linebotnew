@@ -5,19 +5,17 @@
   <div id="app" style="font-family: 'Roboto', sans-serif; margin-left: 20px;">
     <v-app id="inspire" class="fixed-nav sticky-footer bg-gray-200">
       <v-row>
-        <v-col cols="4">
+        <v-col cols="5">
           <v-card
+              :loading="!spinChart"
               class="rounded-xl"
           >
             <v-card-text>
               <i class="fa fa-bar-chart"></i> Revenue Chart
               <hr>
-              <div v-if="!spinChart" style="margin-left: 250px; margin-top: 100px">
-                <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
-              </div>
               <div class="row">
                 <div class="col-sm-7 text-center my-auto">
-                  <canvas ref="myChart" height="240px"></canvas>
+                  <canvas ref="myChart" height="180px"></canvas>
                 </div>
                 <div class="col-sm-5 text-center my-auto" v-for="d in dataSetData">
                   <v-row>
@@ -489,7 +487,7 @@
             </v-sheet>
           </v-card>
         </v-col>
-        <v-col cols="8">
+        <v-col cols="7">
           <div class="container-fluid">
             <v-data-table
                 v-model="selected"
