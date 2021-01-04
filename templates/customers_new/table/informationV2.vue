@@ -17,7 +17,7 @@
               </div>
               <div class="row">
                 <div class="col-sm-7 text-center my-auto">
-                  <canvas ref="myChart" width="100"></canvas>
+                  <canvas ref="myChart" height="240px"></canvas>
                 </div>
                 <div class="col-sm-5 text-center my-auto" v-for="d in dataSetData">
                   <v-row>
@@ -368,7 +368,7 @@
                 id="scrolling-techniques-7"
                 class="overflow-y-auto"
                 elevation="3"
-                max-height="500"
+                max-height="430px"
                 elevate-on-scroll
                 style="height: 1500px;"
             >
