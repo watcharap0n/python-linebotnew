@@ -11,9 +11,9 @@ sp = dlib.shape_predictor('model_image/shape_predictor_68_face_landmarks.dat')  
 model = dlib.face_recognition_model_v1('model_image/dlib_face_recognition_resnet_model_v1.dat')  # buil model
 smile_cascade = cv2.CascadeClassifier("model_image/haarcascade_smile.xml")
 
-path_c = 'yolo-coco/yolov3-tiny.weights'
+path_yolo = 'yolo-coco/yolov3-tiny.weights'
 path_cfg = 'yolo-coco/yolov3-tiny.cfg'
-net = cv2.dnn.readNet(path_c, path_cfg)
+net = cv2.dnn.readNet(path_yolo, path_cfg)
 classes = []
 with open("yolo-coco/coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
