@@ -6,12 +6,12 @@
     <v-app id="inspire" class="fixed-nav sticky-footer bg-gray-200">
       <v-row>
         <v-col cols="4">
-            <v-card
-                class="rounded-xl"
-            >
-              <v-card-text>
+          <v-card
+              class="rounded-xl"
+          >
+            <v-card-text>
               <i class="fa fa-bar-chart"></i> Revenue Chart
-                <hr>
+              <hr>
               <div v-if="!spinChart" style="margin-left: 250px; margin-top: 100px">
                 <i id="spinChar" class="fas fa-spinner fa-spin fa-2x"></i>
               </div>
@@ -62,12 +62,12 @@
                   </v-row>
                 </div>
               </div>
-                <br>
-              </v-card-text>
-            </v-card>
+              <br>
+            </v-card-text>
+          </v-card>
 
           <br>
-          <v-card class="overflow-hidden rounded-xl" elevation="3" >
+          <v-card class="overflow-hidden rounded-xl" elevation="3">
             <v-app-bar
                 color="white"
                 scroll-target="#scrolling-techniques-7"
@@ -558,13 +558,13 @@
               </template>
 
               <template v-slot:top>
-                <v-toolbar flat class="rounded-xl">
+                <v-toolbar flat>
                   <v-tabs
                       dark
-                      background-color="success">
+                      style="background: linear-gradient(to right , #7C4DFF, #304FFE, #448AFF);">
                     <v-tab>
                       <v-badge
-                          color="blue"
+                          color="#FF648D"
                           :content="amountInfo">
                         ข้อมูลลูกค้า
                       </v-badge>
@@ -573,7 +573,7 @@
                     <v-tab>
                       <a href="/marketing_import">
                         <v-badge
-                            color="blue"
+                            color="#FF648D"
                             :content="amountImport"
                             class="text-white"
                         >
@@ -587,7 +587,7 @@
                         <v-badge
                             class="text-white"
                             :content="amountDemo"
-                            color="blue"
+                            color="#FF648D"
                         >
                           นัดDemo
                         </v-badge>
@@ -598,7 +598,7 @@
                         <v-badge
                             class="text-white"
                             :content="amountContact"
-                            color="blue"
+                            color="#FF648D"
                         >
                           ติดต่อเรา
                         </v-badge>
@@ -625,13 +625,13 @@
                 </v-toolbar>
                 <v-toolbar flat>
                   <v-btn
-                      class="ma-2"
+                      class="ma-2 text-white"
                       :loading="!spinTable"
                       :disabled="!spinTable"
-                      color="success"
+                      color="#FF648D"
                       @click="LoadDataInfo"
                   >
-                    MANGO ANYWHERE
+                      MANGO ANYWHERE
                     <template v-slot:loader>
                         <span class="custom-loader">
                           <v-icon light>mdi-cached</v-icon>
@@ -662,8 +662,9 @@
                               small
                               v-bind="attrs"
                               v-on="on"
-                              color="success"
+                              color="#FF648D"
                               @click="excelIndex(selected)"
+                              class="text-white"
                           >
                             <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                           </v-btn>
@@ -713,7 +714,8 @@
                           small
                           v-bind="attrs"
                           v-on="on"
-                          color="success"
+                          color="#FF648D"
+                          class="text-white"
                           @click="sortIndex(selected)"
                       ><i class="fas fa-user-tag"></i>
                       </v-btn>
@@ -861,7 +863,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
                           :loading="!spinTable"
-                          color="success"
+                          color="#FF648D"
                           style=" margin-left: 10px"
                           dark
                           small
@@ -869,7 +871,7 @@
                           v-bind="attrs"
                           v-on="on"
                       >
-                        <i class="fa fa-plus" aria-hidden="true"></i>New Item
+                        <i class="fa fa-plus" aria-hidden="true"></i>เพิ่มข้อมูล
                       </v-btn>
                     </template>
 
