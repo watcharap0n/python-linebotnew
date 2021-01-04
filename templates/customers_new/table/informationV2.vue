@@ -366,7 +366,7 @@
                 id="scrolling-techniques-7"
                 class="overflow-y-auto"
                 elevation="3"
-                max-height="430px"
+                max-height="350px"
                 elevate-on-scroll
                 style="height: 1500px;"
             >
@@ -493,7 +493,7 @@
                 v-model="selected"
                 :single-select="singleSelect"
                 show-select
-                height="700"
+                height="550"
                 :search="search"
                 :headers="showHeaders"
                 :items="transaction"
@@ -622,26 +622,6 @@
                   </v-tabs>
                 </v-toolbar>
                 <v-toolbar flat>
-                  <v-btn
-                      class="ma-2 text-white"
-                      :loading="!spinTable"
-                      :disabled="!spinTable"
-                      color="#FF648D"
-                      @click="LoadDataInfo"
-                  >
-                      MANGO ANYWHERE
-                    <template v-slot:loader>
-                        <span class="custom-loader">
-                          <v-icon light>mdi-cached</v-icon>
-                        </span>
-                    </template>
-                  </v-btn>
-                  <v-divider
-                      class="mx-4"
-                      inset
-                      vertical
-                  ></v-divider>
-
 
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
@@ -757,7 +737,7 @@
                         :items="itemsTag"
                         :search-input.sync="searchTag"
                         hide-selected
-                        label="เลือกแท็กที่ต้องการ"
+                        label="แท็ก"
                         multiple
                         dense
                         small-chips
@@ -848,7 +828,7 @@
                     <v-text-field
                         :loading="!spinTable"
                         v-model="search"
-                        label="Search"
+                        label="ค้นหา"
                         single-line
                         hide-details
                     ></v-text-field>
