@@ -5,9 +5,10 @@ from numpy import random
 from collections import OrderedDict
 import firebase_admin  # authen Firebase
 from firebase_admin import credentials, auth  # authen Firebase,
-import pyrebase
+import pyrebase, requests
 import datetime as tim
 import json
+import matplotlib.pyplot as plt
 from flask import Flask, request, abort, render_template, jsonify, session, g
 import pandas as pd
 
@@ -21,30 +22,25 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
-tags = [
-    {'ee': 'fw an optiong or create one'},
-    {'ww': 'gw an option or create one'},
-    {'text': 'รับเหมาสาธารณูปโภค', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างระบบวางท่อ', 'color': 'green'},
-    {'text': 'งานระบบประกอบอาคาร', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างพลังงานทดแทน', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างงานอาคาร', 'color': 'green'},
-    {'text': 'ออกแบบตกแต่ง', 'color': 'green'},
-    {'text': 'รับเหมาขุดเจาะ', 'color': 'green'},
-    {'text': 'งานอลูมิเนียม', 'color': 'green'},
-    {'text': 'ผลิตและติดตั้ง', 'color': 'green'},
-    {'text': 'งานบริการ', 'color': 'green'},
-    {'text': 'รับสร้างบ้าน', 'color': 'green'},
-    {'text': 'ไม่แน่ใจ', 'color': 'green'},
-    {'text': 'ขาย', 'color': 'green'},
-    {'text': 'อสังหาฯ', 'color': 'green'},
-    {'text': 'แนวราบ', 'color': 'green'},
-    {'text': 'แนวสูง', 'color': 'green'}
-]
 
-# for i in tags:
-#     db.child('customer_tag').push(i)
+def get_keys(items):
+    lst = []
+    for key, value in items.items():
+        lst.append(key)
+    return lst
 
+
+country = f'https://disease.sh/v3/covid-19/countries/Thailand'
+countries = f'https://disease.sh/v3/covid-19/continents'
+country = requests.get(country)
+countries = requests.get(countries)
+content = country.json()
+contents = countries.json()
+result = get_keys(content)
+print(result)
+
+# decoded = json.loads(dumps)
+# print(decoded)
 # db.child('customer_tag').push(tags)
 # lst = []
 # ref = db.child('customer_tag').get()
@@ -54,7 +50,6 @@ tags = [
 #     lst.append(tag)
 
 # print(lst)
-
 
 
 #
