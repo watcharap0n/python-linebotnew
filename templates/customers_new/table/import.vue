@@ -462,8 +462,7 @@
                       <td class="_email">{{ import.event.email }}</td>
                       <td class="_LIFF">{{ import.event.token }}</td>
                       <td class="_message">
-                        {% set notvalue = 'None' %}
-                        {% if notvalue not in import.event.comment %}
+                        {% if import.event.comment %}
                           <button type="button" class="btn btn-primary btn-xs"
                                   data-toggle="collapse"
                                   data-target="#message">
@@ -471,7 +470,7 @@
                           </button>
                         {% endif %}
                         <div id="message" class="collapse">
-                          {% if notvalue not in import.event.comment %}
+                          {% if import.event.comment %}
                             {{ import.event.comment }}
                           {% endif %}
                         </div>
