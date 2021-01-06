@@ -285,7 +285,7 @@
                       </div>
                       <div class="dropdown-item">
                         <input class="tag_sort" type="checkbox" name="_product"
-                               id="product checked=" checked">
+                               id="product" checked="checked">
                         <label>
                           ผลิตภัณฑ์
                         </label>
