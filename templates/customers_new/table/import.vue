@@ -327,7 +327,7 @@
                       </div>
                       <div class="dropdown-item">
                         <input class="tag_sort" type="checkbox" name="_message"
-                               id="LIFF">
+                               id="LIFF" checked="checked">
                         <label>
                           ข้อความ
                         </label>
