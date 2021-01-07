@@ -658,7 +658,7 @@
                           <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn
-                                color="green darken-1"
+                                color="red"
                                 text
                                 @click="dialogExcel = false"
                             >
@@ -709,6 +709,7 @@
                   <v-dialog
                       v-model="dialogCustoms"
                       width="500"
+                      persistent
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
@@ -817,13 +818,13 @@
                           </v-col>
                         </v-row>
                       </v-card-text>
-
+                      [[formProduct]]
                       <v-divider></v-divider>
 
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn
-                            color="primary"
+                            color="red"
                             text
                             @click="dialogCustoms = false"
                         >
@@ -844,6 +845,7 @@
                   <v-dialog
                       v-model="dialogMonth"
                       width="500"
+                      persistent
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
@@ -891,7 +893,7 @@
                               </template>
                               <v-date-picker
                                   v-model="table_month"
-                                  type="table_month"
+                                  type="month"
                                   no-title
                                   scrollable
                                   multiple
@@ -923,7 +925,7 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn
-                            color="primary"
+                            color="red"
                             text
                             @click="dialogMonth = false"
                         >
@@ -1075,7 +1077,6 @@
 
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
-                          disabled
                           :loading="!spinTable"
                           color="#FF648D"
                           style=" margin-left: 10px"
@@ -1216,7 +1217,7 @@
                               <v-autocomplete
                                   prepend-inner-icon="mdi-tag"
                                   v-model="editedItem.tag"
-                                  :items="tags"
+                                  :items="itemsTag"
                                   outlined
                                   dense
                                   chips
@@ -1266,7 +1267,7 @@
               <template v-slot:no-data>
                 <v-btn
                     color="primary"
-                    @click="createInformation"
+                    @click="getTableStart"
                 >
                   Reset
                 </v-btn>
@@ -1284,6 +1285,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
+              dateValid: false,
               productMango: [],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
               showSelect: [],
@@ -1480,6 +1482,7 @@
               this.buildChart(this.dataSetData);
           },
           methods: {
+
               getDataSet: function () {
                   console.log("get data sets");
                   console.log(this.dataSetData);
@@ -1573,19 +1576,28 @@
                       });
               },
               tableSortDate() {
-                  let _json = {
-                      'dates': this.table_dates,
-                      'product': this.formProduct,
-                      'channel': this.formChannel,
-                      'tag': this.tagsSelect
+                  if (this.table_dates.length === 0 && this.formProduct === '' && this.formChannel === '') {
+                      console.log('error')
+                  } else {
+                      console.log('ff')
+                      let _json = {
+                          'dates': this.table_dates,
+                          'product': this.formProduct,
+                          'channel': this.formChannel,
+                          'tag': this.tagsSelect
+                      }
+                      this.tablePostSorting(_json)
+                      this.dialogCustoms = false
                   }
-                  this.tablePostSorting(_json)
-                  this.dialogCustoms = false
               },
               tableSortMonth() {
-                  _json = {'months': this.table_month}
-                  this.tablePostMonth(_json)
-                  this.dialogMonth = false
+                  if (this.table_month.length === 0) {
+                      log.error('error')
+                  } else {
+                      _json = {'months': this.table_month}
+                      this.tablePostMonth(_json)
+                      this.dialogMonth = false
+                  }
               },
               tablePostSorting(data) {
                   const path = '/return_sort_table'
@@ -1602,8 +1614,19 @@
                   const path = '/data_month';
                   axios.post(path, data)
                       .then(() => {
-                          this.getTable()
+                          this.tableGetMonths()
                           console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+              tableGetMonths() {
+                  this.spinTable = false
+                  const path = '/data_month';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
                       })
                       .catch((error) => {
                           console.error(error);

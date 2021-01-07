@@ -892,10 +892,10 @@ def return_information():
     elif request.method == 'POST':
         post_data = request.get_json()
         o = TimeDate
-        post_data['Date'] = f'{o.day}-{o.month}-{o.year}'
-        post_data['Time'] = f'{o.hour}:{o.minute}:{o.second}'
-        post_data['Picture'] = ''
-        post_data['Other'] = ''
+        post_data['date'] = f'{o.day}-{o.month}-{o.year}'
+        post_data['time'] = f'{o.hour}:{o.minute}:{o.second}'
+        post_data['picture'] = ''
+        post_data['other'] = ''
         del post_data['id']
         print(post_data)
         db2.child('RestCustomer').push(post_data)

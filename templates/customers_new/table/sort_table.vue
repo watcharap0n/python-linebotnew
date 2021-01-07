@@ -43,17 +43,17 @@
                       <v-row>
                         <v-col cols="12">
                           <v-menu
-                              ref="tableMenu"
-                              v-model="tableMenu"
+                              ref="menu"
+                              v-model="menu"
                               :close-on-content-click="false"
-                              :return-value.sync="table_dates"
+                              :return-value.sync="dates"
                               transition="scale-transition"
                               offset-y
                               min-width="290px"
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-combobox
-                                  v-model="table_dates"
+                                  v-model="dates"
                                   multiple
                                   chips
                                   small-chips
@@ -65,7 +65,7 @@
                               ></v-combobox>
                             </template>
                             <v-date-picker
-                                v-model="table_dates"
+                                v-model="dates"
                                 multiple
                                 no-title
                                 scrollable
@@ -74,14 +74,14 @@
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="tableMenu = false"
+                                  @click="menu = false"
                               >
                                 Cancel
                               </v-btn>
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="$refs.tableMenu.save(table_dates)"
+                                  @click="$refs.menu.save(dates)"
                               >
                                 OK
                               </v-btn>
@@ -142,7 +142,7 @@
                       <v-btn
                           color="primary"
                           text
-                          @click="tableSortDate"
+                          @click="sortDate"
                       >
                         ตกลง
                       </v-btn>
@@ -181,10 +181,10 @@
                       <v-row>
                         <v-col cols="12">
                           <v-menu
-                              ref="tableMenuMonth"
-                              v-model="tableMenuMonth"
+                              ref="menuMonth"
+                              v-model="menuMonth"
                               :close-on-content-click="false"
-                              :return-value.sync="table_month"
+                              :return-value.sync="month"
                               transition="scale-transition"
                               offset-y
                               max-width="290px"
@@ -192,7 +192,7 @@
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-combobox
-                                  v-model="table_month"
+                                  v-model="month"
                                   multiple
                                   chips
                                   small-chips
@@ -204,8 +204,8 @@
                               ></v-combobox>
                             </template>
                             <v-date-picker
-                                v-model="table_month"
-                                type="table_month"
+                                v-model="month"
+                                type="month"
                                 no-title
                                 scrollable
                                 multiple
@@ -214,14 +214,14 @@
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="tableMenuMonth = false"
+                                  @click="menuMonth = false"
                               >
                                 Cancel
                               </v-btn>
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="$refs.tableMenuMonth.save(table_month)"
+                                  @click="$refs.menuMonth.save(month)"
                               >
                                 OK
                               </v-btn>
@@ -246,7 +246,7 @@
                       <v-btn
                           color="primary"
                           text
-                          @click="tableSortMonth"
+                          @click="sortMonth"
                       >
                         ตกลง
                       </v-btn>
@@ -505,10 +505,10 @@
               dialog: false,
               dialogDelete: false,
               editedIndex: -1,
-              tableMenu: false,
-              table_dates: [],
-              table_month: [],
-              tableMenuMonth: false,
+              menu: false,
+              dates: [],
+              month: [],
+              menuMonth: false,
               dialogCustoms: false,
               dialogMonth: false,
               showTable: false,
@@ -585,22 +585,22 @@
                       this.spinChart = true
                   }
               },
-              tableSortDate() {
+              sortDate() {
                   let _json = {
-                      'dates': this.table_dates,
+                      'dates': this.dates,
                       'product': this.formProduct,
                       'channel': this.formChannel,
                       'tag': this.tagsSelect
                   }
-                  this.tablePostSorting(_json)
+                  this.postSorting(_json)
                   this.dialogCustoms = false
               },
-              tableSortMonth() {
-                  _json = {'months': this.table_month}
-                  this.tablePostMonth(_json)
+              sortMonth() {
+                  _json = {'months': this.month}
+                  this.postMonth(_json)
                   this.dialogMonth = false
               },
-              tablePostSorting(data) {
+              postSorting(data) {
                   const path = '/return_sort_table'
                   axios.post(path, data)
                       .then(() => {
@@ -611,11 +611,11 @@
                           console.error(error)
                       })
               },
-              tablePostMonth(data) {
+              postMonth(data) {
                   const path = '/data_month';
                   axios.post(path, data)
                       .then(() => {
-                          this.tableGetMonths()
+                          this.getMonths()
                           console.log('success')
                       })
                       .catch((error) => {
@@ -644,7 +644,7 @@
                           console.error(error);
                       });
               },
-              tableGetMonths() {
+              getMonths() {
                   this.spinChart = false
                   const path = '/data_month';
                   axios.get(path)
