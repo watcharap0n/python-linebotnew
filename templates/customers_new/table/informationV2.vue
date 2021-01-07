@@ -592,7 +592,7 @@
                 <div style="color: #6183D4;">[[item.product]]</div>
               </template>
 
-               <template v-slot:item.datetime="{item}">
+              <template v-slot:item.datetime="{item}">
                 <div style="color: #E9643C;">[[item.datetime]]</div>
               </template>
 
@@ -1619,7 +1619,7 @@
                       });
               },
               tableSortDate() {
-                  if (this.table_dates.length === 0 && this.formProduct === '' && this.formChannel === '') {
+                  if (this.table_dates.length === 0 && this.formProduct === '' && this.formChannel === '' && this.tagsSelect.length === 0) {
                       console.log('error')
                   } else {
                       console.log('ff')
