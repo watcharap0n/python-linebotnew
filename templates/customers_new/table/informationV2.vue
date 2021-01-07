@@ -530,11 +530,9 @@
                       [[tag]]
                     </v-chip>
                   </div>
-                  <div v-else>
-                  </div>
+                  <div v-else></div>
                 </div>
-                <div v-else>
-                </div>
+                <div v-else></div>
               </template>
 
               <template v-slot:item.actions="{ item }">
@@ -553,6 +551,49 @@
                 >
                   mdi-delete
                 </v-icon>
+              </template>
+
+              <template v-slot:item.channel="{item}">
+                <v-chip v-if="item.channel === 'LINE'"
+                        color="green"
+                        class="text-white"
+                >
+                  [[item.channel]]
+                </v-chip>
+                <v-chip v-else-if="item.channel === 'GetDemo'"
+                        color="#FF648D"
+                        class="text-white"
+                >
+                  [[item.channel]]
+                </v-chip>
+                <v-chip v-else
+                        color="#F7F77D"
+                        class="text-black"
+                >
+                  [[item.channel]]
+                </v-chip>
+              </template>
+
+              <template v-slot:item.message="{item}">
+                <v-list-group
+                    color="#7A8FC0"
+                    v-if="item.message"
+                    :value="false"
+                    prepend-icon="mdi-message"
+                >
+                  <v-list-item-content>
+                    [[item.message]]
+                  </v-list-item-content>
+                </v-list-group>
+                <div v-else></div>
+              </template>
+
+              <template v-slot:item.product="{item}">
+                <div style="color: #6183D4;">[[item.product]]</div>
+              </template>
+
+               <template v-slot:item.datetime="{item}">
+                <div style="color: #E9643C;">[[item.datetime]]</div>
               </template>
 
               <template v-slot:top>
