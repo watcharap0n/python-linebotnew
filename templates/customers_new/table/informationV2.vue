@@ -884,7 +884,7 @@
                                     multiple
                                     chips
                                     small-chips
-                                    label="Multiple picker in menu"
+                                    label="เลือกเดือน"
                                     prepend-icon="mdi-calendar"
                                     readonly
                                     v-bind="attrs"
