@@ -22,18 +22,20 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                        color="red lighten-2"
+                        color="pink lighten-2"
                         dark
                         v-bind="attrs"
                         v-on="on"
                     >
-                      Days/Products/Channels
+                      <v-icon>
+                        mdi-calendar-multiselect
+                      </v-icon>
                     </v-btn>
                   </template>
 
                   <v-card>
                     <v-card-title class="headline grey lighten-2">
-                      Days/Products/Channels
+                      Days/Product/Channel/Tags
                     </v-card-title>
 
                     <v-card-text>
@@ -41,21 +43,21 @@
                       <v-row>
                         <v-col cols="12">
                           <v-menu
-                              ref="menu"
-                              v-model="menu"
+                              ref="tableMenu"
+                              v-model="tableMenu"
                               :close-on-content-click="false"
-                              :return-value.sync="dates"
+                              :return-value.sync="table_dates"
                               transition="scale-transition"
                               offset-y
                               min-width="290px"
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-combobox
-                                  v-model="dates"
+                                  v-model="table_dates"
                                   multiple
                                   chips
                                   small-chips
-                                  label="Multiple picker in menu"
+                                  label="เลือกในแต่ละวัน"
                                   prepend-icon="mdi-calendar"
                                   readonly
                                   v-bind="attrs"
@@ -63,7 +65,7 @@
                               ></v-combobox>
                             </template>
                             <v-date-picker
-                                v-model="dates"
+                                v-model="table_dates"
                                 multiple
                                 no-title
                                 scrollable
@@ -72,14 +74,14 @@
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="menu = false"
+                                  @click="tableMenu = false"
                               >
                                 Cancel
                               </v-btn>
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="$refs.menu.save(dates)"
+                                  @click="$refs.tableMenu.save(table_dates)"
                               >
                                 OK
                               </v-btn>
@@ -87,12 +89,23 @@
                           </v-menu>
                         </v-col>
                       </v-row>
-                      <v-row>
+                      <div>
+                        <v-combobox
+                            prepend-icon="mdi-tag"
+                            v-model="tagsSelect"
+                            :items="filter_tags"
+                            label="เลือกแท็ก"
+                            multiple
+                            chips
+                            small-chips
+                        ></v-combobox>
+                      </div>
+                      <v-row style="margin-top: 8px">
                         <v-col cols="6">
                           <v-select
                               v-model="formProduct"
-                              :items="products"
-                              label="Product"
+                              :items="filter_products"
+                              label="ผลิตภัณฑ์"
                               menu-props="auto"
                               outlined
                               dense
@@ -103,8 +116,8 @@
                         <v-col cols="6">
                           <v-select
                               v-model="formChannel"
-                              :items="channels"
-                              label="Channel"
+                              :items="filter_channels"
+                              label="ช่องทาง"
                               menu-props="auto"
                               outlined
                               dense
@@ -129,7 +142,7 @@
                       <v-btn
                           color="primary"
                           text
-                          @click="sortDate"
+                          @click="tableSortDate"
                       >
                         ตกลง
                       </v-btn>
@@ -148,12 +161,14 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                        color="red lighten-2"
+                        color="pink lighten-2"
                         dark
                         v-bind="attrs"
                         v-on="on"
                     >
-                      Month
+                      <v-icon>
+                        mdi-calendar-month
+                      </v-icon>
                     </v-btn>
                   </template>
 
@@ -166,10 +181,10 @@
                       <v-row>
                         <v-col cols="12">
                           <v-menu
-                              ref="menuMonth"
-                              v-model="menuMonth"
+                              ref="tableMenuMonth"
+                              v-model="tableMenuMonth"
                               :close-on-content-click="false"
-                              :return-value.sync="month"
+                              :return-value.sync="table_month"
                               transition="scale-transition"
                               offset-y
                               max-width="290px"
@@ -177,7 +192,7 @@
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-combobox
-                                  v-model="month"
+                                  v-model="table_month"
                                   multiple
                                   chips
                                   small-chips
@@ -189,8 +204,8 @@
                               ></v-combobox>
                             </template>
                             <v-date-picker
-                                v-model="month"
-                                type="month"
+                                v-model="table_month"
+                                type="table_month"
                                 no-title
                                 scrollable
                                 multiple
@@ -199,14 +214,14 @@
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="menuMonth = false"
+                                  @click="tableMenuMonth = false"
                               >
                                 Cancel
                               </v-btn>
                               <v-btn
                                   text
                                   color="primary"
-                                  @click="$refs.menuMonth.save(month)"
+                                  @click="$refs.tableMenuMonth.save(table_month)"
                               >
                                 OK
                               </v-btn>
@@ -231,7 +246,7 @@
                       <v-btn
                           color="primary"
                           text
-                          @click="sortMonth"
+                          @click="tableSortMonth"
                       >
                         ตกลง
                       </v-btn>
@@ -251,7 +266,6 @@
 
       <v-container>
         <v-data-table
-            :hidden="!showTable"
             :loading="!spinChart"
             :headers="headers"
             :items="transaction"
@@ -491,22 +505,24 @@
               dialog: false,
               dialogDelete: false,
               editedIndex: -1,
-              menu: false,
-              dates: [],
-              month: [],
-              menuMonth: false,
+              tableMenu: false,
+              table_dates: [],
+              table_month: [],
+              tableMenuMonth: false,
               dialogCustoms: false,
               dialogMonth: false,
               showTable: false,
-              products: [],
-              channels: [],
+              filter_products: [],
+              filter_channels: [],
+              filter_tags: [],
               formProduct: '',
               formChannel: '',
+              tagsSelect: [],
               transaction: [],
               headers: [
                   {text: 'Actions', value: 'actions', sortable: false},
                   {text: 'แท็ก', value: 'tag'},
-                  {text: 'ชื่อ', value: 'fname'},
+                  {text: 'ชื่อ', value: 'name'},
                   {text: 'ผลิตภัณฑ์', value: 'product'},
                   {text: 'บริษัท', value: 'company'},
                   {text: 'อีเมล', value: 'email'},
@@ -516,7 +532,7 @@
               ],
               editedItem: {
                   id: '',
-                  fname: '',
+                  name: '',
                   product: '',
                   company: '',
                   email: '',
@@ -525,7 +541,7 @@
               },
               defaultItem: {
                   id: '',
-                  fname: '',
+                  name: '',
                   product: '',
                   company: '',
                   email: '',
@@ -534,8 +550,8 @@
               },
           }),
           created() {
-              this.showTable = false
               this.createTable()
+              this.getTableStart()
           },
           computed: {
               formTitle() {
@@ -556,8 +572,9 @@
                   const path = '/json_datetime'
                   axios.get(path)
                       .then((res) => {
-                          this.products = res.data.products
-                          this.channels = res.data.channels
+                          this.filter_products = res.data.products
+                          this.filter_channels = res.data.channels
+                          this.filter_tags = res.data.tags
                       })
                       .catch((err) => {
                           console.error(err)
@@ -568,21 +585,25 @@
                       this.spinChart = true
                   }
               },
-              sortDate() {
-                  let _json = {'dates': this.dates, 'product': this.formProduct, 'channel': this.formChannel}
-                  this.postSorting(_json)
+              tableSortDate() {
+                  let _json = {
+                      'dates': this.table_dates,
+                      'product': this.formProduct,
+                      'channel': this.formChannel,
+                      'tag': this.tagsSelect
+                  }
+                  this.tablePostSorting(_json)
                   this.dialogCustoms = false
               },
-              sortMonth() {
-                  _json = {'months': this.month}
-                  this.postMonth(_json)
+              tableSortMonth() {
+                  _json = {'months': this.table_month}
+                  this.tablePostMonth(_json)
                   this.dialogMonth = false
               },
-              postSorting(data) {
+              tablePostSorting(data) {
                   const path = '/return_sort_table'
                   axios.post(path, data)
                       .then(() => {
-                          this.showTable = true
                           this.getTable()
                           console.log('success')
                       })
@@ -590,12 +611,11 @@
                           console.error(error)
                       })
               },
-              postMonth(data) {
+              tablePostMonth(data) {
                   const path = '/data_month';
                   axios.post(path, data)
                       .then(() => {
-                          this.showTable = true
-                          this.getMonths()
+                          this.tableGetMonths()
                           console.log('success')
                       })
                       .catch((error) => {
@@ -613,7 +633,18 @@
                           console.error(err)
                       })
               },
-              getMonths() {
+              getTableStart() {
+                  this.spinChart = false
+                  const path = '/json_datetime';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+              tableGetMonths() {
                   this.spinChart = false
                   const path = '/data_month';
                   axios.get(path)

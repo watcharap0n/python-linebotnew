@@ -22,22 +22,53 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
-
-def get_keys(items):
-    lst = []
-    for key, value in items.items():
-        lst.append(key)
-    return lst
+res = db.child('RestCustomer').get()
 
 
-country = f'https://disease.sh/v3/covid-19/countries/Thailand'
-countries = f'https://disease.sh/v3/covid-19/continents'
-country = requests.get(country)
-countries = requests.get(countries)
-content = country.json()
-contents = countries.json()
-result = get_keys(content)
-print(result)
+def test_key():
+    for i in res.each()[1:]:
+        key = i.key()
+        r = i.val()
+        authorized = r['authorized']
+        channel = r['channel']
+        company = r['company']
+        date = r['date']
+        email = r['email']
+        message = r['message']
+        name = r['name']
+        picture = r['picture']
+        tel = r['tel']
+        profile = r['profile']
+        tax = r['tax']
+        time = r['time']
+        emailliff = r['emailliff']
+        tag = r['tag']
+        date_insert = r['date_insert']
+        time_insert = r['time_insert']
+        other = r['other']
+        position = r['position']
+        product = r['product']
+        username = r['username']
+
+        result = {
+            'authorized': authorized, 'channel': channel, 'company': company, 'date': date, 'email': email,
+            'message': message, 'name': name, 'picture': picture, 'tel': tel, 'profile': profile, 'tax': tax,
+            'time': time,
+            'emailliff': emailliff, 'tag': tag, 'date_insert': date_insert, 'time_insert': time_insert, 'other': other,
+            'position': position, 'product': product, 'username': username
+        }
+        print(result)
+
+
+tag = ['CB010', 'CJ010']
+for i in res.each()[1:]:
+    d_tag = i.val()['tag']
+    for e in d_tag:
+        for v in tag:
+            if e == v:
+                print(i.val())
+
+
 
 # decoded = json.loads(dumps)
 # print(decoded)

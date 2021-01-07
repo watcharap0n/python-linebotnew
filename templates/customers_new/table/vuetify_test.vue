@@ -889,7 +889,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-account"
-                              v-model="editedItem.Name"
+                              v-model="editedItem.name"
                               label="Name"
                               outlined
                               dense
@@ -903,7 +903,7 @@
                         >
                           <v-select
                               prepend-inner-icon="mdi-post-outline"
-                              v-model="editedItem.Product"
+                              v-model="editedItem.product"
                               :items="productMango"
                               label="Product"
                               outlined
@@ -917,7 +917,7 @@
                         >
                           <v-select
                               prepend-inner-icon="mdi-post"
-                              v-model="editedItem.Other"
+                              v-model="editedItem.other"
                               :items="productOther"
                               label="Product"
                               outlined
@@ -931,7 +931,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-office-building"
-                              v-model="editedItem.Company"
+                              v-model="editedItem.company"
                               label="Company"
                               outlined
                               dense
@@ -944,7 +944,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-card-account-phone"
-                              v-model="editedItem.Tel"
+                              v-model="editedItem.tel"
                               label="Tel"
                               outlined
                               dense
@@ -957,7 +957,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-email"
-                              v-model="editedItem.Email"
+                              v-model="editedItem.email"
                               label="Email"
                               outlined
                               dense
@@ -970,7 +970,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-android-messages"
-                              v-model="editedItem.Message"
+                              v-model="editedItem.message"
                               label="Message"
                               outlined
                               dense
@@ -984,7 +984,7 @@
                         >
                           <v-text-field
                               prepend-inner-icon="mdi-access-point-check"
-                              v-model="editedItem.Channel"
+                              v-model="editedItem.channel"
                               label="Channel"
                               outlined
                               dense
@@ -998,7 +998,7 @@
                         >
                           <v-autocomplete
                               prepend-inner-icon="mdi-tag"
-                              v-model="editedItem.Tag"
+                              v-model="editedItem.tag"
                               :items="tags"
                               outlined
                               dense
@@ -1121,45 +1121,45 @@
               ],
               editedItem: {
                   id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
+                  name: '',
+                  tag: [],
+                  product: '',
+                  email: '',
+                  emailliff: '',
+                  company: '',
+                  tel: '',
+                  profile: '',
+                  username: '',
+                  time: '',
+                  date: '',
+                  position: '',
+                  tax: '',
+                  authorized: '',
+                  date_insert: '',
+                  time_insert: '',
+                  channel: '',
+                  message: '',
               },
               defaultItem: {
                   id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
+                  name: '',
+                  tag: [],
+                  product: '',
+                  email: '',
+                  emailliff: '',
+                  company: '',
+                  tel: '',
+                  profile: '',
+                  username: '',
+                  time: '',
+                  date: '',
+                  position: '',
+                  tax: '',
+                  authorized: '',
+                  date_insert: '',
+                  time_insert: '',
+                  channel: '',
+                  message: '',
               },
               dataSetData: [],
               amountCon: '',
@@ -1180,18 +1180,18 @@
                   return [
                       {text: 'Edit/Delete', value: 'actions', sortable: false},
                       {text: 'แท็ก', value: 'tag'},
-                      {text: 'ชื่อ', value: 'Name'},
-                      {text: 'ผลิตภัณฑ์', value: 'Product'},
-                      {text: 'อื่นๆ', value: 'Other'},
-                      {text: 'บริษัท', value: 'Company'},
-                      {text: 'เบอร์', value: 'Tel'},
-                      {text: 'อีเมล', value: 'Email'},
-                      {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
-                      {text: 'ข้อความ', value: 'Message'},
-                      {text: 'โปรไฟล์', value: 'Profile'},
+                      {text: 'ชื่อ', value: 'name'},
+                      {text: 'ผลิตภัณฑ์', value: 'product'},
+                      {text: 'อื่นๆ', value: 'other'},
+                      {text: 'บริษัท', value: 'company'},
+                      {text: 'เบอร์', value: 'tel'},
+                      {text: 'อีเมล', value: 'email'},
+                      {text: 'อีเมล(ไลน์)', value: 'email_liff'},
+                      {text: 'ข้อความ', value: 'message'},
+                      {text: 'โปรไฟล์', value: 'profile'},
                       {text: 'วันเวลา', value: 'datetime'},
-                      {text: 'ช่องทาง', value: 'Channel'},
-                      {text: 'คนนำเข้า', value: 'Username'},
+                      {text: 'ช่องทาง', value: 'channel'},
+                      {text: 'คนนำเข้า', value: 'username'},
                       {text: 'วันเวลานำ', value: 'datetime_insert'},
                   ]
               },
@@ -1199,12 +1199,12 @@
                   return [
                       {text: 'Edit/Delete', value: 'actions', sortable: false},
                       {text: 'แท็ก', value: 'tag'},
-                      {text: 'ชื่อ', value: 'Name'},
-                      {text: 'ผลิตภัณฑ์', value: 'Product'},
-                      {text: 'อื่นๆ', value: 'Other'},
-                      {text: 'บริษัท', value: 'Company'},
-                      {text: 'เบอร์', value: 'Tel'},
-                      {text: 'อีเมล', value: 'Email'},
+                      {text: 'ชื่อ', value: 'name'},
+                      {text: 'ผลิตภัณฑ์', value: 'product'},
+                      {text: 'อื่นๆ', value: 'other'},
+                      {text: 'บริษัท', value: 'company'},
+                      {text: 'เบอร์', value: 'tel'},
+                      {text: 'อีเมล', value: 'email'},
                   ]
               }
           },

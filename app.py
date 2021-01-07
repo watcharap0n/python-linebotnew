@@ -34,7 +34,6 @@ firebase_auth = firebase_admin.initialize_app(cred)
 COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 days
 
 
-
 def database_test():
     with open('model/config/database_test/firebase.json', encoding='utf8') as json_file:
         data = json.load(json_file)
@@ -614,13 +613,12 @@ def tags_index(index):
     db2.child('customer_tag').child(index).update(post_data)
     return make_response(post_data)
 
+
 @app.route('/add_tags', methods=['POST'])
 def add_tags():
     post_data = request.get_json()
     db2.child('customer_tag').push(post_data)
     return make_response(post_data)
-
-
 
 
 @app.route('/information_v2', methods=['GET', 'POST'])
@@ -705,6 +703,14 @@ def return_sort_table():
             other = get_data.len_amount_other(ms)
             return jsonify(
                 {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('tag'):
+            print('tag')
+            ms = get_data.dynamic_tag(todo, ref['tag'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif request.method == 'POST':
         lst = []
         post_data = request.get_json()
@@ -715,16 +721,16 @@ def return_sort_table():
                 lst.append(date)
             if post_data.get('product') and post_data.get('channel') and post_data.get('dates'):
                 post_data = {'product': post_data['product'], 'dates': lst, 'channel': post_data['channel']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             elif post_data.get('dates') and post_data.get('channel'):
                 post_data = {'dates': lst, 'channel': post_data['channel']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             elif post_data.get('dates') and post_data.get('product'):
                 post_data = {'dates': lst, 'product': post_data['product']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             else:
                 post_data = {'dates': lst}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
         db2.child('setTable').set(post_data)
         return make_response(post_data)
 
@@ -735,14 +741,15 @@ def return_datetime():
         get_data = GetDateTime(None, db2)
         month20 = get_data.todo_date('month', db2)
         result = get_data.data_datetime('RestCustomer')
-        todo, product, channel = result[0], result[1], result[2]
+        todo, product, channel, tag = result[0], result[1], result[2], result[3]
         todo.sort(key=month20.get_date)
         product = list(OrderedDict.fromkeys(product).keys())
         channel = list(OrderedDict.fromkeys(channel).keys())
+        tag = list(OrderedDict.fromkeys(tag).keys())
         LINE = get_data.len_amount(todo, 'channel', 'LINE')
         get_demo = get_data.len_amount(todo, 'channel', 'GetDemo')
         other = get_data.len_amount_other(todo)
-        status = {'ms': todo[::-1], 'products': product, 'channels': channel,
+        status = {'ms': todo[::-1], 'products': product, 'channels': channel, 'tags': tag,
                   'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}}
         return jsonify(status)
     elif request.method == 'POST':
@@ -890,10 +897,6 @@ def return_information():
         post_data['Picture'] = ''
         post_data['Other'] = ''
         del post_data['id']
-        if dict(post_data).get('Tag'):
-            db2.child('RestCustomer').push(post_data)
-        else:
-            post_data['Tag'] = ''
         print(post_data)
         db2.child('RestCustomer').push(post_data)
         return jsonify(post_data)
@@ -903,19 +906,10 @@ def return_information():
 def update_information(id):
     response_object = {'status': 'success'}
     post_data = request.get_json()
+    print(post_data)
     print(id)
-    d = dict(post_data)
-    fire = FirebaseAPI(None)
-    if d['tag']:
-        group = fire.groupToInsert(d, d['tag'])
-        db2.child('RestCustomer').child(id).update(group)
-        response_object['message'] = 'Data updated!'
-        return make_response(response_object)
-    else:
-        group = fire.groupToInsert(d, '')
-        db2.child('RestCustomer').child(id).update(group)
-        response_object['message'] = 'Data updated!'
-        return make_response(response_object)
+    db2.child('RestCustomer').child(id).update(post_data)
+    return make_response(response_object)
 
 
 @app.route('/delete_information/<id>', methods=['POST'])
