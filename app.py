@@ -926,7 +926,7 @@ def return_Chip(id):
         fire = FirebaseAPI(db2)
         print(post_data)
         print(id)
-        fire.popChip('RestCustomer', id, 'Tag', post_data)
+        fire.popChip('RestCustomer', id, 'tag', post_data)
     return jsonify(response_object)
 
 
@@ -952,10 +952,11 @@ def excel_information():
 def sort_information():
     if request.method == 'POST':
         post_data = request.get_json()
+        print(post_data)
         tags = post_data['tags']
         key = post_data['key']
         for i in key:
-            db2.child('RestCustomer').child(i).update({'Tag': tags})
+            db2.child('RestCustomer').child(i).update({'tag': tags})
         print(post_data)
         return jsonify(post_data)
 

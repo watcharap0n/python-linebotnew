@@ -57,17 +57,21 @@ def test_key():
             'emailliff': emailliff, 'tag': tag, 'date_insert': date_insert, 'time_insert': time_insert, 'other': other,
             'position': position, 'product': product, 'username': username
         }
-        print(result)
+        print(result, i.key())
+
+test_key()
 
 
-tag = ['CB010', 'CJ010']
-for i in res.each()[1:]:
-    d_tag = i.val()['tag']
-    for e in d_tag:
-        for v in tag:
-            if e == v:
-                print(i.val())
 
+# tag = ['CB010', 'CJ010']
+# for i in res.each()[1:]:
+#     d_tag = i.val()['tag']
+#     for e in d_tag:
+#         for v in tag:
+#             if e == v:
+#                 print(i.val())
+# for i in res.each()[2:]:
+#     print(i.val()['tag'], i.key())
 
 
 # decoded = json.loads(dumps)
