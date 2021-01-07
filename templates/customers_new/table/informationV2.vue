@@ -621,8 +621,8 @@
                     </div>
                   </v-tabs>
                 </v-toolbar>
-                <v-toolbar flat>
 
+                <v-toolbar flat>
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                       <v-dialog
@@ -669,6 +669,7 @@
                                   color="green darken-1"
                                   text
                                   type="submit"
+                                  :disabled="!exD"
                                   @click="dialogExcel = false"
                               >
                                 ตกลง
@@ -1394,6 +1395,7 @@
                   channel: '',
                   message: '',
               },
+              exD: false,
               dataSetData: [],
               amountCon: '',
               amountReal: '',
@@ -1651,13 +1653,19 @@
                   this.updateChip(chip, id)
               },
               excelIndex(selected) {
-                  console.log(selected)
-                  key = []
-                  selected.forEach((data) => {
-                      key.push(data.id)
-                  })
-                  this.ExcelPush(key)
-                  console.log(key)
+                  if (selected.length === 0) {
+                      this.exD = false
+                  } else {
+                      this.exD = true
+                      console.log(selected)
+                      key = []
+                      selected.forEach((data) => {
+                          key.push(data.id)
+                      })
+                      this.ExcelPush(key)
+                      console.log(key)
+                  }
+
               },
               sortIndex(selected) {
                   user = []
