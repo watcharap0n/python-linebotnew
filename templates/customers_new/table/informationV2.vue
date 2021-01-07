@@ -1075,6 +1075,7 @@
 
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
+                          disabled
                           :loading="!spinTable"
                           color="#FF648D"
                           style=" margin-left: 10px"
