@@ -722,7 +722,6 @@
                     </template>
                   </v-tooltip>
 
-
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
@@ -1437,6 +1436,7 @@
                   message: '',
               },
               exD: false,
+              tagD: false,
               dataSetData: [],
               amountCon: '',
               amountReal: '',
