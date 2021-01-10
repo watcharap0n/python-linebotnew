@@ -746,8 +746,9 @@
                       </span>
                     </template>
                   </v-tooltip>
-
+                  &nbsp;
                   <v-dialog
+
                       v-model="dialogCustoms"
                       width="500"
                       persistent
@@ -758,6 +759,7 @@
                           dark
                           v-bind="attrs"
                           v-on="on"
+                          small
                       >
                         <v-icon>
                           mdi-calendar-multiselect
@@ -881,7 +883,7 @@
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
-
+ &nbsp;
 
                   <v-dialog
                       v-model="dialogMonth"
@@ -894,6 +896,7 @@
                           dark
                           v-bind="attrs"
                           v-on="on"
+                          small
                       >
                         <v-icon>
                           mdi-calendar-month

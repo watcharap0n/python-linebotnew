@@ -22,45 +22,48 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
-res = db.child('RestCustomer').get()
+foo = []
+cut_channels = []
+cut_products = []
+cut_tags = []
+ref = db.child('RestCustomer').get()
+for i in ref.each()[1:]:
+    v = i.val()
+    date = v['date']
+    time = v['time']
+    fname = v['name']
+    company = v['company']
+    product = v['product']
+    channel = v['channel']
+    message = v['message']
+    Img = v['picture']
+    email = v['email']
+    tel = v['tel']
+    tag = v['tag']
+    emailliff = v['emailliff']
+    username = v['username']
+    time_insert = v['time_insert']
+    date_insert = v['date_insert']
+    profile = v['profile']
+    for t in tag:
+        cut_tags.append(t)
+    cut_channels.append(channel)
+    cut_products.append(product)
+    d = tim.datetime.strptime(date, '%d-%m-%Y')
+    t = tim.datetime.strptime(time, '%H:%M:%S')
+    mapProduct = {'name': fname, 'tag': tag, 'company': company, 'product': product, 'channel': channel,
+                  'day': d.day, 'month': d.month, 'year': d.year, 'date': date, 'time': time,
+                  'message': message, 'img': Img, 'id': i.key(), 'email': email, 'profile': profile,
+                  'datetime_insert': f'{date_insert} {time_insert}', 'month_check': f'{d.year}-{d.month}',
+                  'tel': tel, 'emailliff': emailliff, 'username': username, 'datetime': f'{date} {time}'}
+    foo.append(mapProduct)
 
+months = '2021-01'
+d = tim.datetime.strptime(months, '%Y-%m')
+print(d.year, d.month)
 
-def test_key():
-    for i in res.each()[1:]:
-        key = i.key()
-        r = i.val()
-        authorized = r['authorized']
-        channel = r['channel']
-        company = r['company']
-        date = r['date']
-        email = r['email']
-        message = r['message']
-        name = r['name']
-        picture = r['picture']
-        tel = r['tel']
-        profile = r['profile']
-        tax = r['tax']
-        time = r['time']
-        emailliff = r['emailliff']
-        tag = r['tag']
-        date_insert = r['date_insert']
-        time_insert = r['time_insert']
-        other = r['other']
-        position = r['position']
-        product = r['product']
-        username = r['username']
-
-        result = {
-            'authorized': authorized, 'channel': channel, 'company': company, 'date': date, 'email': email,
-            'message': message, 'name': name, 'picture': picture, 'tel': tel, 'profile': profile, 'tax': tax,
-            'time': time,
-            'emailliff': emailliff, 'tag': tag, 'date_insert': date_insert, 'time_insert': time_insert, 'other': other,
-            'position': position, 'product': product, 'username': username
-        }
-        print(result, i.key())
-
-test_key()
-
+# for i in foo[::-1]:
+#     print(i)
 
 
 # tag = ['CB010', 'CJ010']

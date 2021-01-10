@@ -6,7 +6,7 @@ import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
 from pusher import Pusher
 from datetime import timedelta, datetime
-import datetime
+import datetime as tim
 from random import randrange
 from numpy import random
 from model_image import *
@@ -647,10 +647,8 @@ def return_sort_table():
         ref = db2.child('setTable').get()
         ref = dict(ref.val())
         get_data = GetDateTime(None, db2)
-        month20 = get_data.todo_date('month', db2)
         result = get_data.data_datetime('RestCustomer')
         todo, product, channel = result[0], result[1], result[2]
-        todo.sort(key=month20.get_date)
         if ref.get('dates') and ref.get('product') and ref.get('channel'):
             ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
             LINE = get_data.len_amount(ms, 'channel', 'LINE')
@@ -739,10 +737,8 @@ def return_sort_table():
 def return_datetime():
     if request.method == 'GET':
         get_data = GetDateTime(None, db2)
-        month20 = get_data.todo_date('month', db2)
         result = get_data.data_datetime('RestCustomer')
         todo, product, channel, tag = result[0], result[1], result[2], result[3]
-        todo.sort(key=month20.get_date)
         product = list(OrderedDict.fromkeys(product).keys())
         channel = list(OrderedDict.fromkeys(channel).keys())
         tag = list(OrderedDict.fromkeys(tag).keys())
@@ -859,8 +855,14 @@ def data_month():
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif request.method == 'POST':
         post_data = request.get_json()
-        print(post_data)
-        db2.child('sort_month').set(post_data)
+        post_data = dict(post_data)
+        monthss = []
+        for month in post_data['months']:
+            d = tim.datetime.strptime(month, '%Y-%m')
+            monthss.append(f'{d.year}-{d.month}')
+
+        inserted = {'months': monthss}
+        db2.child('sort_month').set(inserted)
         return make_response(post_data)
 
 

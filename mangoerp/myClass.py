@@ -205,7 +205,6 @@ class GetDateTime:
                           'datetime_insert': f'{date_insert} {time_insert}', 'month_check': f'{d.year}-{d.month}',
                           'tel': tel, 'emailliff': emailliff, 'username': username, 'datetime': f'{date} {time}'}
             foo.append(mapProduct)
-        print(foo)
         return foo, cut_products, cut_channels, cut_tags
 
 
