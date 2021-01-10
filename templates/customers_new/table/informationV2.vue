@@ -609,8 +609,7 @@
                       </v-badge>
                     </v-tab>
 
-                    <v-tab>
-                      <a href="/marketing_import">
+                    <v-tab href="/marketing_import">
                         <v-badge
                             color="#FF648D"
                             :content="amountImport"
@@ -618,11 +617,9 @@
                         >
                           นำเข้า
                         </v-badge>
-                      </a>
                     </v-tab>
 
-                    <v-tab>
-                      <a href="/getDemo">
+                    <v-tab href="/getDemo">
                         <v-badge
                             class="text-white"
                             :content="amountDemo"
@@ -630,10 +627,8 @@
                         >
                           นัดDemo
                         </v-badge>
-                      </a>
                     </v-tab>
-                    <v-tab>
-                      <a href="#">
+                    <v-tab href="/getDemo">
                         <v-badge
                             class="text-white"
                             :content="amountContact"
@@ -641,7 +636,6 @@
                         >
                           ติดต่อเรา
                         </v-badge>
-                      </a>
                     </v-tab>
                     <v-spacer></v-spacer>
                     <div>
