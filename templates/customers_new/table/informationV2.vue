@@ -628,7 +628,7 @@
                           นัดDemo
                         </v-badge>
                     </v-tab>
-                    <v-tab href="/getDemo">
+                    <v-tab href="/getContract">
                         <v-badge
                             class="text-white"
                             :content="amountContact"
