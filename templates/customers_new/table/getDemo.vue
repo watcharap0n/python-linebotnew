@@ -80,7 +80,7 @@
             <div class="col-sm-8">
               <ul class="nav nav-pills" role="tablist">
                 <li class="nav-item" style="margin-left: 10px">
-                  <a href="/marketing_information">
+                  <a href="/information_v2">
                     <button
                         class="btn btn-outline-success">
                       <i class="fa fa-users"></i>

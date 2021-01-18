@@ -1,12 +1,13 @@
 # Created by .ignore support plugin (hsz.mobi)
-venv
-log
-model/__pycache__/
-node_modules
-package-lock.json
+### Example user template template
+### Example user template
+
+# IntelliJ project files
 .idea
-.DS_Store
-.idea/flask edu.iml
-.idea/jsLibraryMappings.xml
-__pycache__/app.cpython-38.pyc
+node_modules
+venv
+package-lock.json
 log/log_LoginSession
+*.iml
+out
+gen

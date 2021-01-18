@@ -6,7 +6,7 @@ import uuid, time, os, firebase_admin, base64, pyrebase
 from flask_bootstrap import Bootstrap
 from pusher import Pusher
 from datetime import timedelta, datetime
-import datetime
+import datetime as tim
 from random import randrange
 from numpy import random
 from model_image import *
@@ -32,7 +32,6 @@ cred = credentials.Certificate('model/config/database_test/authen_firebase.json'
 firebase_auth = firebase_admin.initialize_app(cred)
 
 COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 days
-
 
 
 def database_test():
@@ -614,13 +613,12 @@ def tags_index(index):
     db2.child('customer_tag').child(index).update(post_data)
     return make_response(post_data)
 
+
 @app.route('/add_tags', methods=['POST'])
 def add_tags():
     post_data = request.get_json()
     db2.child('customer_tag').push(post_data)
     return make_response(post_data)
-
-
 
 
 @app.route('/information_v2', methods=['GET', 'POST'])
@@ -649,10 +647,8 @@ def return_sort_table():
         ref = db2.child('setTable').get()
         ref = dict(ref.val())
         get_data = GetDateTime(None, db2)
-        month20 = get_data.todo_date('month', db2)
         result = get_data.data_datetime('RestCustomer')
         todo, product, channel = result[0], result[1], result[2]
-        todo.sort(key=month20.get_date)
         if ref.get('dates') and ref.get('product') and ref.get('channel'):
             ms = get_data.dynamic_product_dates_channel(ref['dates'], todo, ref['product'], ref['channel'])
             LINE = get_data.len_amount(ms, 'channel', 'LINE')
@@ -705,6 +701,14 @@ def return_sort_table():
             other = get_data.len_amount_other(ms)
             return jsonify(
                 {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
+        elif ref.get('tag'):
+            print('tag')
+            ms = get_data.dynamic_tag(todo, ref['tag'])
+            LINE = get_data.len_amount(ms, 'channel', 'LINE')
+            get_demo = get_data.len_amount(ms, 'channel', 'GetDemo')
+            other = get_data.len_amount_other(ms)
+            return jsonify(
+                {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif request.method == 'POST':
         lst = []
         post_data = request.get_json()
@@ -715,16 +719,16 @@ def return_sort_table():
                 lst.append(date)
             if post_data.get('product') and post_data.get('channel') and post_data.get('dates'):
                 post_data = {'product': post_data['product'], 'dates': lst, 'channel': post_data['channel']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             elif post_data.get('dates') and post_data.get('channel'):
                 post_data = {'dates': lst, 'channel': post_data['channel']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             elif post_data.get('dates') and post_data.get('product'):
                 post_data = {'dates': lst, 'product': post_data['product']}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
             else:
                 post_data = {'dates': lst}
-                db2.child('set_sort_data').set(post_data)
+                db2.child('setTable').set(post_data)
         db2.child('setTable').set(post_data)
         return make_response(post_data)
 
@@ -733,16 +737,15 @@ def return_sort_table():
 def return_datetime():
     if request.method == 'GET':
         get_data = GetDateTime(None, db2)
-        month20 = get_data.todo_date('month', db2)
         result = get_data.data_datetime('RestCustomer')
-        todo, product, channel = result[0], result[1], result[2]
-        todo.sort(key=month20.get_date)
+        todo, product, channel, tag = result[0], result[1], result[2], result[3]
         product = list(OrderedDict.fromkeys(product).keys())
         channel = list(OrderedDict.fromkeys(channel).keys())
+        tag = list(OrderedDict.fromkeys(tag).keys())
         LINE = get_data.len_amount(todo, 'channel', 'LINE')
         get_demo = get_data.len_amount(todo, 'channel', 'GetDemo')
         other = get_data.len_amount_other(todo)
-        status = {'ms': todo[::-1], 'products': product, 'channels': channel,
+        status = {'ms': todo[::-1], 'products': product, 'channels': channel, 'tags': tag,
                   'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}}
         return jsonify(status)
     elif request.method == 'POST':
@@ -852,8 +855,14 @@ def data_month():
             {'ms': ms, 'amount_channel': {'line': len(LINE), 'get_demo': len(get_demo), 'other': len(other)}})
     elif request.method == 'POST':
         post_data = request.get_json()
-        print(post_data)
-        db2.child('sort_month').set(post_data)
+        post_data = dict(post_data)
+        monthss = []
+        for month in post_data['months']:
+            d = tim.datetime.strptime(month, '%Y-%m')
+            monthss.append(f'{d.year}-{d.month}')
+
+        inserted = {'months': monthss}
+        db2.child('sort_month').set(inserted)
         return make_response(post_data)
 
 
@@ -885,15 +894,11 @@ def return_information():
     elif request.method == 'POST':
         post_data = request.get_json()
         o = TimeDate
-        post_data['Date'] = f'{o.day}-{o.month}-{o.year}'
-        post_data['Time'] = f'{o.hour}:{o.minute}:{o.second}'
-        post_data['Picture'] = ''
-        post_data['Other'] = ''
+        post_data['date'] = f'{o.day}-{o.month}-{o.year}'
+        post_data['time'] = f'{o.hour}:{o.minute}:{o.second}'
+        post_data['picture'] = ''
+        post_data['other'] = ''
         del post_data['id']
-        if dict(post_data).get('Tag'):
-            db2.child('RestCustomer').push(post_data)
-        else:
-            post_data['Tag'] = ''
         print(post_data)
         db2.child('RestCustomer').push(post_data)
         return jsonify(post_data)
@@ -903,19 +908,10 @@ def return_information():
 def update_information(id):
     response_object = {'status': 'success'}
     post_data = request.get_json()
+    print(post_data)
     print(id)
-    d = dict(post_data)
-    fire = FirebaseAPI(None)
-    if d['tag']:
-        group = fire.groupToInsert(d, d['tag'])
-        db2.child('RestCustomer').child(id).update(group)
-        response_object['message'] = 'Data updated!'
-        return make_response(response_object)
-    else:
-        group = fire.groupToInsert(d, '')
-        db2.child('RestCustomer').child(id).update(group)
-        response_object['message'] = 'Data updated!'
-        return make_response(response_object)
+    db2.child('RestCustomer').child(id).update(post_data)
+    return make_response(response_object)
 
 
 @app.route('/delete_information/<id>', methods=['POST'])
@@ -932,7 +928,7 @@ def return_Chip(id):
         fire = FirebaseAPI(db2)
         print(post_data)
         print(id)
-        fire.popChip('RestCustomer', id, 'Tag', post_data)
+        fire.popChip('RestCustomer', id, 'tag', post_data)
     return jsonify(response_object)
 
 
@@ -958,10 +954,11 @@ def excel_information():
 def sort_information():
     if request.method == 'POST':
         post_data = request.get_json()
+        print(post_data)
         tags = post_data['tags']
         key = post_data['key']
         for i in key:
-            db2.child('RestCustomer').child(i).update({'Tag': tags})
+            db2.child('RestCustomer').child(i).update({'tag': tags})
         print(post_data)
         return jsonify(post_data)
 
@@ -1449,7 +1446,7 @@ def webhookNew():
         if add_oa == 'follow':
             quick_push(userId, 'สวัสดีค่ะ น้องแมงโก้ยินดีให้บริการท่านสามารถเลือกสอบถามเรื่องที่ท่านสนใจได้เลยค่ะ',
                        QuickReply=QuickReply(items=[
-                           QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิภัณฑ์แมงโก้')),
+                           QuickReplyButton(action=MessageAction(label='ผลิตภัณฑ์แมงโก้', text='ผลิตภัณฑ์แมงโก้')),
                            QuickReplyButton(action=MessageAction(label='โปรโมชั่น', text='โปรโมชั่น')),
                            QuickReplyButton(action=MessageAction(label='ขอใบเสนอราคา', text='ขอใบเสนอราคา')),
                            QuickReplyButton(action=MessageAction(label='สอบถามการอบรม', text='สอบถามการอบรม')),
@@ -2240,7 +2237,7 @@ def handle_message_new(event):
                 displayName = profile.display_name
                 x = f'สวัสดีค่ะ น้องแมงโก้เป็นระบบโต้ตอบอัตโนมัติ\nคุณ {displayName} สามารถเลือกเมนูด้านล่างหรือพิมพ์สอบถามได้เลยนะคะ'
                 quick_reply(event, x, QuickReply=QuickReply(items=[
-                    QuickReplyButton(action=MessageAction(label="ผลิตภัณฑ์แมงโก้", text="ผลิภัณฑ์แมงโก้")),
+                    QuickReplyButton(action=MessageAction(label="ผลิตภัณฑ์แมงโก้", text="ผลิตภัณฑ์แมงโก้")),
                     QuickReplyButton(action=MessageAction(label="โปรโมชั่น", text="โปรโมชั่น")),
                     QuickReplyButton(action=MessageAction(label="ขอใบเสนอราคา", text="ขอใบเสนอราคา")),
                     QuickReplyButton(action=MessageAction(label="สอบถามการอบรม", text="สอบถามการอบรม")),

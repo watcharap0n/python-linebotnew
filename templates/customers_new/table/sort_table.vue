@@ -22,18 +22,20 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                        color="red lighten-2"
+                        color="pink lighten-2"
                         dark
                         v-bind="attrs"
                         v-on="on"
                     >
-                      Days/Products/Channels
+                      <v-icon>
+                        mdi-calendar-multiselect
+                      </v-icon>
                     </v-btn>
                   </template>
 
                   <v-card>
                     <v-card-title class="headline grey lighten-2">
-                      Days/Products/Channels
+                      Days/Product/Channel/Tags
                     </v-card-title>
 
                     <v-card-text>
@@ -55,7 +57,7 @@
                                   multiple
                                   chips
                                   small-chips
-                                  label="Multiple picker in menu"
+                                  label="เลือกในแต่ละวัน"
                                   prepend-icon="mdi-calendar"
                                   readonly
                                   v-bind="attrs"
@@ -87,12 +89,23 @@
                           </v-menu>
                         </v-col>
                       </v-row>
-                      <v-row>
+                      <div>
+                        <v-combobox
+                            prepend-icon="mdi-tag"
+                            v-model="tagsSelect"
+                            :items="filter_tags"
+                            label="เลือกแท็ก"
+                            multiple
+                            chips
+                            small-chips
+                        ></v-combobox>
+                      </div>
+                      <v-row style="margin-top: 8px">
                         <v-col cols="6">
                           <v-select
                               v-model="formProduct"
-                              :items="products"
-                              label="Product"
+                              :items="filter_products"
+                              label="ผลิตภัณฑ์"
                               menu-props="auto"
                               outlined
                               dense
@@ -103,8 +116,8 @@
                         <v-col cols="6">
                           <v-select
                               v-model="formChannel"
-                              :items="channels"
-                              label="Channel"
+                              :items="filter_channels"
+                              label="ช่องทาง"
                               menu-props="auto"
                               outlined
                               dense
@@ -148,12 +161,14 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                        color="red lighten-2"
+                        color="pink lighten-2"
                         dark
                         v-bind="attrs"
                         v-on="on"
                     >
-                      Month
+                      <v-icon>
+                        mdi-calendar-month
+                      </v-icon>
                     </v-btn>
                   </template>
 
@@ -251,7 +266,6 @@
 
       <v-container>
         <v-data-table
-            :hidden="!showTable"
             :loading="!spinChart"
             :headers="headers"
             :items="transaction"
@@ -498,15 +512,17 @@
               dialogCustoms: false,
               dialogMonth: false,
               showTable: false,
-              products: [],
-              channels: [],
+              filter_products: [],
+              filter_channels: [],
+              filter_tags: [],
               formProduct: '',
               formChannel: '',
+              tagsSelect: [],
               transaction: [],
               headers: [
                   {text: 'Actions', value: 'actions', sortable: false},
                   {text: 'แท็ก', value: 'tag'},
-                  {text: 'ชื่อ', value: 'fname'},
+                  {text: 'ชื่อ', value: 'name'},
                   {text: 'ผลิตภัณฑ์', value: 'product'},
                   {text: 'บริษัท', value: 'company'},
                   {text: 'อีเมล', value: 'email'},
@@ -516,7 +532,7 @@
               ],
               editedItem: {
                   id: '',
-                  fname: '',
+                  name: '',
                   product: '',
                   company: '',
                   email: '',
@@ -525,7 +541,7 @@
               },
               defaultItem: {
                   id: '',
-                  fname: '',
+                  name: '',
                   product: '',
                   company: '',
                   email: '',
@@ -534,8 +550,8 @@
               },
           }),
           created() {
-              this.showTable = false
               this.createTable()
+              this.getTableStart()
           },
           computed: {
               formTitle() {
@@ -556,8 +572,9 @@
                   const path = '/json_datetime'
                   axios.get(path)
                       .then((res) => {
-                          this.products = res.data.products
-                          this.channels = res.data.channels
+                          this.filter_products = res.data.products
+                          this.filter_channels = res.data.channels
+                          this.filter_tags = res.data.tags
                       })
                       .catch((err) => {
                           console.error(err)
@@ -569,7 +586,12 @@
                   }
               },
               sortDate() {
-                  let _json = {'dates': this.dates, 'product': this.formProduct, 'channel': this.formChannel}
+                  let _json = {
+                      'dates': this.dates,
+                      'product': this.formProduct,
+                      'channel': this.formChannel,
+                      'tag': this.tagsSelect
+                  }
                   this.postSorting(_json)
                   this.dialogCustoms = false
               },
@@ -582,7 +604,6 @@
                   const path = '/return_sort_table'
                   axios.post(path, data)
                       .then(() => {
-                          this.showTable = true
                           this.getTable()
                           console.log('success')
                       })
@@ -594,7 +615,6 @@
                   const path = '/data_month';
                   axios.post(path, data)
                       .then(() => {
-                          this.showTable = true
                           this.getMonths()
                           console.log('success')
                       })
@@ -612,6 +632,17 @@
                       .catch((err) => {
                           console.error(err)
                       })
+              },
+              getTableStart() {
+                  this.spinChart = false
+                  const path = '/json_datetime';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
               },
               getMonths() {
                   this.spinChart = false

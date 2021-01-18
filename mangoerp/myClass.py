@@ -143,6 +143,10 @@ class GetDateTime:
         return [i for i in lst if i[value] == condition]
 
     @staticmethod
+    def dynamic_tag(lst, value):
+        return [i for i in lst for e in i['tag'] for v in value if e == v]
+
+    @staticmethod
     def dynamic_product_channel(lst, condition_channel, condition_product):
         return [i for i in lst if i['channel'] == condition_channel and i['product'] == condition_product]
 
@@ -169,56 +173,65 @@ class GetDateTime:
         foo = []
         cut_channels = []
         cut_products = []
+        cut_tags = []
         ref = self.db.child(transaction).get()
         for i in ref.each()[1:]:
             v = i.val()
-            date = v['Date']
-            time = v['Time']
-            fname = v['Name']
-            company = v['Company']
-            product = v['Product']
-            channel = v['Channel']
-            message = v['Message']
-            Img = v['Picture']
-            email = v['Email']
-            tel = v['Tel']
-            tag = v['Tag']
+            date = v['date']
+            time = v['time']
+            fname = v['name']
+            company = v['company']
+            product = v['product']
+            channel = v['channel']
+            message = v['message']
+            Img = v['picture']
+            email = v['email']
+            tel = v['tel']
+            tag = v['tag']
+            emailliff = v['emailliff']
+            username = v['username']
+            time_insert = v['time_insert']
+            date_insert = v['date_insert']
+            profile = v['profile']
+            for t in tag:
+                cut_tags.append(t)
             cut_channels.append(channel)
             cut_products.append(product)
             d = tim.datetime.strptime(date, '%d-%m-%Y')
             t = tim.datetime.strptime(time, '%H:%M:%S')
-            mapProduct = {'fname': fname, 'Tag': tag, 'company': company, 'product': product, 'channel': channel, 'day': d.day,
-                          'month': d.month, 'year': d.year, 'date': date, 'time': time,
-                          'message': message, 'img': Img, 'id': i.key(), 'email': email,
-                          'month_check': f'{d.year}-{d.month}', 'tel': tel, 'datetime': f'{date} {time}'}
+            mapProduct = {'name': fname, 'tag': tag, 'company': company, 'product': product, 'channel': channel,
+                          'day': d.day, 'month': d.month, 'year': d.year, 'date': date, 'time': time,
+                          'message': message, 'img': Img, 'id': i.key(), 'email': email, 'profile': profile,
+                          'datetime_insert': f'{date_insert} {time_insert}', 'month_check': f'{d.year}-{d.month}',
+                          'tel': tel, 'emailliff': emailliff, 'username': username, 'datetime': f'{date} {time}'}
             foo.append(mapProduct)
-        return foo, cut_products, cut_channels
+        return foo, cut_products, cut_channels, cut_tags
 
 
 class TagChart:
     @staticmethod
     def information_excel(key, db2):
         i = db2.child('RestCustomer').child(key).get()
-        profile = i.val()['Profile']
-        cTime = i.val()['Time']
-        cDate = i.val()['Date']
-        company = i.val()['Company']
-        email = i.val()['Email']
-        pEmail = i.val()['EmailLiff']
-        message = i.val()['Message']
-        picture = i.val()['Picture']
-        product = i.val()['Product']
-        other = i.val()['Other']
-        tel = i.val()['Tel']
-        tag = i.val()['Tag']
-        name = i.val()['Name']
-        channel = i.val()['Channel']
-        username = i.val()['Username']
-        date = i.val()['DateInsert']
-        time = i.val()['TimeInsert']
-        authorized = i.val()['Authorized']
-        position = i.val()['Position']
-        tax = i.val()['Tax']
+        profile = i.val()['profile']
+        cTime = i.val()['time']
+        cDate = i.val()['date']
+        company = i.val()['company']
+        email = i.val()['email']
+        pEmail = i.val()['emailliff']
+        message = i.val()['message']
+        picture = i.val()['picture']
+        product = i.val()['product']
+        other = i.val()['other']
+        tel = i.val()['tel']
+        tag = i.val()['tag']
+        name = i.val()['name']
+        channel = i.val()['channel']
+        username = i.val()['username']
+        date = i.val()['date_insert']
+        time = i.val()['time_insert']
+        authorized = i.val()['authorized']
+        position = i.val()['position']
+        tax = i.val()['tax']
         group = {'Name': name, 'Product': product, 'Other': other, 'Company': company, 'Tel': tel, 'Email': email,
                  'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
                  'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
@@ -320,24 +333,24 @@ class TagChart:
         ref = db2.child('RestCustomer').get()
         toList = []
         for i in ref.each()[1:]:
-            profile = i.val()['Profile']
-            cTime = i.val()['Time']
-            cDate = i.val()['Date']
-            company = i.val()['Company']
-            email = i.val()['Email']
-            pEmail = i.val()['EmailLiff']
-            message = i.val()['Message']
-            picture = i.val()['Picture']
-            product = i.val()['Product']
-            tag = i.val()['Tag']
-            tel = i.val()['Tel']
-            name = i.val()['Name']
-            username = i.val()['Username']
-            ImportDate = i.val()['DateInsert']
-            ImportTime = i.val()['TimeInsert']
-            authorized = i.val()['Authorized']
-            position = i.val()['Position']
-            tax = i.val()['Tax']
+            profile = i.val()['profile']
+            cTime = i.val()['time']
+            cDate = i.val()['date']
+            company = i.val()['company']
+            email = i.val()['email']
+            pEmail = i.val()['emailliff']
+            message = i.val()['message']
+            picture = i.val()['picture']
+            product = i.val()['product']
+            tag = i.val()['tag']
+            tel = i.val()['tel']
+            name = i.val()['name']
+            username = i.val()['username']
+            ImportDate = i.val()['date_insert']
+            ImportTime = i.val()['time_insert']
+            authorized = i.val()['authorized']
+            position = i.val()['position']
+            tax = i.val()['tax']
             group = {'Name': name, 'Product': product, 'Company': company, 'Tel': tel, 'Email': email,
                      'EmailLiff': pEmail, 'Message': message, 'Profile': profile, 'Date': cDate, 'Time': cTime,
                      'Picture': picture, 'Username': username, 'Tag': tag,
@@ -421,11 +434,11 @@ class TagChart:
         tel = event['tel']
         other = event['other']
         token = event['token']
-        group = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
-                 'Tel': tel, 'Email': email, 'EmailLiff': token, 'Message': comment,
-                 'Profile': displayName, 'Date': (f'{day}-{month}-{year}'), 'Time': (f'{hour}:{minn}:{sec}'),
-                 'Picture': picture, 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': channel, 'Tax': '', 'Authorized': '', 'Position': ''}
+        group = {'name': name, 'product': product, 'other': other, 'company': company,
+                 'tel': tel, 'email': email, 'emailliff': token, 'message': comment,
+                 'profile': displayName, 'date': (f'{day}-{month}-{year}'), 'time': (f'{hour}:{minn}:{sec}'),
+                 'picture': picture, 'username': username, 'date_insert': date, 'time_insert': time, 'tag': tag,
+                 'channel': channel, 'tax': '', 'authorized': '', 'position': ''}
         return group
 
     @staticmethod
@@ -440,11 +453,11 @@ class TagChart:
         tel = i.val()['event']['tel']
         tag = i.val()['tag']
         name = i.val()['event']['fname']
-        group = {'Name': name, 'Product': product, 'Other': '', 'Company': company,
-                 'Tel': tel, 'Email': email, 'EmailLiff': '', 'Message': message,
-                 'Profile': '', 'Date': cDate, 'Time': cTime, 'Picture': '',
-                 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': 'GetDemo', 'Tax': '', 'Authorized': '', 'Position': ''}
+        group = {'name': name, 'product': product, 'other': '', 'company': company,
+                 'tel': tel, 'email': email, 'emailliff': '', 'message': message,
+                 'profile': '', 'date': cDate, 'time': cTime, 'picture': '',
+                 'username': username, 'date_insert': date, 'time_insert': time, 'tag': tag,
+                 'channel': 'GetDemo', 'tax': '', 'authorized': '', 'position': ''}
         return group
 
     @staticmethod
@@ -460,11 +473,11 @@ class TagChart:
         cdate = contract.val()['Date']
         ctime = contract.val()['Time']
         tag = contract.val()['tag']
-        group = {'Name': contact_name, 'Product': contact_subject, 'Other': '', 'Company': contact_name_company,
-                 'Tel': contact_tel, 'Email': contact_email, 'EmailLiff': '', 'Message': contact_message,
-                 'Profile': '', 'Date': cdate, 'Time': ctime, 'Picture': '',
-                 'Username': username, 'DateInsert': date, 'TimeInsert': time, 'Tag': tag,
-                 'Channel': 'Contact', 'Tax': '', 'Authorized': '', 'Position': ''}
+        group = {'name': contact_name, 'product': contact_subject, 'other': '', 'company': contact_name_company,
+                 'tel': contact_tel, 'email': contact_email, 'emailliff': '', 'message': contact_message,
+                 'profile': '', 'date': cdate, 'time': ctime, 'picture': '',
+                 'username': username, 'date_insert': date, 'time_insert': time, 'tag': tag,
+                 'channel': 'contact', 'tax': '', 'authorized': '', 'position': ''}
         return group
 
     @staticmethod
@@ -561,19 +574,19 @@ class FirebaseAPI:
                 ref.pop(count)
             count += 1
         if ref:
-            final = self.db.child(transaction).child(id).update({'Tag': ref})
+            final = self.db.child(transaction).child(id).update({'tag': ref})
         else:
-            final = self.db.child(transaction).child(id).update({'Tag': ''})
+            final = self.db.child(transaction).child(id).update({'tag': ''})
         return print(final)
 
     def groupToInsert(self, d, value):
-        group = {'Authorized': d['Authorized'], 'Channel': d['Channel'],
-                 'Company': d['Company'], 'Date': d['Date'], 'DateInsert': d['DateInsert'],
-                 'Email': d['Email'], 'EmailLiff': d['EmailLiff'], 'Message': d['Message'],
-                 'Name': d['Name'], 'Other': d['Other'], 'Picture': d['Picture'], 'Position': d['Position'],
-                 'Product': d['Product'], 'Profile': d['Profile'], 'Tax': d['Tax'], 'Tel': d['Tel'],
-                 'Time': d['Time'], 'TimeInsert': d['TimeInsert'], 'Username': d['Username'],
-                 'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'Tag': value}
+        group = {'authorized': d['authorized'], 'channel': d['channel'],
+                 'company': d['company'], 'date': d['date'], 'date_insert': d['date_insert'],
+                 'email': d['email'], 'emailliff': d['emailliff'], 'message': d['message'],
+                 'name': d['name'], 'other': d['other'], 'picture': d['picture'], 'position': d['position'],
+                 'product': d['product'], 'profile': d['profile'], 'tax': d['tax'], 'tel': d['tel'],
+                 'time': d['time'], 'time_insert': d['time_insert'], 'username': d['username'],
+                 'datetime': d['datetime'], 'datetime_insert': d['datetime_insert'], 'id': d['id'], 'tag': value}
         return group
 
     def information(self, transaction):
@@ -584,36 +597,36 @@ class FirebaseAPI:
         ref = self.db.child(transaction).get()
         for i in ref.each()[1:]:
             key = i.key()
-            name = i.val()['Name']
-            tag = i.val()['Tag']
-            profile = i.val()['Profile']
-            channel = i.val()['Channel']
-            company = i.val()['Company']
-            other = i.val()['Other']
-            email = i.val()['Email']
-            liff = i.val()['EmailLiff']
-            picture = i.val()['Picture']
-            position = i.val()['Position']
-            tax = i.val()['Tax']
-            tel = i.val()['Tel']
-            time = i.val()['Time']
+            name = i.val()['name']
+            tag = i.val()['tag']
+            profile = i.val()['profile']
+            channel = i.val()['channel']
+            company = i.val()['company']
+            other = i.val()['other']
+            email = i.val()['email']
+            liff = i.val()['emailliff']
+            picture = i.val()['picture']
+            position = i.val()['position']
+            tax = i.val()['tax']
+            tel = i.val()['tel']
+            time = i.val()['time']
             lst_time.append(time)
-            date = i.val()['Date']
+            date = i.val()['date']
             lst_date.append(date)
-            message = i.val()['Message']
-            authorized = i.val()['Authorized']
-            date_insert = i.val()['DateInsert']
-            time_insert = i.val()['TimeInsert']
-            username = i.val()['Username']
-            product = i.val()['Product']
+            message = i.val()['message']
+            authorized = i.val()['authorized']
+            date_insert = i.val()['date_insert']
+            time_insert = i.val()['time_insert']
+            username = i.val()['username']
+            product = i.val()['product']
             products.append(product)
             group = {
-                'id': key, 'Name': name, 'tag': tag, 'Product': product, 'Email': email, 'Other': other,
-                'EmailLiff': liff, 'Company': company, 'Tel': tel, 'Channel': channel, 'Message': message,
-                'Profile': profile, 'Picture': picture, 'Username': username, 'Time': time, 'Date': date,
-                'DateInsert': date_insert,
-                'TimeInsert': time_insert, 'datetime': f'{date} {time}', 'Position': position, 'Tax': tax,
-                'Authorized': authorized, 'datetime_insert': f'{date_insert} {time_insert}'
+                'id': key, 'name': name, 'tag': tag, 'product': product, 'email': email, 'other': other,
+                'emailliff': liff, 'company': company, 'tel': tel, 'channel': channel, 'message': message,
+                'profile': profile, 'picture': picture, 'username': username, 'time': time, 'date': date,
+                'date_insert': date_insert, 'time_insert': time_insert, 'datetime': f'{date} {time}',
+                'position': position, 'tax': tax, 'authorized': authorized,
+                'datetime_insert': f'{date_insert} {time_insert}'
             }
             lst.append(group)
         return lst[::-1], lst_time, lst_date, products
@@ -746,8 +759,8 @@ class FirebaseNewCustomer:
     def lenProduct(self, db, product):
         lst = []
         ref = self.db.child(db).get()
-        for i in ref.each():
-            lst.append(i.val()['Product'])
+        for i in ref.each()[1:]:
+            lst.append(i.val()['product'])
         result = [x for x in lst if product in x]
         return result
 

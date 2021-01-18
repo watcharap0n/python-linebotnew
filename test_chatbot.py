@@ -5,9 +5,10 @@ from numpy import random
 from collections import OrderedDict
 import firebase_admin  # authen Firebase
 from firebase_admin import credentials, auth  # authen Firebase,
-import pyrebase
+import pyrebase, requests
 import datetime as tim
 import json
+import matplotlib.pyplot as plt
 from flask import Flask, request, abort, render_template, jsonify, session, g
 import pandas as pd
 
@@ -21,30 +22,63 @@ with open('model/config/database_new/firebase.json', encoding='utf8') as json_fi
     pb = pyrebase.initialize_app(config)
     db = firebase.database()
 
-tags = [
-    {'ee': 'fw an optiong or create one'},
-    {'ww': 'gw an option or create one'},
-    {'text': 'รับเหมาสาธารณูปโภค', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างระบบวางท่อ', 'color': 'green'},
-    {'text': 'งานระบบประกอบอาคาร', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างพลังงานทดแทน', 'color': 'green'},
-    {'text': 'รับเหมาก่อสร้างงานอาคาร', 'color': 'green'},
-    {'text': 'ออกแบบตกแต่ง', 'color': 'green'},
-    {'text': 'รับเหมาขุดเจาะ', 'color': 'green'},
-    {'text': 'งานอลูมิเนียม', 'color': 'green'},
-    {'text': 'ผลิตและติดตั้ง', 'color': 'green'},
-    {'text': 'งานบริการ', 'color': 'green'},
-    {'text': 'รับสร้างบ้าน', 'color': 'green'},
-    {'text': 'ไม่แน่ใจ', 'color': 'green'},
-    {'text': 'ขาย', 'color': 'green'},
-    {'text': 'อสังหาฯ', 'color': 'green'},
-    {'text': 'แนวราบ', 'color': 'green'},
-    {'text': 'แนวสูง', 'color': 'green'}
-]
+foo = []
+cut_channels = []
+cut_products = []
+cut_tags = []
+ref = db.child('RestCustomer').get()
+for i in ref.each()[1:]:
+    v = i.val()
+    date = v['date']
+    time = v['time']
+    fname = v['name']
+    company = v['company']
+    product = v['product']
+    channel = v['channel']
+    message = v['message']
+    Img = v['picture']
+    email = v['email']
+    tel = v['tel']
+    tag = v['tag']
+    emailliff = v['emailliff']
+    username = v['username']
+    time_insert = v['time_insert']
+    date_insert = v['date_insert']
+    profile = v['profile']
+    for t in tag:
+        cut_tags.append(t)
+    cut_channels.append(channel)
+    cut_products.append(product)
+    d = tim.datetime.strptime(date, '%d-%m-%Y')
+    t = tim.datetime.strptime(time, '%H:%M:%S')
+    mapProduct = {'name': fname, 'tag': tag, 'company': company, 'product': product, 'channel': channel,
+                  'day': d.day, 'month': d.month, 'year': d.year, 'date': date, 'time': time,
+                  'message': message, 'img': Img, 'id': i.key(), 'email': email, 'profile': profile,
+                  'datetime_insert': f'{date_insert} {time_insert}', 'month_check': f'{d.year}-{d.month}',
+                  'tel': tel, 'emailliff': emailliff, 'username': username, 'datetime': f'{date} {time}'}
+    foo.append(mapProduct)
 
-# for i in tags:
-#     db.child('customer_tag').push(i)
+months = '2021-01'
+d = tim.datetime.strptime(months, '%Y-%m')
+print(d.year, d.month)
 
+# for i in foo[::-1]:
+#     print(i)
+
+
+# tag = ['CB010', 'CJ010']
+# for i in res.each()[1:]:
+#     d_tag = i.val()['tag']
+#     for e in d_tag:
+#         for v in tag:
+#             if e == v:
+#                 print(i.val())
+# for i in res.each()[2:]:
+#     print(i.val()['tag'], i.key())
+
+
+# decoded = json.loads(dumps)
+# print(decoded)
 # db.child('customer_tag').push(tags)
 # lst = []
 # ref = db.child('customer_tag').get()
@@ -54,7 +88,6 @@ tags = [
 #     lst.append(tag)
 
 # print(lst)
-
 
 
 #

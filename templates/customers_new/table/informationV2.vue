@@ -530,11 +530,9 @@
                       [[tag]]
                     </v-chip>
                   </div>
-                  <div v-else>
-                  </div>
+                  <div v-else></div>
                 </div>
-                <div v-else>
-                </div>
+                <div v-else></div>
               </template>
 
               <template v-slot:item.actions="{ item }">
@@ -555,6 +553,49 @@
                 </v-icon>
               </template>
 
+              <template v-slot:item.channel="{item}">
+                <v-chip v-if="item.channel === 'LINE'"
+                        color="green"
+                        class="text-white"
+                >
+                  [[item.channel]]
+                </v-chip>
+                <v-chip v-else-if="item.channel === 'GetDemo'"
+                        color="#FF648D"
+                        class="text-white"
+                >
+                  [[item.channel]]
+                </v-chip>
+                <v-chip v-else
+                        color="#F7F77D"
+                        class="text-black"
+                >
+                  [[item.channel]]
+                </v-chip>
+              </template>
+
+              <template v-slot:item.message="{item}">
+                <v-list-group
+                    color="#7A8FC0"
+                    v-if="item.message"
+                    :value="false"
+                    prepend-icon="mdi-message"
+                >
+                  <v-list-item-content>
+                    [[item.message]]
+                  </v-list-item-content>
+                </v-list-group>
+                <div v-else></div>
+              </template>
+
+              <template v-slot:item.product="{item}">
+                <div style="color: #6183D4;">[[item.product]]</div>
+              </template>
+
+              <template v-slot:item.datetime="{item}">
+                <div style="color: #E9643C;">[[item.datetime]]</div>
+              </template>
+
               <template v-slot:top>
                 <v-toolbar flat>
                   <v-tabs
@@ -568,8 +609,7 @@
                       </v-badge>
                     </v-tab>
 
-                    <v-tab>
-                      <a href="/marketing_import">
+                    <v-tab href="/marketing_import">
                         <v-badge
                             color="#FF648D"
                             :content="amountImport"
@@ -577,11 +617,9 @@
                         >
                           นำเข้า
                         </v-badge>
-                      </a>
                     </v-tab>
 
-                    <v-tab>
-                      <a href="/getDemo">
+                    <v-tab href="/getDemo">
                         <v-badge
                             class="text-white"
                             :content="amountDemo"
@@ -589,10 +627,8 @@
                         >
                           นัดDemo
                         </v-badge>
-                      </a>
                     </v-tab>
-                    <v-tab>
-                      <a href="#">
+                    <v-tab href="/getContract">
                         <v-badge
                             class="text-white"
                             :content="amountContact"
@@ -600,7 +636,6 @@
                         >
                           ติดต่อเรา
                         </v-badge>
-                      </a>
                     </v-tab>
                     <v-spacer></v-spacer>
                     <div>
@@ -621,8 +656,8 @@
                     </div>
                   </v-tabs>
                 </v-toolbar>
-                <v-toolbar flat>
 
+                <v-toolbar flat>
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                       <v-dialog
@@ -652,13 +687,13 @@
                             ดาวโหลดไฟล์ Excel
                           </v-card-title>
                           <v-card-text v-for="(i, x) in selected" :key="x">
-                            ลำดับ : [[x + 1]] ชื่อ : [[i.Name]]
+                            ลำดับ : [[x + 1]] ชื่อ : [[i.name]]
                           </v-card-text>
 
                           <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn
-                                color="green darken-1"
+                                color="red"
                                 text
                                 @click="dialogExcel = false"
                             >
@@ -669,6 +704,7 @@
                                   color="green darken-1"
                                   text
                                   type="submit"
+                                  :disabled="!exD"
                                   @click="dialogExcel = false"
                               >
                                 ตกลง
@@ -679,7 +715,6 @@
                       </v-dialog>
                     </template>
                   </v-tooltip>
-
 
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
@@ -705,6 +740,246 @@
                       </span>
                     </template>
                   </v-tooltip>
+                  &nbsp;
+                  <v-dialog
+
+                      v-model="dialogCustoms"
+                      width="500"
+                      persistent
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          color="pink lighten-2"
+                          dark
+                          v-bind="attrs"
+                          v-on="on"
+                          small
+                      >
+                        <v-icon>
+                          mdi-calendar-multiselect
+                        </v-icon>
+                      </v-btn>
+                    </template>
+
+                    <v-card>
+                      <v-card-title class="headline grey lighten-2">
+                        Days/Product/Channel/Tags
+                      </v-card-title>
+
+                      <v-card-text>
+
+                        <v-row>
+                          <v-col cols="12">
+                            <v-menu
+                                ref="tableMenu"
+                                v-model="tableMenu"
+                                :close-on-content-click="false"
+                                :return-value.sync="table_dates"
+                                transition="scale-transition"
+                                offset-y
+                                min-width="290px"
+                            >
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-combobox
+                                    v-model="table_dates"
+                                    multiple
+                                    chips
+                                    small-chips
+                                    label="เลือกในแต่ละวัน"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-combobox>
+                              </template>
+                              <v-date-picker
+                                  v-model="table_dates"
+                                  multiple
+                                  no-title
+                                  scrollable
+                              >
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="tableMenu = false"
+                                >
+                                  Cancel
+                                </v-btn>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="$refs.tableMenu.save(table_dates)"
+                                >
+                                  OK
+                                </v-btn>
+                              </v-date-picker>
+                            </v-menu>
+                          </v-col>
+                        </v-row>
+                        <div>
+                          <v-combobox
+                              prepend-icon="mdi-tag"
+                              v-model="tagsSelect"
+                              :items="filter_tags"
+                              label="เลือกแท็ก"
+                              multiple
+                              chips
+                              small-chips
+                          ></v-combobox>
+                        </div>
+                        <v-row style="margin-top: 8px">
+                          <v-col cols="6">
+                            <v-select
+                                v-model="formProduct"
+                                :items="filter_products"
+                                label="ผลิตภัณฑ์"
+                                menu-props="auto"
+                                outlined
+                                dense
+                                clearable
+                            >
+                            </v-select>
+                          </v-col>
+                          <v-col cols="6">
+                            <v-select
+                                v-model="formChannel"
+                                :items="filter_channels"
+                                label="ช่องทาง"
+                                menu-props="auto"
+                                outlined
+                                dense
+                                clearable
+                            >
+                            </v-select>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                      [[formProduct]]
+                      <v-divider></v-divider>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="red"
+                            text
+                            @click="dialogCustoms = false"
+                        >
+                          ยกเลิก
+                        </v-btn>
+                        <v-btn
+                            color="primary"
+                            text
+                            @click="tableSortDate"
+                        >
+                          ตกลง
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+ &nbsp;
+
+                  <v-dialog
+                      v-model="dialogMonth"
+                      width="500"
+                      persistent
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          color="pink lighten-2"
+                          dark
+                          v-bind="attrs"
+                          v-on="on"
+                          small
+                      >
+                        <v-icon>
+                          mdi-calendar-month
+                        </v-icon>
+                      </v-btn>
+                    </template>
+
+                    <v-card>
+                      <v-card-title class="headline grey lighten-2">
+                        Month
+                      </v-card-title>
+
+                      <v-card-text>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-menu
+                                ref="tableMenuMonth"
+                                v-model="tableMenuMonth"
+                                :close-on-content-click="false"
+                                :return-value.sync="table_month"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="290px"
+                            >
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-combobox
+                                    v-model="table_month"
+                                    multiple
+                                    chips
+                                    small-chips
+                                    label="เลือกเดือน"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-combobox>
+                              </template>
+                              <v-date-picker
+                                  v-model="table_month"
+                                  type="month"
+                                  no-title
+                                  scrollable
+                                  multiple
+                              >
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="tableMenuMonth = false"
+                                >
+                                  Cancel
+                                </v-btn>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="$refs.tableMenuMonth.save(table_month)"
+                                >
+                                  OK
+                                </v-btn>
+                              </v-date-picker>
+                            </v-menu>
+                          </v-col>
+
+                        </v-row>
+                      </v-card-text>
+
+                      <v-divider></v-divider>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="red"
+                            text
+                            @click="dialogMonth = false"
+                        >
+                          ยกเลิก
+                        </v-btn>
+                        <v-btn
+                            color="primary"
+                            text
+                            @click="tableSortMonth"
+                        >
+                          ตกลง
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+
 
                   <v-col cols="2" style="margin-top: 30px">
                     <v-select
@@ -870,7 +1145,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-account"
-                                  v-model="editedItem.Name"
+                                  v-model="editedItem.name"
                                   label="Name"
                                   outlined
                                   dense
@@ -884,7 +1159,7 @@
                             >
                               <v-select
                                   prepend-inner-icon="mdi-post-outline"
-                                  v-model="editedItem.Product"
+                                  v-model="editedItem.product"
                                   :items="productMango"
                                   label="Product"
                                   outlined
@@ -898,7 +1173,7 @@
                             >
                               <v-select
                                   prepend-inner-icon="mdi-post"
-                                  v-model="editedItem.Other"
+                                  v-model="editedItem.other"
                                   :items="productOther"
                                   label="Product"
                                   outlined
@@ -912,7 +1187,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-office-building"
-                                  v-model="editedItem.Company"
+                                  v-model="editedItem.company"
                                   label="Company"
                                   outlined
                                   dense
@@ -925,7 +1200,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-card-account-phone"
-                                  v-model="editedItem.Tel"
+                                  v-model="editedItem.tel"
                                   label="Tel"
                                   outlined
                                   dense
@@ -938,7 +1213,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-email"
-                                  v-model="editedItem.Email"
+                                  v-model="editedItem.email"
                                   label="Email"
                                   outlined
                                   dense
@@ -951,7 +1226,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-android-messages"
-                                  v-model="editedItem.Message"
+                                  v-model="editedItem.message"
                                   label="Message"
                                   outlined
                                   dense
@@ -965,7 +1240,7 @@
                             >
                               <v-text-field
                                   prepend-inner-icon="mdi-access-point-check"
-                                  v-model="editedItem.Channel"
+                                  v-model="editedItem.channel"
                                   label="Channel"
                                   outlined
                                   dense
@@ -979,8 +1254,8 @@
                             >
                               <v-autocomplete
                                   prepend-inner-icon="mdi-tag"
-                                  v-model="editedItem.Tag"
-                                  :items="tags"
+                                  v-model="editedItem.tag"
+                                  :items="itemsTag"
                                   outlined
                                   dense
                                   chips
@@ -1030,7 +1305,7 @@
               <template v-slot:no-data>
                 <v-btn
                     color="primary"
-                    @click="createInformation"
+                    @click="getTableStart"
                 >
                   Reset
                 </v-btn>
@@ -1048,6 +1323,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
+              dateValid: false,
               productMango: [],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
               showSelect: [],
@@ -1068,7 +1344,9 @@
               amountDemo: '',
               amountImport: '',
               amountContact: '',
-
+              filter_products: [],
+              filter_channels: [],
+              filter_tags: [],
               editedIndex: -1,
               dates: [],
               date: [],
@@ -1096,6 +1374,16 @@
               model: [],
               x: 0,
               y: 0,
+              tableMenu: false,
+              table_dates: [],
+              table_month: [],
+              tableMenuMonth: false,
+              dialogCustoms: false,
+              dialogMonth: false,
+              showTable: false,
+              formProduct: '',
+              formChannel: '',
+              tagsSelect: [],
               selectProduct: [
                   {
                       product: '',
@@ -1104,46 +1392,48 @@
               ],
               editedItem: {
                   id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
+                  name: '',
+                  tag: [],
+                  product: '',
+                  email: '',
+                  emailliff: '',
+                  company: '',
+                  tel: '',
+                  profile: '',
+                  username: '',
+                  time: '',
+                  date: '',
+                  position: '',
+                  tax: '',
+                  authorized: '',
+                  date_insert: '',
+                  time_insert: '',
+                  channel: '',
+                  message: '',
               },
               defaultItem: {
                   id: '',
-                  Name: '',
-                  Tag: [],
-                  Product: '',
-                  Email: '',
-                  EmailLiff: '',
-                  Company: '',
-                  Tel: '',
-                  Profile: '',
-                  Username: '',
-                  Time: '',
-                  Date: '',
-                  Position: '',
-                  Tax: '',
-                  Authorized: '',
-                  DateInsert: '',
-                  TimeInsert: '',
-                  Channel: '',
-                  Message: '',
+                  name: '',
+                  tag: [],
+                  product: '',
+                  email: '',
+                  emailLiff: '',
+                  company: '',
+                  tel: '',
+                  profile: '',
+                  username: '',
+                  time: '',
+                  date: '',
+                  position: '',
+                  tax: '',
+                  authorized: '',
+                  date_insert: '',
+                  time_insert: '',
+                  channel: '',
+                  message: '',
               },
+              exD: false,
+              tagD: false,
               dataSetData: [],
               amountCon: '',
               amountReal: '',
@@ -1163,18 +1453,18 @@
                   return [
                       {text: 'Edit/Delete', value: 'actions', sortable: false},
                       {text: 'แท็ก', value: 'tag'},
-                      {text: 'ชื่อ', value: 'Name'},
-                      {text: 'ผลิตภัณฑ์', value: 'Product'},
-                      {text: 'อื่นๆ', value: 'Other'},
-                      {text: 'บริษัท', value: 'Company'},
-                      {text: 'เบอร์', value: 'Tel'},
-                      {text: 'อีเมล', value: 'Email'},
-                      {text: 'อีเมล(ไลน์)', value: 'EmailLiff'},
-                      {text: 'ข้อความ', value: 'Message'},
-                      {text: 'โปรไฟล์', value: 'Profile'},
+                      {text: 'ชื่อ', value: 'name'},
+                      {text: 'ผลิตภัณฑ์', value: 'product'},
+                      {text: 'อื่นๆ', value: 'other'},
+                      {text: 'บริษัท', value: 'company'},
+                      {text: 'เบอร์', value: 'tel'},
+                      {text: 'อีเมล', value: 'email'},
+                      {text: 'อีเมล(ไลน์)', value: 'emailliff'},
+                      {text: 'ข้อความ', value: 'message'},
+                      {text: 'โปรไฟล์', value: 'profile'},
                       {text: 'วันเวลา', value: 'datetime'},
-                      {text: 'ช่องทาง', value: 'Channel'},
-                      {text: 'คนนำเข้า', value: 'Username'},
+                      {text: 'ช่องทาง', value: 'channel'},
+                      {text: 'คนนำเข้า', value: 'username'},
                       {text: 'วันเวลานำ', value: 'datetime_insert'},
                   ]
               },
@@ -1182,12 +1472,12 @@
                   return [
                       {text: 'Edit/Delete', value: 'actions', sortable: false},
                       {text: 'แท็ก', value: 'tag'},
-                      {text: 'ชื่อ', value: 'Name'},
-                      {text: 'ผลิตภัณฑ์', value: 'Product'},
-                      {text: 'อื่นๆ', value: 'Other'},
-                      {text: 'บริษัท', value: 'Company'},
-                      {text: 'เบอร์', value: 'Tel'},
-                      {text: 'อีเมล', value: 'Email'},
+                      {text: 'ชื่อ', value: 'name'},
+                      {text: 'ผลิตภัณฑ์', value: 'product'},
+                      {text: 'อื่นๆ', value: 'other'},
+                      {text: 'บริษัท', value: 'company'},
+                      {text: 'เบอร์', value: 'tel'},
+                      {text: 'อีเมล', value: 'email'},
                   ]
               }
           },
@@ -1217,6 +1507,8 @@
               ms: 'showDateTime'
           },
           created() {
+              this.filterTable()
+              this.getTableStart();
               this.getTags();
               this.createInformation()
               this.getDateTime()
@@ -1230,6 +1522,7 @@
               this.buildChart(this.dataSetData);
           },
           methods: {
+
               getDataSet: function () {
                   console.log("get data sets");
                   console.log(this.dataSetData);
@@ -1283,12 +1576,34 @@
                       options: {}
                   });
               },
+              filterTable() {
+                  const path = '/json_datetime'
+                  axios.get(path)
+                      .then((res) => {
+                          this.filter_products = res.data.products
+                          this.filter_channels = res.data.channels
+                          this.filter_tags = res.data.tags
+                      })
+                      .catch((err) => {
+                          console.error(err)
+                      })
+              },
+              getTableStart() {
+                  this.spinTable = false
+                  const path = '/json_datetime';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
               createInformation() {
                   this.spinTable = false
                   const path = '/json_information';
                   axios.get(path)
                       .then((res) => {
-                          this.transaction = res.data.transaction;
                           this.tags = res.data.tags
                           this.amountInfo = res.data.amount_info
                           this.amountImport = res.data.amount_import
@@ -1300,6 +1615,74 @@
                           console.error(error);
                       });
               },
+              tableSortDate() {
+                  if (this.table_dates.length === 0 && this.formProduct === '' && this.formChannel === '' && this.tagsSelect.length === 0) {
+                      console.log('error')
+                  } else {
+                      console.log('ff')
+                      let _json = {
+                          'dates': this.table_dates,
+                          'product': this.formProduct,
+                          'channel': this.formChannel,
+                          'tag': this.tagsSelect
+                      }
+                      this.tablePostSorting(_json)
+                      this.dialogCustoms = false
+                  }
+              },
+              tableSortMonth() {
+                  if (this.table_month.length === 0) {
+                      log.error('error')
+                  } else {
+                      _json = {'months': this.table_month}
+                      this.tablePostMonth(_json)
+                      this.dialogMonth = false
+                  }
+              },
+              tablePostSorting(data) {
+                  const path = '/return_sort_table'
+                  axios.post(path, data)
+                      .then(() => {
+                          this.getTable()
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error)
+                      })
+              },
+              tablePostMonth(data) {
+                  const path = '/data_month';
+                  axios.post(path, data)
+                      .then(() => {
+                          this.tableGetMonths()
+                          console.log('success')
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+              tableGetMonths() {
+                  this.spinTable = false
+                  const path = '/data_month';
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((error) => {
+                          console.error(error);
+                      });
+              },
+              getTable() {
+                  this.spinTable = false
+                  const path = '/return_sort_table'
+                  axios.get(path)
+                      .then((res) => {
+                          this.transaction = res.data.ms
+                      })
+                      .catch((err) => {
+                          console.error(err)
+                      })
+              },
               onShowTag() {
                   this.showTag = !this.showTag
               },
@@ -1308,13 +1691,19 @@
                   this.updateChip(chip, id)
               },
               excelIndex(selected) {
-                  console.log(selected)
-                  key = []
-                  selected.forEach((data) => {
-                      key.push(data.id)
-                  })
-                  this.ExcelPush(key)
-                  console.log(key)
+                  if (selected.length === 0) {
+                      this.exD = false
+                  } else {
+                      this.exD = true
+                      console.log(selected)
+                      key = []
+                      selected.forEach((data) => {
+                          key.push(data.id)
+                      })
+                      this.ExcelPush(key)
+                      console.log(key)
+                  }
+
               },
               sortIndex(selected) {
                   user = []
@@ -1343,7 +1732,7 @@
               },
               LoadDataInfo() { //
                   this.spinTable = false;
-                  this.createInformation()
+                  this.getTableStart()
                   console.log(this.spinTable)
               },
               editItem(item) {
@@ -1416,13 +1805,13 @@
                   const path = `/tag_information`;
                   axios.post(path, group)
                       .then(() => {
-                          this.createInformation();
+                          this.getTableStart();
                           this.showLog = 'Sorting!';
                           this.showMessage = true;
                       })
                       .catch((error) => {
                           console.error(error);
-                          this.createInformation();
+                          this.getTableStart();
                       });
               },
 
@@ -1446,7 +1835,7 @@
                       })
                       .catch((error) => {
                           console.error(error);
-                          this.createInformation();
+                          this.getTableStart();
                       });
               },
               removeData(id) {
@@ -1466,12 +1855,12 @@
                   axios.post(path, payload)
                       .then(() => {
                           console.log(payload)
-                          this.createInformation();
+                          this.getTableStart();
                           this.showMessage = true;
                       })
                       .catch((error) => {
                           console.log(error)
-                          this.createInformation()
+                          this.getTableStart();
                       });
               },
               sortProduct(value) {
