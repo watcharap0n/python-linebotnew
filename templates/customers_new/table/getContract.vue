@@ -1,7 +1,7 @@
 {% extends "customers_new/layout.html" %}
 {% block content %}
 
-
+<br><br><br>
   <div id="app">
     <div class="container-fluid" style="margin-top: 30px">
 
