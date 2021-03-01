@@ -280,20 +280,6 @@ def promotion():
         template=ImageCarouselTemplate(
             columns=[
                 ImageCarouselColumn(
-                    image_url='https://sv1.picz.in.th/images/2020/11/03/bxG8n2.jpg',
-                    action=URIAction(
-                        label='คลิก',
-                        uri='https://liff.line.me/1655208213-L8BOv6ky'
-                    )
-                ),
-                ImageCarouselColumn(
-                    image_url='https://sv1.picz.in.th/images/2020/11/03/bxGrQW.jpg',
-                    action=URIAction(
-                        label='คลิก',
-                        uri='https://liff.line.me/1655208213-L8BOv6ky'
-                    )
-                ),
-                ImageCarouselColumn(
                     image_url='https://sv1.picz.in.th/images/2020/11/03/bxv8wu.jpg',
                     action=URIAction(
                         label='คลิก',
