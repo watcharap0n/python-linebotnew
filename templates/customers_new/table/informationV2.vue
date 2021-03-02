@@ -610,32 +610,32 @@
                     </v-tab>
 
                     <v-tab href="/marketing_import">
-                        <v-badge
-                            color="#FF648D"
-                            :content="amountImport"
-                            class="text-white"
-                        >
-                          นำเข้า
-                        </v-badge>
+                      <v-badge
+                          color="#FF648D"
+                          :content="amountImport"
+                          class="text-white"
+                      >
+                        นำเข้า
+                      </v-badge>
                     </v-tab>
 
                     <v-tab href="/getDemo">
-                        <v-badge
-                            class="text-white"
-                            :content="amountDemo"
-                            color="#FF648D"
-                        >
-                          นัดDemo
-                        </v-badge>
+                      <v-badge
+                          class="text-white"
+                          :content="amountDemo"
+                          color="#FF648D"
+                      >
+                        นัดDemo
+                      </v-badge>
                     </v-tab>
                     <v-tab href="/getContract">
-                        <v-badge
-                            class="text-white"
-                            :content="amountContact"
-                            color="#FF648D"
-                        >
-                          ติดต่อเรา
-                        </v-badge>
+                      <v-badge
+                          class="text-white"
+                          :content="amountContact"
+                          color="#FF648D"
+                      >
+                        ติดต่อเรา
+                      </v-badge>
                     </v-tab>
                     <v-spacer></v-spacer>
                     <div>
@@ -705,6 +705,7 @@
                                   text
                                   type="submit"
                                   :disabled="!exD"
+                                  :loading="!excelfile"
                                   @click="dialogExcel = false"
                               >
                                 ตกลง
@@ -877,7 +878,7 @@
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
- &nbsp;
+                  &nbsp;
 
                   <v-dialog
                       v-model="dialogMonth"
@@ -995,13 +996,15 @@
                     </v-select>
                   </v-col>
                   {#
-{#          <v-switch#}
-                  {#              #}
+              {#
+              <v-switch
+              #}
+                  {# #}
                   {# v-model="singleSelect" #}
                   {# label="Single select" #}
                   {# class="pa-3" #}
                   {#></v-switch>
-{#          #}
+              {# #}
                   <v-spacer></v-spacer>
                   <div class="small" style="margin-left: 10px; margin-top: 23px; margin-right: 20px">
                     <v-combobox
@@ -1323,6 +1326,7 @@
           el: '#app',
           vuetify: new Vuetify(),
           data: () => ({
+              excelfile: false,
               dateValid: false,
               productMango: [],
               productOther: ['RealEstate', 'Construction', 'BI Dashboard', 'Project Planning', 'CSM', 'QCM', 'Maintenance', 'Rental', 'MRP'],
@@ -1786,6 +1790,7 @@
                       .then(() => {
                           console.log('success');
                           this.getExcel();
+                          this.excelfile = true;
                       })
                       .catch((error) => {
                           console.error(error);

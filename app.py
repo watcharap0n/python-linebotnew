@@ -31,7 +31,7 @@ app.secret_key = 'watcharaponweeraborirakz'
 cred = credentials.Certificate('model/config/database_test/authen_firebase.json')
 firebase_auth = firebase_admin.initialize_app(cred)
 
-COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 days
+COOKIE_TIME_OUT = 60 * 60 * 24 * 7  # 7 years
 
 
 def database_test():
@@ -622,11 +622,21 @@ def add_tags():
 
 
 @app.route('/information_v2', methods=['GET', 'POST'])
-def page_info():
+def page_information2():
     if not g.user:
         return redirect(url_for('welcome'))
     if request.method == 'GET':
         return render_template('customers_new/table/informationV2.vue')
+    elif request.method == 'POST':
+        return send_from_directory('static/excel', 'testVue.xlsx')
+
+
+@app.route('/information_v2_fullscreen', methods=['GET', 'POST'])
+def page_fullscreen_v2():
+    if not g.user:
+        return redirect(url_for('welcome'))
+    if request.method == 'GET':
+        return render_template('customers_new/table/tableFullscreen.vue')
     elif request.method == 'POST':
         return send_from_directory('static/excel', 'testVue.xlsx')
 
@@ -936,14 +946,15 @@ def return_Chip(id):
 def excel_information():
     if request.method == 'POST':
         post_data = request.get_json()
-        print('post_data', post_data)
         lst = []
         for i in post_data:
             ref = db2.child('RestCustomer').child(i).get()
             lst.append(dict(ref.val()))
-        print(lst)
+        idx = len(lst)
+        idx = [x + 1 for x in range(idx)]
         data_frame = pd.DataFrame(lst)
-        print(data_frame)
+        data_frame['index'] = idx
+        data_frame = data_frame.set_index(data_frame['index'])
         datatoexcel = pd.ExcelWriter('static/excel/testVue.xlsx', engine='xlsxwriter')
         data_frame.to_excel(datatoexcel, sheet_name='Sheet1')
         datatoexcel.save()
