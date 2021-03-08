@@ -135,14 +135,14 @@
                                         color="primary"
                                         @click="menu = false"
                                     >
-                                      Cancel
+                                      ยกเลิก
                                     </v-btn>
                                     <v-btn
                                         text
                                         color="primary"
                                         @click="$refs.menu.save(dates)"
                                     >
-                                      OK
+                                      ตกลง
                                     </v-btn>
                                   </v-date-picker>
                                 </v-menu>
@@ -264,14 +264,14 @@
                                         color="primary"
                                         @click="menuMonth = false"
                                     >
-                                      Cancel
+                                      ยกเลิก
                                     </v-btn>
                                     <v-btn
                                         text
                                         color="primary"
                                         @click="$refs.menuMonth.save(date)"
                                     >
-                                      OK
+                                      ตกลง
                                     </v-btn>
                                   </v-date-picker>
                                 </v-menu>
@@ -805,14 +805,14 @@
                                     color="primary"
                                     @click="tableMenu = false"
                                 >
-                                  Cancel
+                                  ยกเลิก
                                 </v-btn>
                                 <v-btn
                                     text
                                     color="primary"
                                     @click="$refs.tableMenu.save(table_dates)"
                                 >
-                                  OK
+                                  ตกลง
                                 </v-btn>
                               </v-date-picker>
                             </v-menu>
@@ -943,14 +943,14 @@
                                     color="primary"
                                     @click="tableMenuMonth = false"
                                 >
-                                  Cancel
+                                  ยกเลิก
                                 </v-btn>
                                 <v-btn
                                     text
                                     color="primary"
                                     @click="$refs.tableMenuMonth.save(table_month)"
                                 >
-                                  OK
+                                  ตกลง
                                 </v-btn>
                               </v-date-picker>
                             </v-menu>
@@ -1278,14 +1278,14 @@
                             text
                             @click="close"
                         >
-                          Cancel
+                          ยกเลิก
                         </v-btn>
                         <v-btn
                             color="blue darken-1"
                             text
                             @click="save"
                         >
-                          Save
+                          บันทึก
                         </v-btn>
                       </v-card-actions>
                     </v-card>

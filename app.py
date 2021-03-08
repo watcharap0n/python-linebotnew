@@ -906,8 +906,11 @@ def return_information():
         o = TimeDate
         post_data['date'] = f'{o.day}-{o.month}-{o.year}'
         post_data['time'] = f'{o.hour}:{o.minute}:{o.second}'
+        post_data['username'] = session['user_id']['displayName']
         post_data['picture'] = ''
         post_data['other'] = ''
+        post_data['tag'] = ''
+        post_data['channel'] = 'custom'
         del post_data['id']
         print(post_data)
         db2.child('RestCustomer').push(post_data)
@@ -1215,13 +1218,13 @@ def marketing_information_update(id):
         position = request.form['position']
         if tags:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
-                       'Tel': tel, 'Email': email, 'Emailliff': emailLIFF, 'Message': message,
+                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
                        'Profile': displayName, 'Channel': channel, 'Tag': tags, 'Authorized': authorized, 'Tax': tax,
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         else:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
-                       'Tel': tel, 'Email': email, 'Emailliff': emailLIFF, 'Message': message,
+                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
                        'Profile': displayName, 'Channel': channel, 'Tag': '', 'Authorized': authorized, 'Tax': tax,
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
