@@ -1215,13 +1215,13 @@ def marketing_information_update(id):
         position = request.form['position']
         if tags:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
-                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
+                       'Tel': tel, 'Email': email, 'Emailliff': emailLIFF, 'Message': message,
                        'Profile': displayName, 'Channel': channel, 'Tag': tags, 'Authorized': authorized, 'Tax': tax,
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
         else:
             groupBy = {'Name': name, 'Product': product, 'Other': other, 'Company': company,
-                       'Tel': tel, 'Email': email, 'EmailLiff': emailLIFF, 'Message': message,
+                       'Tel': tel, 'Email': email, 'Emailliff': emailLIFF, 'Message': message,
                        'Profile': displayName, 'Channel': channel, 'Tag': '', 'Authorized': authorized, 'Tax': tax,
                        'Position': position}
             db2.child('RestCustomer').child(id).update(groupBy)
