@@ -1448,7 +1448,7 @@
           }),
           computed: {
               formTitle() {
-                  return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+                  return this.editedIndex === -1 ? 'เพิ่มข้อมูล' : 'แก้ไขข้อมูล'
               },
               showHeaders() {
                   return this.headers.filter(s => this.selectedHeaders.includes(s));
