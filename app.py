@@ -194,39 +194,6 @@ def apiContractReq():
             return jsonify({'error Sending: Please try again'}, 400)
 
 
-@app.route('/monitoring_bot', methods=['GET', 'POST'])
-def monitoring_bot():
-    if request.method == 'GET':
-        db2.child('status_bot').set({'status': 'Please Second'})
-        db2.child('selenium').set({'status': 'start'})
-        return render_template('monitoring_bot.html')
-    elif request.method == 'POST':
-        payload = request.get_json()
-        payload = dict(payload)
-        if payload.get('condition') or payload.get('start') or payload.get('end'):
-            scarping_token(token=payload['token'], db=db2, condition=True, start=payload['start'], end=payload['end'])
-        else:
-            scarping_token(payload['token'], db2)
-        return redirect('/static/scraping.xlsx')
-
-
-@app.route('/status_bot')
-def status_bot():
-    ref = db2.child('status_bot').get()
-    return jsonify(ref.val())
-
-
-@app.route('/terminate_bot')
-def terminate_bot():
-    db2.child('selenium').set({'status': 'stop'})
-    return redirect('/static/scraping.xlsx')
-
-
-@app.route('/start_bot')
-def start_bot():
-    db2.child('selenium').set({'status': 'start'})
-    return jsonify({'test': 'success'})
-
 @app.route('/ML')
 def ml_dlib():
     return render_template('customers_new/form/machine_learning_dlib.html')
