@@ -1209,6 +1209,7 @@
                   this.updateChip(chip, id)
               },
               excelIndex(selected) {
+                  this.excelfile = false;
                   if (selected.length === 0) {
                       this.exD = false
                   } else {
