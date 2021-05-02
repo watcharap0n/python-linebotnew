@@ -1608,7 +1608,7 @@ def event_handler1(event):
             with open('static/images/line.png', 'wb') as fb:
                 for chunk in message_content.iter_content():
                     fb.write(chunk)
-            image = cv2.imread('static/images/line.png', cv2.IMREAD_UNCHANGED)
+            image = cv2.imread('static/images/line.png')
             detect_object(image, rtoken, user_id, line_bot_api2)
 
 
@@ -1631,52 +1631,53 @@ def event_handler2(event):
 def detect_object(img, rtoken, user_id, line_bot_api):
     scale = 0.5
     img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
-    height, width, channels = img.shape
-    name_app = []
-    # Detecting objects
-    blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-    net.setInput(blob)
-    outs = net.forward(output_layers)
 
-    class_ids = []
-    confidences = []
-    boxes = []
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-            # print(confidence)
-            if confidence > 0.5:
-                # Object detected
-                center_x = int(detection[0] * width)
-                center_y = int(detection[1] * height)
-                w = int(detection[2] * width)
-                h = int(detection[3] * height)
-                # Rectangle coordinates
-                x = int(center_x - w / 2)
-                y = int(center_y - h / 2)
-                boxes.append([x, y, w, h])
-                confidences.append(float(confidence))
-                class_ids.append(class_id)
-    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    label_str = []
-    for i in range(len(boxes)):
-        if i in indexes:
-            print(i, indexes)
-            x, y, w, h = boxes[i]
-            label = str(classes[class_ids[i]])
-            label_str.append(label)
-            color = colors[i]
-            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(img, label, (x, y - 5), font, .7, color, 2)
+    # height, width, channels = img.shape
+    name_app = []
+    # # Detecting objects
+    # blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    # net.setInput(blob)
+    # outs = net.forward(output_layers)
+    #
+    # class_ids = []
+    # confidences = []
+    # boxes = []
+    # for out in outs:
+    #     for detection in out:
+    #         scores = detection[5:]
+    #         class_id = np.argmax(scores)
+    #         confidence = scores[class_id]
+    #         # print(confidence)
+    #         if confidence > 0.5:
+    #             # Object detected
+    #             center_x = int(detection[0] * width)
+    #             center_y = int(detection[1] * height)
+    #             w = int(detection[2] * width)
+    #             h = int(detection[3] * height)
+    #             # Rectangle coordinates
+    #             x = int(center_x - w / 2)
+    #             y = int(center_y - h / 2)
+    #             boxes.append([x, y, w, h])
+    #             confidences.append(float(confidence))
+    #             class_ids.append(class_id)
+    # indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+    # font = cv2.FONT_HERSHEY_SIMPLEX
+    # label_str = []
+    # for i in range(len(boxes)):
+    #     if i in indexes:
+    #         print(i, indexes)
+    #         x, y, w, h = boxes[i]
+    #         label = str(classes[class_ids[i]])
+    #         label_str.append(label)
+    #         color = colors[i]
+    #         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+    #         cv2.putText(img, label, (x, y - 5), font, .7, color, 2)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     dets = detector(gray, 1)
     for d in dets:
         xy = d.left(), d.top()
         wh = d.right(), d.bottom()
-        shape = sp(img, d)
+        shape = sp(gray, d)
         face_desc0 = model.compute_face_descriptor(img, shape, 1)  # output deeplearning
         d = []
         for face_desc in FACE_DESC:
@@ -1684,13 +1685,29 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         d = np.array(d)  # compare picture
         idx = np.argmin(d)  # ระบุลาเบล
         print(d[idx])
-        if d[idx] <= 0.45:
+        if d[idx] <= 0.34:
             name = FACE_NAME[idx]
             name = str(name)
             print(name)
             name_app.append(name)
-            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            percent = 1.0 - d[idx]
+            percent = percent * 100
+            cv2.putText(img, f'{name}', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2,
+                        cv2.LINE_AA)
+            cv2.putText(img, f'{round(percent, 1)}%', (xy[0] + 40, xy[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 255, 0), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 255, 0), 2)
+        elif d[idx] <= 0.39:
+            name = FACE_NAME[idx]
+            name = str(name)
+            print(d[idx], name)
+            percent = 1.0 - d[idx]
+            percent = percent * 100
+            cv2.putText(img, f'{name}', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2,
+                        cv2.LINE_AA)
+            cv2.putText(img, f'{round(percent, 1)}%', (xy[0] + 40, xy[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 255, 255), 2, cv2.LINE_AA)
+            cv2.rectangle(img, xy, wh, (0, 255, 255), 2)
         else:
             name = 'Unknown'
             print(name)
@@ -1698,11 +1715,11 @@ def detect_object(img, rtoken, user_id, line_bot_api):
             cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 0, 255), 2)
     str_name = ''
-    str_object = ''
+    # str_object = ''
     for n in name_app:
         str_name = str_name + n.ljust(8)
-    for l in label_str:
-        str_object = str_object + l.ljust(8)
+    # for l in label_str:
+    #     str_object = str_object + l.ljust(8)
     img_item = 'static/images/predict_rec.png'
     cv2.imwrite(img_item, img)
     image_name = 'static/images/predict_rec.png'
@@ -1726,12 +1743,14 @@ def detect_object(img, rtoken, user_id, line_bot_api):
         original_content_url=img_origin,
         preview_image_url=img_240
     )
-    if not str_name and not str_object:
+    # if not str_name and not str_object:
+    if not str_name:
         line_bot_api.push_message(user_id, TextSendMessage(
-            text='รูปที่คุณถ่าย ไม่สามารถระบุได้ โปรดถ่ายรูปหน้าคน หรือ รถสิ่งของต่าง ๆ'))
+            text='รูปที่คุณถ่าย ไม่สามารถระบุได้ โปรดถ่ายรูปหน้าคน'))
     else:
         line_bot_api.reply_message(rtoken, image_message)
-        line_bot_api.push_message(user_id, TextSendMessage(text=f'นี้อาจจะเป็น {str(str_name)}รูปแบบ {str_object}'))
+        line_bot_api.push_message(user_id, TextSendMessage(text=f'สวัสดีคุณ {str(str_name)}'))
+        # line_bot_api.push_message(user_id, TextSendMessage(text=f'นี้อาจจะเป็น {str(str_name)}รูปแบบ {str_object}'))
     return str(str_name)
 
 
