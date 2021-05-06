@@ -75,19 +75,27 @@ def webdlib(cap):
         d = np.array(d)  # compare picture
         idx = np.argmin(d)  # ระบุลาเบล
         # print(d[idx])
-        if d[idx] <= 0.49:
+        if d[idx] <= 0.39:
             name = FACE_NAME[idx]
             name = str(name)
+            percent = 1.0 - d[idx]
+            percent = percent * 100
             # print(name)
             # print(name_api)
             name_app.append(name)
-            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, .7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(img, f'{name}', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2,
+                        cv2.LINE_AA)
+            cv2.putText(img, f'{round(percent, 1)}%', (xy[0] + 40, xy[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 255, 0), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 255, 0), 2)
         else:
             name = 'Unknown'
-            # print(name)
+            percent = 1.0 - d[idx]
+            percent = percent * 100
             name_app.append(name)
-            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, .7, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(img, f'{round(percent, 1)}%', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 0, 255), 2,
+                        cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 0, 255), 2)
     ret, jpeg = cv2.imencode('.jpg', img)
     return jpeg.tobytes()

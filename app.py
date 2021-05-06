@@ -468,7 +468,7 @@ def ajax_marketing():
         line_bot_api2.push_message(userId, flex_profile)
         line_bot_api2.push_message(userId, TextSendMessage(
             text='น้องแมงโก้ได้รับข้อมูลของท่านแล้ว โดยจะรีบดำเนินการประสานงานให้เจ้าหน้าที่ติดต่อกลับให้เร็วที่สุดค่ะ\n'
-                 'หรือหากต้องการขอใบเสนอราคาด่วนสามารถติดต่อได้ที่ 063-565-4594 😀'))
+                 'ติดต่อเจ้าหน้าที่ฝ่ายขายโทร 086-914-6997 😀'))
         return make_response(event)
 
 
@@ -1608,7 +1608,7 @@ def event_handler1(event):
             with open('static/images/line.png', 'wb') as fb:
                 for chunk in message_content.iter_content():
                     fb.write(chunk)
-            image = cv2.imread('static/images/line.png')
+            image = cv2.imread('static/images/line.png', cv2.IMREAD_UNCHANGED)
             detect_object(image, rtoken, user_id, line_bot_api2)
 
 
@@ -1629,12 +1629,10 @@ def event_handler2(event):
 
 
 def detect_object(img, rtoken, user_id, line_bot_api):
-    scale = 0.5
-    img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 
     # height, width, channels = img.shape
     name_app = []
-    # # Detecting objects
+    # Detecting objects
     # blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
     # net.setInput(blob)
     # outs = net.forward(output_layers)
@@ -1709,13 +1707,18 @@ def detect_object(img, rtoken, user_id, line_bot_api):
                         (0, 255, 255), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 255, 255), 2)
         else:
-            name = 'Unknown'
-            print(name)
+            name = 'unknown'
             name_app.append(name)
-            cv2.putText(img, name, (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            percent = 1.0 - d[idx]
+            percent = percent * 100
+            cv2.putText(img, f'{round(percent, 1)}%', (xy[0] + 40, xy[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 0, 255), 2, cv2.LINE_AA)
             cv2.rectangle(img, xy, wh, (0, 0, 255), 2)
+
+    scale = 0.5
+    img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
     str_name = ''
-    # str_object = ''
+    str_object = ''
     for n in name_app:
         str_name = str_name + n.ljust(8)
     # for l in label_str:
